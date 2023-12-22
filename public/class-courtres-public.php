@@ -46,6 +46,7 @@ class Courtres_Public extends Courtres_Base {
 	public $max_hours;
 	public $isReservatedPerPersonInFuture;
 	public $isSeveralReservePerson;
+	public $assets_version;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -577,6 +578,12 @@ class Courtres_Public extends Courtres_Base {
 		$min_players = $this->getMinPlayers();
 		// print_r($min_players);
 
+		if (!isset($min_players['Single'])) { $min_players['Single']=0; }
+		if (!isset($min_players['Double'])) { $min_players['Double']=0; }
+		if (!isset($min_players['Championship'])) { $min_players['Championship']=0; }
+		if (!isset($min_players['Training'])) { $min_players['Training']=0; }
+		if (!isset($min_players['Competition'])) { $min_players['Competition']=0; }
+
 		$helper       = false; // activate before pushing to production to remove dev data!
 		$helper_title = $helper ? ' title="' . $helper . '"' : '';
 		// $output = '<td class="available" data-now="' . $nowHourD . 'h" data-cell="' . $hourD . 'h"><a class=" ' . $link_class_green . ' reservation" data-day="'
@@ -596,7 +603,7 @@ class Courtres_Public extends Courtres_Base {
 		return $output;
 	}
 
-	public function getTD_multi( $court, $day, $hour, $mstart = 0, $mend = 0, $date = false, $klasa ) {
+	public function getTD_multi( $court, $day, $hour, $klasa, $mstart = 0, $mend = 0, $date = false ) {
 		$now     = getCurrentDateTime();
 		$theTime = getCurrentDateTime();
 		$nowTZ   = new DateTime( $theTime['datetime'] );
@@ -822,6 +829,13 @@ class Courtres_Public extends Courtres_Base {
 		$min_players = $this->getMinPlayers();
 		// print_r($min_players);
 
+		if (!isset($min_players['Single'])) { $min_players['Single']=0; }
+		if (!isset($min_players['Double'])) { $min_players['Double']=0; }
+		if (!isset($min_players['Championship'])) { $min_players['Championship']=0; }
+		if (!isset($min_players['Training'])) { $min_players['Training']=0; }
+		if (!isset($min_players['Competition'])) { $min_players['Competition']=0; }
+
+
 		$helper       = false; // activate before pushing to production to remove dev data!
 		$helper_title = $helper ? ' title="' . $helper . '"' : '';
 		// $output = '<td class="available" data-now="' . $nowHourD . 'h" data-cell="' . $hourD . 'h"><a class=" ' . $link_class_green . ' reservation" data-day="'
@@ -867,7 +881,7 @@ class Courtres_Public extends Courtres_Base {
 		// $cr_ids[] = $atts['id'];
 		if (!is_array($cr_ids)) { $cr_ids=array(); }
 		if (!is_array($atts)) { $atts=array(); }
-		if (isset($atts['id'])) { $atts['id']=0; } { $cr_ids[] = str_replace(",","_",$atts['id']); }
+		if (isset($atts['id'])) { $cr_ids[] = str_replace(",","_",$atts['id']); }
 		ob_start();
 		include 'partials/' . $this->plugin_name . '-public-display-full-view.php';
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/courtres-public.js', array( 'jquery' ), $this->assets_version, false );

@@ -41,6 +41,8 @@ class Courtres_Admin extends Courtres_Base {
 	 */
 	private $version;
 
+	private $assets_version;
+
 	/**
 	 * Initialize the class and set its properties.
 	 *

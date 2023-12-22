@@ -246,7 +246,7 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 									),
 									'br' => array(),
 								);
-								echo wp_kses( $this->getTD_multi( $court_ispis_2, $day, $j, 0, 30, date_i18n( 'Y-m-d', strtotime( '+' . $day . ' day', $nowTZTS ) ), $klasa ), $allowed_html );
+								echo wp_kses( $this->getTD_multi( $court_ispis_2, $day, $j, $klasa, 0, 30, date_i18n( 'Y-m-d', strtotime( '+' . $day . ' day', $nowTZTS ) ) ), $allowed_html );
 								// echo $this->getTD_multi( $court_ispis_2, $day, $j, 0, 30, date_i18n("Y-m-d", strtotime('+'.$day.' day', $nowTZTS)), $klasa );
 							}
 					}
@@ -300,7 +300,7 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 										),
 										'br' => array(),
 									);
-									echo wp_kses( $this->getTD_multi( $court_ispis_2, $day, $j, 30, 0, date_i18n( 'Y-m-d', strtotime( '+' . $day . ' day', $nowTZTS ) ), $klasa ), $allowed_html );
+									echo wp_kses( $this->getTD_multi( $court_ispis_2, $day, $j, $klasa, 30, 0, date_i18n( 'Y-m-d', strtotime( '+' . $day . ' day', $nowTZTS ) ) ), $allowed_html );
 									// echo $this->getTD_multi( $court_ispis_2, $day, $j, 30, 0, date_i18n("Y-m-d", strtotime('+'.$day.' day', $nowTZTS)), $klasa );
 								}
 						}

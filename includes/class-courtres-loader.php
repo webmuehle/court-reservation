@@ -41,6 +41,8 @@ class Courtres_Loader {
 	 */
 	protected $filters;
 
+	protected $shortcodes;
+
 	/**
 	 * Initialize the collections used to maintain the actions and filters.
 	 *

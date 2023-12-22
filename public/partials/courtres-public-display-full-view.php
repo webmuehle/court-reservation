@@ -144,6 +144,14 @@ foreach ( $court_ispis as $court_ispis_pojedini ) {
 </style>
 
 <!-- CR-DIALOG-RESERVE -->
+
+<?php 
+if (!isset($court) || !is_object($court)) { $court = new stdClass(); }
+if (!property_exists("court", "name")) { $court->name=""; }
+if (!property_exists("court", "id")) { $court->id=""; }
+?>
+
+
 <div id="cr-dialog-reserve-<?php echo esc_attr( $courtID ); ?>" style="display:none;" class="cr-dialog-reserve" title="<?php echo esc_attr( $court->name ); ?> <?php echo esc_html__( 'Reservation', 'court-reservation' ); ?>">
 	<form id="cr-form-reserve-<?php echo esc_attr( $courtID ); ?>" class="resform" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" >
 		<input type="hidden" name="action" value="add_reservation">
@@ -221,6 +229,8 @@ echo wp_kses($this->option_ui_table_cell_mouseover_background(), $allowed_html);
 echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?>
 
 <!-- CR-TABLE -->
+<?php if (!property_exists("court", "close")) { $court->close=""; } ?>
+
 <div class="table-responsive container-reservations" id="cr-table-<?php echo esc_attr($courtID); ?>" data-navigator-step="<?php echo esc_attr($court_ob->days); ?>" data-hour-close="<?php echo esc_attr($court->close); ?>">
 
 	<?php if ( $mayEdit ) : ?>
@@ -390,7 +400,7 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 									),
 									'br' => array(),
 								);
-								echo wp_kses( $this->getTD_multi( $court_ispis_2, $day, $j, 0, 30, date_i18n( 'Y-m-d', strtotime( '+' . $day . ' day', $nowTZTS ) ), $klasa ), $allowed_html );
+								echo wp_kses( $this->getTD_multi( $court_ispis_2, $day, $j, $klasa, 0, 30, date_i18n( 'Y-m-d', strtotime( '+' . $day . ' day', $nowTZTS ) ) ), $allowed_html );
 								// echo $this->getTD_multi( $court_ispis_2, $day, $j, 0, 30, date_i18n("Y-m-d", strtotime('+'.$day.' day', $nowTZTS)), $klasa );
 							}
 					}
@@ -444,7 +454,7 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 										),
 										'br' => array(),
 									);
-									echo wp_kses( $this->getTD_multi( $court_ispis_2, $day, $j, 30, 0, date_i18n( 'Y-m-d', strtotime( '+' . $day . ' day', $nowTZTS ) ), $klasa ), $allowed_html );
+									echo wp_kses( $this->getTD_multi( $court_ispis_2, $day, $j, $klasa, 30, 0, date_i18n( 'Y-m-d', strtotime( '+' . $day . ' day', $nowTZTS ) ) ), $allowed_html );
 									// echo $this->getTD_multi( $court_ispis_2, $day, $j, 30, 0, date_i18n("Y-m-d", strtotime('+'.$day.' day', $nowTZTS)), $klasa );
 								}
 						}
