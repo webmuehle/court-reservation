@@ -97,7 +97,7 @@ require 'courtres-notice-upgrade.php';
 									<div class="offer">
 										<span class="price">
 											<span>
-												<b class="currency">$</b><var>89</var>
+												<b class="currency">$</b><var>129</var>
 											</span>
 											<span>
 												<b class="price-decimal">99</b>
@@ -131,7 +131,7 @@ require 'courtres-notice-upgrade.php';
 									<div class="offer">
 										<span class="price">
 											<span>
-												<b class="currency">$</b><var>169</var>
+												<b class="currency">$</b><var>199</var>
 											</span>
 											<span>
 												<b class="price-decimal">99</b>
