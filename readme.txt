@@ -4,7 +4,7 @@ Donate link: https://www.webmuehle.at/
 Tags: Court Reservation, Padel Tennis, Tennis, Squash, Badminton, Volleyball, Padel, Pickleball, Pyramid Tournament, Pyramid Competition, Ladder Tournament, Ladder Competition,Clubmanagement, Reservierungssystem, Buchungssystem, Platzreservierung, Forderungen, Forderungspyramide
 Requires at least: 3.0.1
 Tested up to: 6.4.1
-Stable tag: 1.8.4
+Stable tag: 1.8.6
 Requires PHP: 5.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
