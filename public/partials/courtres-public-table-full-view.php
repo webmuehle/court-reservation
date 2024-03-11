@@ -154,7 +154,9 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 					echo "<th class='block_issue";
 					if ( $day != $fromDay ) {
 						echo ' mob_minus'; }
-					echo "' colspan='" . esc_attr( $broj_court ) . "'>" . esc_html(date_i18n( 'l', strtotime( '+' . $day . ' day', $nowTZTS ) )) . '<br/>' . esc_html(date_i18n( $dateformat, strtotime( '+' . $day . ' day', $nowTZTS ) )) . '</th>';
+					if ($day<0) { $date_for_print=date_i18n( 'l', strtotime( $day . ' day', $nowTZTS ) ); }
+					else { $date_for_print=date_i18n( 'l', strtotime( '+' . $day . ' day', $nowTZTS ) ); }
+					echo "' colspan='" . esc_attr( $broj_court ) . "'>" . esc_html($date_for_print) . '<br/>' . esc_html(date_i18n( $dateformat, strtotime( '+' . $day . ' day', $nowTZTS ) )) . '</th>';
 			}
 
 				echo "</tr><tr><th class='mob_width'> &nbsp; </th>";

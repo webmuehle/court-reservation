@@ -148,7 +148,11 @@
 							$step -= parseInt( $( "#cr-table-" + id ).data( 'navigator-step' ) ) || 0;
 							$step  = $step < 0 ? 0 : $step;
 						} else if ($cr_days.data( 'navigator' ) === 'next') {
-							$step = +$step + (parseInt($("#cr-table-" + id).data('navigator-step')) || 0);
+							if (window.innerWidth > 900) {
+								$step = +$step + (parseInt($("#cr-table-" + id).data('navigator-step')) || 0);
+							} else { 
+								$step = +$step + 1;
+							}
 						} else if ($cr_days.data( 'navigator' ) === 'prev-month') {
 							$step = +$step - (parseInt($cr_days.data('day')) || 0);
 						} else if ($cr_days.data( 'navigator' ) === 'next-month') {

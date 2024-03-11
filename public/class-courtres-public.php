@@ -489,8 +489,10 @@ class Courtres_Public extends Courtres_Base {
 			$helper_title = $helper ? ' title="' . $helper . '"' : '';
 
 			$block_colours = get_option('option_reservation_type_color');
+
 			$block_type=$reservation->type; 
-			if ($block_colours[$block_type]=="0") { $block_colours[$block_type]="inherit"; }
+			if (is_bool($block_colours)) { unset($block_colours); $block_colours=array(); $block_colours[$block_type]="inherit"; }
+			elseif ($block_colours[$block_type]=="0") { $block_colours[$block_type]="inherit"; }
 			else { $block_colours[$block_type]=$block_colours[$block_type] . " !important"; }
 
 			$output       = '<td class="blocked" style="background-color: ' . $block_colours[$block_type] . '" rowspan="' . $rowpan . '" data-now="' . $now['hour'] . ':' . $now['minute'] . '"' . $style . $helper_title . '  data-gid="' . $reservation->gid . '">';

@@ -21,6 +21,23 @@
 					$fromDay                   = isset( $_SESSION['cr_from'] ) ? intval( $_SESSION['cr_from'] ) : 0; // $court->days;
 					$tillDay                   = $fromDay === 0 ? $court->days : $fromDay + $court->days;
 				}
+
+				if (isset($_GET['navigator_step']))
+				{
+					$koliko=$_GET['navigator_step'];
+					$odabrani_dan1=strtotime($danas);
+					if ($koliko<0) { $odabrani_dan2 = strtotime("$koliko day", $odabrani_dan1); }
+					else { $odabrani_dan2 = strtotime("+$koliko day", $odabrani_dan1); }
+					$odabrani_dan = date('Y-m-d', $odabrani_dan2);
+					// $odabrani_dan = $_POST['datum'];
+					// $odabrani_dan_ = strtotime($odabrani_dan);
+					// $danas_ = strtotime($danas);
+					// $razlika =  round( ($odabrani_dan_-$danas_) / (60 * 60 * 24) );
+					$_SESSION['cr_from']=$_GET['navigator_step'];
+					$fromDay                   = isset( $_SESSION['cr_from'] ) ? intval( $_SESSION['cr_from'] ) : 0; // $court->days;
+					$tillDay                   = $fromDay === 0 ? $court->days : $fromDay + $court->days;
+				}
+
 				// $danas=date('2023-06-05');
 				$danas_bez1=explode("-",$odabrani_dan);
 				$danas_bez=$danas_bez1[0] . "-" . $danas_bez1[1] . "-";
