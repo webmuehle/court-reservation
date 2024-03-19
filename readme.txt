@@ -33,6 +33,7 @@ With our new ULTIMATE plan, you can create unlimited pyramid competitions/tourna
 **FEATURES OF THE ULTIMATE VERSION**
 * All of the PREMIUM VERSION, and
 * Ladder Competitions / Pyramid Tournaments
+* Individual colors for reservation types
 * For just 199,99$ a year
 
 
