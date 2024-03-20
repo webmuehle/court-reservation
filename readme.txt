@@ -4,16 +4,16 @@ Donate link: https://www.webmuehle.at/
 Tags: Court Reservation, Padel Tennis, Tennis, Squash, Badminton, Volleyball, Padel, Pickleball, Pyramid Tournament, Pyramid Competition, Ladder Tournament, Ladder Competition,Clubmanagement, Reservierungssystem, Buchungssystem, Platzreservierung, Forderungen, Forderungspyramide
 Requires at least: 3.0.1
 Tested up to: 6.4.1
-Stable tag: 1.8.6
+Stable tag: 1.8.7
 Requires PHP: 5.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 
-With this plugin it is easy and quick to integrate a reservation system for tennis, padel, squash, volleyball, badminton or all kinds of settings where a court needs to be reserved.
+With this plugin, it is easy and quick to integrate a reservation system for tennis, padel, squash, volleyball, badminton or all kinds of settings where a court needs to be reserved.
 
 == Description ==
-With this plugin it is easy and quick to integrate a reservation system on your WordPress site. With just a few clicks, you can create additional courts which can then be integrated via shortcode anywhere on your website.
+With this plugin, it is easy and quick to integrate a reservation system on your WordPress site. With just a few clicks, you can create additional courts which can then be integrated via shortcode anywhere on your website.
 With our new ULTIMATE plan, you can create unlimited pyramid competitions/tournaments, where members of your club can challenge each other. Pyramids are as fast and easy to set up as our regular court reservations system and brings a lot of new excitement into your club.
 
  
@@ -33,6 +33,7 @@ With our new ULTIMATE plan, you can create unlimited pyramid competitions/tourna
 **FEATURES OF THE ULTIMATE VERSION**
 * All of the PREMIUM VERSION, and
 * Ladder Competitions / Pyramid Tournaments
+* Individual colors for reservation types
 * For just 199,99$ a year
 
 
@@ -71,6 +72,15 @@ Upload the plugin via ZIP or install and activate it via the WordPress plugin in
 [youtube https://www.youtube.com/watch?v=twkmSQSuGME]
 
 == Changelog ==
+= 1.8.7 =
+* PHP 8 warnings fixed
+
+= 1.8.6 =
+* Navigation fixed
+
+= 1.8.5 =
+* Diverse bug fixes
+
 = 1.8.4 =
 * Min-Max-issue solved
 
