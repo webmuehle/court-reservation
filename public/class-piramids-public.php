@@ -182,7 +182,7 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 		);
 		wp_localize_script(
 			$this->plugin_name . 'piramid',
-			$this->plugin_name . '_params',
+			$this->plugin_name . '_params_pir',
 			array(
 				'ajax_url'                      => admin_url( 'admin-ajax.php' ),
 				'user_can_accept'               => $user_can_accept,

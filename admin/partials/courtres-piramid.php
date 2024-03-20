@@ -47,7 +47,7 @@ if ( isset( $_POST['submit'] ) && $_POST['submit'] == __( 'Save', 'court-reserva
 	$piramid=$_POST['piramid'];
 	array_walk($piramid, function(&$value, &$key) 
 	{
-		$value[$key] = sanitize_text_field($value[$key]);
+		if (isset($value[$key])) { $value[$key] = sanitize_text_field($value[$key]); }
 	});
 
 	$piramid['duration_ts'] = intval( $piramid['duration']['hours'] ) * 3600 + intval( $piramid['duration']['min'] ) * 60;

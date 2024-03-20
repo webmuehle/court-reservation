@@ -5,7 +5,7 @@
 
 	$( document ).ready(
 		function () {
-			cr_params = (typeof courtres_params !== 'undefined') ? courtres_params : null;
+			cr_params = (typeof courtres_params_pir !== 'undefined') ? courtres_params_pir : null;
 			// console.log('cr_params', cr_params);
 
 			the_player = $( ".cr-piramid" ).data( "the_player" );
