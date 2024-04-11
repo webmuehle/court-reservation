@@ -74,6 +74,7 @@ Upload the plugin via ZIP or install and activate it via the WordPress plugin in
 == Changelog ==
 = 1.8.7 =
 * PHP 8 warnings fixed
+* Performance increased
 
 = 1.8.6 =
 * Navigation fixed
