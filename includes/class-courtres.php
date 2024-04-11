@@ -256,10 +256,13 @@ class Courtres {
 		$this->loader->add_shortcode( 'courtreservation-full-view', $plugin_public, 'public_shortcode_full_view' );
 
 		$this->loader->add_action( 'wp_ajax_ajax_cr_navigator', $plugin_public, 'ajax_cr_navigator' );
+		$this->loader->add_action( 'wp_ajax_nopriv_ajax_cr_navigator', $plugin_public, 'ajax_cr_navigator' );
 		$this->loader->add_action( 'wp_ajax_ajax_cr_navigator2', $plugin_public, 'ajax_cr_navigator2' );
 		$this->loader->add_action( 'wp_ajax_ajax_cr_navigator_full_view', $plugin_public, 'ajax_cr_navigator_full_view' );
+		$this->loader->add_action( 'wp_ajax_nopriv_ajax_cr_navigator_full_view', $plugin_public, 'ajax_cr_navigator_full_view' );
 		$this->loader->add_action( 'wp_ajax_ajax_cr_navigator_calendar', $plugin_public, 'ajax_cr_navigator_calendar' );
-		$this->loader->add_action( 'wp_ajax_nopriv_ajax_cr_navigator', $plugin_public, 'ajax_cr_navigator' );
+		$this->loader->add_action( 'wp_ajax_nopriv_ajax_cr_navigator_calendar', $plugin_public, 'ajax_cr_navigator_calendar' );
+
 
 		// get_player_select_html in add reservation popup
 		$this->loader->add_action( 'wp_ajax_get_more_rows_html', $plugin_public, 'get_more_rows_html' );

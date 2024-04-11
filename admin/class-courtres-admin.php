@@ -428,6 +428,8 @@ class Courtres_Admin extends Courtres_Base {
 
 			$option_email_1 = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_email_1'" )->option_value;
 			$option_email_2 = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_email_2'" )->option_value;
+			$option_email_10 = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_email_10'" )->option_value;
+			$option_email_9 = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_email_9'" )->option_value;
 			$option_email_3 = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_email_3'" )->option_value;
 			$option_email_4 = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_email_4'" )->option_value;
 			$option_email_5 = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_email_5'" )->option_value;
@@ -469,15 +471,6 @@ class Courtres_Admin extends Courtres_Base {
 			$players_list  = $players_names ? implode( ', ', $players_names ) : '';
 			// <from 1.5.0
 
-			$subject = sprintf(
-				__( 'New reservation on %1$s on %2$s at %3$s for %4$s and %5$s.', 'court-reservation' ),
-				$court->name,
-				$dateStr,
-				$hour_from_till,
-				$player->display_name,
-				$players_list
-			);
-
 			if ( $email_template ) {
 				$placeholders = array(
 					'/\[court_name\]/'          => $court->name,
@@ -503,7 +496,7 @@ class Courtres_Admin extends Courtres_Base {
 
 	<body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="padding: 0;">';
 
-			$message___=email_message($message_,$option_email_3,$option_email_4,$option_email_5,$option_email_6,$option_email_7,$option_email_8);
+			$message___=email_message($message_,$option_email_3,$option_email_4,$option_email_5,$option_email_6,$option_email_7,$option_email_8,$option_email_10);
 
 			$message=$message__ . $message___ . '
 	</body>
@@ -512,6 +505,24 @@ class Courtres_Admin extends Courtres_Base {
 
 			if (!isset($option_email_1)) { $option_email_1=wp_get_current_user()->display_name; }
 			if (!isset($option_email_2)) { $option_email_2=wp_get_current_user()->user_email; }
+			if (!isset($option_email_10)) { $option_email_10=__( 'New reservation', 'court-reservation' ); }
+			if (!isset($option_email_9) || $option_email_9=="") 
+			{ 
+				$subject = sprintf(
+					__( 'New reservation on %1$s on %2$s at %3$s for %4$s and %5$s.', 'court-reservation' ),
+					$court->name,
+					$dateStr,
+					$hour_from_till,
+					$player->display_name,
+					$players_list
+				);
+			}	
+			else
+			{	
+				
+				$subject = $option_email_9;
+			}
+
 			$header1 = 'From: ' . sanitize_text_field($option_email_1) . '<' . sanitize_email($option_email_2) . '>';
 			$headers = array('Content-Type: text/html; charset=UTF-8',$header1);
 

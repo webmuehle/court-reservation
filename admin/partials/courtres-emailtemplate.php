@@ -121,6 +121,52 @@ if ( isset( $_POST['submit'] ) ) {
 		$message = __( 'Successfully created!', 'court-reservation' );
 	}
 
+	// save option_email_10
+	if ( isset( $_POST['option_email_10'] ) && (int) $_POST['option_email_10_id'] > 0 ) { // edit
+		$wpdb->update(
+			$table_name,
+			array(
+				'option_value' => sanitize_text_field( $_POST['option_email_10'] ),
+			),
+			array( 'option_id' => (int) $_POST['option_email_10_id'] ),
+			array( '%s' )
+		);
+		$message = __( 'Successfully changed!', 'court-reservation' );
+	} else { // create
+		$wpdb->insert(
+			$table_name,
+			array(
+				'option_name'  => 'option_email_10',
+				'option_value' => sanitize_text_field( $_POST['option_email_10'] ),
+			),
+			array( '%s', '%s' )
+		);
+		$message = __( 'Successfully created!', 'court-reservation' );
+	}
+
+	// save option_email_9
+	if ( isset( $_POST['option_email_9'] ) && (int) $_POST['option_email_9_id'] > 0 ) { // edit
+		$wpdb->update(
+			$table_name,
+			array(
+				'option_value' => sanitize_text_field( $_POST['option_email_9'] ),
+			),
+			array( 'option_id' => (int) $_POST['option_email_9_id'] ),
+			array( '%s' )
+		);
+		$message = __( 'Successfully changed!', 'court-reservation' );
+	} else { // create
+		$wpdb->insert(
+			$table_name,
+			array(
+				'option_name'  => 'option_email_9',
+				'option_value' => sanitize_text_field( $_POST['option_email_9'] ),
+			),
+			array( '%s', '%s' )
+		);
+		$message = __( 'Successfully created!', 'court-reservation' );
+	}
+
 	// save option_email_3
 	if ( isset( $_POST['option_email_3'] ) && (int) $_POST['option_email_3_id'] > 0 ) { // edit
 		$wpdb->update(
@@ -312,6 +358,23 @@ if ( !isset( $option_email_2 ) ) {
 	$option_email_2->option_value = '';
 }
 
+// option_email_10
+$option_email_10 = $wpdb->get_row( "SELECT * FROM $table_name WHERE option_name = 'option_email_10'" );
+if ( !isset( $option_email_10 ) ) {
+	$option_email_10               = new stdClass();
+	$option_email_10->option_id    = 0;
+	$option_email_10->option_name  = 'option_email_10';
+	$option_email_10->option_value = '';
+}
+
+// option_email_9
+$option_email_9 = $wpdb->get_row( "SELECT * FROM $table_name WHERE option_name = 'option_email_9'" );
+if ( !isset( $option_email_9 ) ) {
+	$option_email_9               = new stdClass();
+	$option_email_9->option_id    = 0;
+	$option_email_9->option_name  = 'option_email_9';
+	$option_email_9->option_value = '';
+}
 
 // option_email_3
 $option_email_3 = $wpdb->get_row( "SELECT * FROM $table_name WHERE option_name = 'option_email_3'" );
@@ -422,6 +485,8 @@ require 'courtres-notice-message.php';
 				<input type="hidden" name="option_email_template_id" value="<?php echo wp_kses_post( $option_email_template->option_id ); ?>" />
 				<input type="hidden" name="option_email_1_id" value="<?php echo esc_attr( $option_email_1->option_id ); ?>" />
 				<input type="hidden" name="option_email_2_id" value="<?php echo esc_attr( $option_email_2->option_id ); ?>" />
+				<input type="hidden" name="option_email_10_id" value="<?php echo esc_attr( $option_email_10->option_id ); ?>" />
+				<input type="hidden" name="option_email_9_id" value="<?php echo esc_attr( $option_email_9->option_id ); ?>" />
 				<input type="hidden" name="option_email_3_id" value="<?php echo esc_attr( $option_email_3->option_id ); ?>" />
 				<input type="hidden" name="option_email_4_id" value="<?php echo esc_attr( $option_email_4->option_id ); ?>" />
 				<input type="hidden" name="option_email_5_id" value="<?php echo esc_attr( $option_email_5->option_id ); ?>" />
@@ -463,8 +528,6 @@ require 'courtres-notice-message.php';
 							<?php echo esc_html__( 'Customize text of e-mail confirmation', 'court-reservation' ); ?><br>
 							<?php echo esc_html__( 'Use the following placeholders:', 'court-reservation' ); ?><br>
 							[court_name], [date_on], [hours_from_till], [player_name_creator], [players_list]<br />
-							<strong><?php echo esc_html__( 'Not supported placeholders from v1.5.0:', 'court-reservation' ); ?></strong>
-							[player_name_1], [player_name_2], [player_name_3], [player_name_4]
 						</td>
 						<td>
 							<div style="width: 100%; max-width: 800px;">
@@ -499,6 +562,22 @@ require 'courtres-notice-message.php';
 						</td>
 						<td>
 							<input name="option_email_2" value="<?php echo esc_attr( $option_email_2->option_value ); ?>"  placeholder="<?php echo esc_attr__( 'default', 'court-reservation' ); ?>">
+						</td>
+					</tr>
+					<tr id="option_email_9_tr">
+						<td>
+							<?php echo esc_html__( 'Subject', 'court-reservation' ); ?>
+						</td>
+						<td>
+							<input name="option_email_9" value="<?php echo esc_attr( $option_email_9->option_value ); ?>"  placeholder="<?php echo esc_attr__( 'default', 'court-reservation' ); ?>">
+						</td>
+					</tr>
+					<tr id="option_email_10_tr">
+						<td>
+							<?php echo esc_html__( 'Header title', 'court-reservation' ); ?>
+						</td>
+						<td>
+							<input name="option_email_10" value="<?php echo esc_attr( $option_email_10->option_value ); ?>"  placeholder="<?php echo esc_attr__( 'default', 'court-reservation' ); ?>">
 						</td>
 					</tr>
 					<tr>

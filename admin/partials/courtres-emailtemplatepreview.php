@@ -25,6 +25,8 @@ require 'courtres-notice-message.php';
 $email_template = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_email_template'" )->option_value;
 $option_email_1 = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_email_1'" )->option_value;
 $option_email_2 = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_email_2'" )->option_value;
+$option_email_10 = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_email_10'" )->option_value;
+$option_email_9 = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_email_9'" )->option_value;
 $option_email_3 = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_email_3'" )->option_value;
 $option_email_4 = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_email_4'" )->option_value;
 $option_email_5 = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_email_5'" )->option_value;
@@ -81,7 +83,7 @@ if (!isset($option_email_8) || $option_email_8=="") { $option_email_8="#4e4e4e";
 			<div style="width: 100%; background: #f7f7f7;"> 
 				<div style="width: 100%; max-width: 600px; margin-left: auto; margin-right: auto;"> 
 <?php
-					$message=email_message($email_template,$option_email_3,$option_email_4,$option_email_5,$option_email_6,$option_email_7,$option_email_8);
+					$message=email_message($email_template,$option_email_3,$option_email_4,$option_email_5,$option_email_6,$option_email_7,$option_email_8,$option_email_10);
 					echo wp_kses_post($message);
 ?>
 				</div>

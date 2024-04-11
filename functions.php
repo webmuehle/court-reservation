@@ -40,7 +40,7 @@ function getCurrentDateTime() {
 	return $theTime;
 }
 
-function email_message($message1,$option_email_3,$option_email_4,$option_email_5,$option_email_6,$option_email_7,$option_email_8)
+function email_message($message1,$option_email_3,$option_email_4,$option_email_5,$option_email_6,$option_email_7,$option_email_8,$option_email_10)
 {
 
 	$message='
@@ -66,7 +66,7 @@ function email_message($message1,$option_email_3,$option_email_4,$option_email_5
 
 											<td id="header_wrapper" style="display: table-cell !important; padding: 0 0 0 48px; text-align: left; height: 100px;">
 
-												<h1 style=\'font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 30px; font-weight: 300; line-height: 150%; margin: 0; text-align: left; text-shadow: 0 1px 0 #2b87da; color: #fff; background-color: inherit;\' bgcolor="inherit">' . __( 'New reservation', 'court-reservation' ) . '</h1>
+												<h1 style=\'font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 30px; font-weight: 300; line-height: 150%; margin: 0; text-align: left; text-shadow: 0 1px 0 #2b87da; color: #fff; background-color: inherit;\' bgcolor="inherit">' . esc_attr($option_email_10) . '</h1>
 
 											</td>
 											<td id="header_wrapper2" style="padding: 10px 25px 10px; display: table-cell !important; text-align: right;">
