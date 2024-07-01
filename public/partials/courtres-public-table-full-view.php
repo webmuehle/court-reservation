@@ -72,7 +72,6 @@ foreach ( $court_ispis as $court_ispis_pojedini ) {
 	$halfhour                  = $this->ishalfhour() ? '1' : '';
   	$fromDay             	   = isset( $_REQUEST['navigator_step'] ) ? intval( $_REQUEST['navigator_step'] ) : 0; // $court->days;
 	$tillDay                   = $fromDay === 0 ? $court_ispis[0]->days : $fromDay + $court_ispis[0]->days;
-        $_SESSION['cr_from'] = $fromDay;
 
 	$availableReservationTypes = $this->getAvailableReservationTypes();
 	$maxPlayers                = $this->getMaxPlayers();

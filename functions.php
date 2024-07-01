@@ -210,12 +210,6 @@ function get_court_calendar($courtID,$nowTZTS,$fromDay,$tillDay,$type)
 				$mjeseci=array("01"=>"January", "02"=>"February", "03"=>"March", "04"=>"April", "05"=>"May", "06"=>"June", "07"=>"July", "08"=>"August", "09"=>"September", "10"=>"October", "11"=>"November", "12"=>"December");
 				$odabrani_dan=date('Y-m-d');
 				$danas=date('Y-m-d');
-				if (isset($_SESSION['cr_from']) && is_numeric($_SESSION['cr_from']))
-				{
-					$buducnost=$_SESSION['cr_from'] . " days";
-					$odabrani_dan = date('Y', strtotime($buducnost, strtotime($danas)));
-					if ($odabrani_dan<2022) { $odabrani_dan=date('Y-m-d'); } else { $odabrani_dan = date('Y-m-d', strtotime($buducnost, strtotime($danas))); }
-				}
 				if (isset($_POST['datum']))
 				{
 					$odabrani_dan = $_POST['datum'];

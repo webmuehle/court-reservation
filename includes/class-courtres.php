@@ -244,11 +244,6 @@ class Courtres {
 
 		$plugin_public = new Courtres_Public( $this->get_plugin_name(), $this->get_version() );
 
-		if ( ! session_id() ) {
-			session_start();
-		}
-		session_write_close();
-
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 

@@ -15,10 +15,6 @@
 
 <?php
 
-	if (isset($_POST['ponisti'])) { $_SESSION['cr_from']=0; }
-	if (isset($_POST['prethodni'])) { $_SESSION['cr_from']=$_SESSION['cr_from']-$_POST['prethodni']; }
-	if (isset($_POST['sljedeci'])) { $_SESSION['cr_from']=$_SESSION['cr_from']+$_POST['sljedeci']; }
-
 	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
 if ( ! isset( $atts['id'] ) ) {
 	echo( esc_html__( 'Court Reservation ID not set.', 'court-reservation' ) );
@@ -55,7 +51,7 @@ if ( is_user_logged_in() ) {
 
 	$maxhours                  = $this->getMaxHours();
 	$halfhour                  = $this->ishalfhour() ? '1' : '';
-	$fromDay                   = isset( $_SESSION['cr_from'] ) ? intval( $_SESSION['cr_from'] ) : 0; // $court->days;
+	$fromDay                   = 0; // $court->days;
 	$tillDay                   = $fromDay === 0 ? $court->days : $fromDay + $court->days;
 	$availableReservationTypes = $this->getAvailableReservationTypes();
 	$maxPlayers                = $this->getMaxPlayers();

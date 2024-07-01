@@ -44,7 +44,6 @@ if ( $court == null ) {
   $halfhour            = $this->ishalfhour() ? '1' : '';
   $fromDay             = isset( $_REQUEST['navigator_step'] ) ? intval( $_REQUEST['navigator_step'] ) : 0; // $court->days;
   $tillDay             = $fromDay === 0 ? $court->days : $fromDay + $court->days;
-  $_SESSION['cr_from'] = $fromDay;
 
   $availableReservationTypes = $this->getAvailableReservationTypes();
   $dateformats               = $this->getDateformats();

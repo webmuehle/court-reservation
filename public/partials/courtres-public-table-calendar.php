@@ -5,20 +5,13 @@
 				$mjeseci=array("01"=>"January", "02"=>"February", "03"=>"March", "04"=>"April", "05"=>"May", "06"=>"June", "07"=>"July", "08"=>"August", "09"=>"September", "10"=>"October", "11"=>"November", "12"=>"December");
 				$odabrani_dan=date('Y-m-d');
 				$danas=date('Y-m-d');
-				if (isset($_SESSION['cr_from']) && is_numeric($_SESSION['cr_from']))
-				{
-					$buducnost=$_SESSION['cr_from'] . " days";
-					$odabrani_dan = date('Y', strtotime($buducnost, strtotime($danas)));
-					if ($odabrani_dan<2022) { $odabrani_dan=date('Y-m-d'); } else { $odabrani_dan = date('Y-m-d', strtotime($buducnost, strtotime($danas))); }
-				}
 				if (isset($_POST['datum']))
 				{
 					$odabrani_dan = $_POST['datum'];
 					$odabrani_dan_ = strtotime($odabrani_dan);
 					$danas_ = strtotime($danas);
 					$razlika =  round( ($odabrani_dan_-$danas_) / (60 * 60 * 24) );
-					$_SESSION['cr_from']=$razlika;
-					$fromDay                   = isset( $_SESSION['cr_from'] ) ? intval( $_SESSION['cr_from'] ) : 0; // $court->days;
+					$fromDay                   = intval( $razlika ); // $court->days;
 					$tillDay                   = $fromDay === 0 ? $court->days : $fromDay + $court->days;
 				}
 
@@ -33,8 +26,7 @@
 					// $odabrani_dan_ = strtotime($odabrani_dan);
 					// $danas_ = strtotime($danas);
 					// $razlika =  round( ($odabrani_dan_-$danas_) / (60 * 60 * 24) );
-					$_SESSION['cr_from']=$_GET['navigator_step'];
-					$fromDay                   = isset( $_SESSION['cr_from'] ) ? intval( $_SESSION['cr_from'] ) : 0; // $court->days;
+					$fromDay                   = intval( $_GET['navigator_step'] ); // $court->days;
 					$tillDay                   = $fromDay === 0 ? $court->days : $fromDay + $court->days;
 				}
 
