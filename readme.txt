@@ -28,7 +28,7 @@ With our new ULTIMATE plan, you can create unlimited pyramid competitions/tourna
 
 **FEATURES OF THE PREMIUM VERSION**
 * All of the FREE VERSION, but no limitation in possible courts or members
-* For just 109,99$ a year
+* For just 129,99$ a year
 
 **FEATURES OF THE ULTIMATE VERSION**
 * All of the PREMIUM VERSION, and
