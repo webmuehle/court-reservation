@@ -216,8 +216,7 @@ function get_court_calendar($courtID,$nowTZTS,$fromDay,$tillDay,$type)
 					$odabrani_dan_ = strtotime($odabrani_dan);
 					$danas_ = strtotime($danas);
 					$razlika =  round( ($odabrani_dan_-$danas_) / (60 * 60 * 24) );
-					$_SESSION['cr_from']=$razlika;
-					$fromDay                   = isset( $_SESSION['cr_from'] ) ? intval( $_SESSION['cr_from'] ) : 0; // $court->days;
+					$fromDay                   = intval( $razlika ); // $court->days;
 					$tillDay                   = $fromDay === 0 ? $court->days : $fromDay + $court->days;
 				}
 				// $danas=date('2023-06-05');
