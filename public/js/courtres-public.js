@@ -193,6 +193,7 @@
 											$( '#cr-reservations-' + id ).fadeIn( 1000 );
 											$cr_days.find( 'img' ).remove();
 											$cr_days.removeClass( 'button--active' );
+											dialogs( id );
 											// console.log( cnt );
 										}
 									);
@@ -255,7 +256,6 @@
 																}
 															});
 														});
-														dialogs( id );
 													}
 												);
 											},
