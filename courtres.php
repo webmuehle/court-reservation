@@ -58,6 +58,7 @@ if ( ! function_exists( 'cr_fs' ) ) {
 					'has_premium_version' => true,
 					'has_addons'          => false,
 					'has_paid_plans'      => true,
+					'show_monthly_switch' => true,
 					'menu'                => array(
 						'first-path' => 'plugins.php',
 						'contact'    => false,
