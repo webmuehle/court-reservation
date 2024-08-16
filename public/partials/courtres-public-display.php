@@ -99,7 +99,7 @@ if ( is_user_logged_in() ) {
 					<?php if ( $mayEdit ) { ?>
 						<?php echo esc_html( $username ); ?>
 					<?php } else { ?>
-						<input list="playerid" placeholder="Type or click to select">
+						<input list="playerid" placeholder="<?php echo __('Type or click to select', 'court-reservation'); ?>">
 						<datalist name="playerid" id="playerid">
 							<option value="0" selected>-</option>
 							<?php

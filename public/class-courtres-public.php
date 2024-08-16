@@ -1390,7 +1390,7 @@ class Courtres_Public extends Courtres_Base {
 
 
 			$html_select = $html_select . '
-				<input style="margin-bottom: 10px;" list="igrac' . $x__ . '" placeholder="Type or click to select" oninput="
+				<input style="margin-bottom: 10px;" list="igrac' . $x__ . '" placeholder="' . __('Type or click to select', 'court-reservation') . '" oninput="
 					var vrijednost=this.value;
 					var igracici = document.querySelectorAll(\'#igrac' . $x__ . ' option\');
 					show_options(igracici,vrijednost,\'' . $x__ . '_' . $args['court_id_'] . '\');

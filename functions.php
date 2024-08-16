@@ -207,6 +207,11 @@ function get_court_calendar($courtID,$nowTZTS,$fromDay,$tillDay,$type)
 
 
 				$dani_tjedna=array("","M","T","W","T","F","S","S");
+
+				$language_dani_tjedna=explode("_",get_locale());
+				if ( $language_dani_tjedna[0] == "de" || $language_dani_tjedna[0] == "DE" ) { $dani_tjedna=array("","M","D","M","D","F","S","S"); }
+				elseif ( $language_dani_tjedna[0] == "hr" || $language_dani_tjedna[0] == "HR" ) { $dani_tjedna=array("","P","U","S","Č","P","S","N"); }
+
 				$mjeseci=array("01"=>"January", "02"=>"February", "03"=>"March", "04"=>"April", "05"=>"May", "06"=>"June", "07"=>"July", "08"=>"August", "09"=>"September", "10"=>"October", "11"=>"November", "12"=>"December");
 				$odabrani_dan=date('Y-m-d');
 				$danas=date('Y-m-d');
@@ -238,8 +243,8 @@ function get_court_calendar($courtID,$nowTZTS,$fromDay,$tillDay,$type)
 
 
 		<div id='strelice_<?php echo esc_html($courtID); ?>' style='display: none; position: relative; height: 0; width: 100%; max-width: 197px;'>
-			<div id='cr-days-prev-<?php echo esc_html($courtID); ?>' data-navigator='prev-month' style='position: absolute; cursor: pointer; border: none; height: 20px; left: 0px; top: 58px; z-index: 10; font-size: 22px; width: 30px; padding: 0; line-height: 20px; text-align: center; background: transparent; color: inherit; box-sizing: border-box;' data-day='<?php echo esc_html($prosli_zadnji1); ?>'><</div>
-			<div id='cr-days-next-<?php echo esc_html($courtID); ?>' data-navigator='next-month' style='position: absolute; cursor: pointer; border: none; height: 20px; right: 0px; top: 58px; z-index: 10; font-size: 22px; width: 30px; padding: 0; line-height: 20px; text-align: center; background: transparent; color: inherit; box-sizing: border-box;' data-day='<?php echo esc_html($danas_zadnji1); ?>'>></div>
+			<div id='cr-days-prev-<?php echo esc_html($courtID); ?>' data-navigator='prev-month' style='position: absolute; cursor: pointer; border: none; height: 20px; left: 0px; top: 54px; z-index: 10; font-size: 22px; width: 30px; padding: 0; line-height: 20px; text-align: center; background: transparent; color: inherit; box-sizing: border-box;' data-day='<?php echo esc_html($prosli_zadnji1); ?>'><</div>
+			<div id='cr-days-next-<?php echo esc_html($courtID); ?>' data-navigator='next-month' style='position: absolute; cursor: pointer; border: none; height: 20px; right: 0px; top: 54px; z-index: 10; font-size: 22px; width: 30px; padding: 0; line-height: 20px; text-align: center; background: transparent; color: inherit; box-sizing: border-box;' data-day='<?php echo esc_html($danas_zadnji1); ?>'>></div>
 		</div>
 
 		<div style="width: 100%; <?php if (!isset($_POST['sljedeci'])) { echo " display: none;"; } ?>" id="drugi_kal_<?php echo esc_attr( $courtID ); ?>">
@@ -255,7 +260,7 @@ function get_court_calendar($courtID,$nowTZTS,$fromDay,$tillDay,$type)
 					</div>
 
 					<div style='width: 197px; box-sizing: border-box; border-top: 3px solid #2273d7; padding: 10px; position: relative; text-align: center;'>
-						<?php echo esc_html($mjeseci[$danas_mjesec]) . " &nbsp; " . esc_html($danas_godina); ?>
+						<?php echo esc_html__($mjeseci[$danas_mjesec], 'court-reservation') . " &nbsp; " . esc_html($danas_godina); ?>
 					</div>
 
 				</form> <?php

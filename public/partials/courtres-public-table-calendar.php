@@ -2,6 +2,11 @@
 			<div style="backwidth: 100%; max-width: 197px; background: #f9fafb; margin-bottom: 10px;"> 
 <?php
 				$dani_tjedna=array("","M","T","W","T","F","S","S");
+
+				$language_dani_tjedna=explode("_",get_locale());
+				if ( $language_dani_tjedna[0] == "de" || $language_dani_tjedna[0] == "DE" ) { $dani_tjedna=array("","M","D","M","D","F","S","S"); }
+				elseif ( $language_dani_tjedna[0] == "hr" || $language_dani_tjedna[0] == "HR" ) { $dani_tjedna=array("","P","U","S","Č","P","S","N"); }
+
 				$mjeseci=array("01"=>"January", "02"=>"February", "03"=>"March", "04"=>"April", "05"=>"May", "06"=>"June", "07"=>"July", "08"=>"August", "09"=>"September", "10"=>"October", "11"=>"November", "12"=>"December");
 				$odabrani_dan=date('Y-m-d');
 				$danas=date('Y-m-d');
@@ -57,7 +62,7 @@
 					</div>
 
 					<div style='width: 197px; box-sizing: border-box; border-top: 3px solid #2273d7; padding: 10px; position: relative; text-align: center;'>
-						<?php echo esc_html($mjeseci[$danas_mjesec]) . " &nbsp; " . esc_html($danas_godina); ?>
+						<?php echo esc_html__($mjeseci[$danas_mjesec], 'court-reservation') . " &nbsp; " . esc_html($danas_godina); ?>
 					</div>
 
 				</form> <?php
