@@ -1,11 +1,15 @@
 msgid ""
 msgstr ""
+"Project-Id-Version: cr\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: POEditor.com\n"
-"Project-Id-Version: cr\n"
-"Language: nl\n"
+"X-Generator: Poedit 3.0.1\n"
 
 #: admin/class-courtres-admin.php:139
 msgid "No permission."
@@ -526,28 +530,22 @@ msgid "Password"
 msgstr "Wachtwoord"
 
 #. Plugin Name of the plugin/theme
-#: 
 msgid "Court Reservation"
 msgstr "Veld Gereserveerd"
 
 #. Plugin URI of the plugin/theme
-#: 
 msgid "https://www.webmuehle.at/plugin-platz-reservierung/"
 msgstr "https://www.webmuehle.at/plugin-platz-reservierung/\n"
-""
 
 #. Description of the plugin/theme
-#: 
 msgid "Reservation system for tennis, squash and badminton"
 msgstr "Reserveringssysteem voor tennis, squash en badminton"
 
 #. Author of the plugin/theme
-#: 
 msgid "Webmühle e.U."
 msgstr "Webmühle e.U."
 
 #. Author URI of the plugin/theme
-#: 
 msgid "https://webmuehle.at"
 msgstr "https://webmuehle.at"
 
@@ -702,35 +700,65 @@ msgstr "Add your reservation type"
 msgid "Successfully changed"
 msgstr "Succesvol veranderd"
 
-#: 
 msgid "Please create a court first."
 msgstr "Maak eerst een rechtbank aan."
 
-#: 
 msgid "Championship"
 msgstr "Kampioenschap"
 
-#: 
 msgid "Single"
 msgstr "Single"
 
-#: 
 msgid "Double"
 msgstr "Dubbele"
 
-#: 
 msgid "Training"
 msgstr "Opleiding"
 
-#: 
 msgid "Competition"
 msgstr "Wedstrijd"
 
-#: 
 msgid "You can't make a event that overlaps in time with another reservation."
 msgstr "U kunt geen evenement maken dat in de tijd overlapt met een andere reservering."
 
-#: 
 msgid "You can't make an event that overlaps in time with another one."
 msgstr "Je kunt geen gebeurtenis maken die in de tijd overlapt met een andere."
 
+msgid "Type or click to select"
+msgstr "Typ of klik om te selecteren"
+
+msgid "January"
+msgstr "Januari"
+
+msgid "February"
+msgstr "Februari"
+
+msgid "March"
+msgstr "Maart"
+
+msgid "April"
+msgstr "April"
+
+msgid "May"
+msgstr "Mei"
+
+msgid "June"
+msgstr "Juni"
+
+msgid "July"
+msgstr "Juli"
+
+msgid "August"
+msgstr "Augustus"
+
+msgid "September"
+msgstr "September"
+
+msgid "October"
+msgstr "Oktober"
+
+msgid "November"
+msgstr "November"
+
+msgid "December"
+msgstr "December"

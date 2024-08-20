@@ -211,6 +211,12 @@ function get_court_calendar($courtID,$nowTZTS,$fromDay,$tillDay,$type)
 				$language_dani_tjedna=explode("_",get_locale());
 				if ( $language_dani_tjedna[0] == "de" || $language_dani_tjedna[0] == "DE" ) { $dani_tjedna=array("","M","D","M","D","F","S","S"); }
 				elseif ( $language_dani_tjedna[0] == "hr" || $language_dani_tjedna[0] == "HR" ) { $dani_tjedna=array("","P","U","S","Č","P","S","N"); }
+				elseif ( $language_dani_tjedna[0] == "at" || $language_dani_tjedna[0] == "AT" ) { $dani_tjedna=array("","M","D","M","D","F","S","S"); }
+				elseif ( $language_dani_tjedna[0] == "ch" || $language_dani_tjedna[0] == "CH" ) { $dani_tjedna=array("","M","D","M","D","F","S","S"); }
+				elseif ( $language_dani_tjedna[0] == "es" || $language_dani_tjedna[0] == "ES" ) { $dani_tjedna=array("","L","M","M","J","V","S","D"); }
+				elseif ( $language_dani_tjedna[0] == "it" || $language_dani_tjedna[0] == "IT" ) { $dani_tjedna=array("","L","M","M","G","V","S","D"); }
+				elseif ( $language_dani_tjedna[0] == "nl" || $language_dani_tjedna[0] == "NL" ) { $dani_tjedna=array("","M","D","W","D","V","Z","Z"); }
+				elseif ( $language_dani_tjedna[0] == "no" || $language_dani_tjedna[0] == "NO" ) { $dani_tjedna=array("","M","T","O","T","F","L","S"); }
 
 				$mjeseci=array("01"=>"January", "02"=>"February", "03"=>"March", "04"=>"April", "05"=>"May", "06"=>"June", "07"=>"July", "08"=>"August", "09"=>"September", "10"=>"October", "11"=>"November", "12"=>"December");
 				$odabrani_dan=date('Y-m-d');
