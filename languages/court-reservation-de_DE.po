@@ -1,15 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Court Reservation\n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: Court Reservation\n"
+"Language: de\n"
 
 #: admin/class-courtres-admin.php:170
 msgid "No permission."
@@ -1352,63 +1348,116 @@ msgid "Dialog comfirm content"
 msgstr "Inhalt des Bestätigungsdialogs"
 
 #. Plugin Name of the plugin/theme
+#: 
 msgid "Court Reservation"
 msgstr "Platz Reservierung"
 
 #. Plugin URI of the plugin/theme
+#: 
 msgid "https://www.courtreservation.io"
 msgstr "https://www.courtreservation.io"
 
 #. Description of the plugin/theme
+#: 
 msgid "Reservation system for tennis, squash and badminton"
 msgstr "Reservierungssystem für Tennis, Squash und Badminton"
 
 #. Author of the plugin/theme
+#: 
 msgid "Webmühle e.U."
 msgstr "Webmühle e.U."
 
 #. Author URI of the plugin/theme
+#: 
 msgid "https://www.webmuehle.at"
 msgstr "https://www.webmuehle.at"
 
+#: 
 msgid "Challenge"
 msgstr "Forderung"
 
+#: 
+msgid "Min. Number of Other Players"
+msgstr "Min. Anzahl von anderen Spielern"
+
+#: 
+msgid "Max Match Duration"
+msgstr "Maximale Spieldauer"
+
+#: 
+msgid "Choose a color"
+msgstr "Eine Farbe wählen"
+
+#: 
+#, fuzzy
+msgid "E-mail Notification"
+msgstr "E-Mail-Benachrichtigungen"
+
+#: 
+msgid "E-mail sender settings"
+msgstr "E-Mail-Absender-Einstellungen"
+
+#: 
+msgid "From - Name"
+msgstr "Von - Name"
+
+#: 
+msgid "From - Address"
+msgstr "Von - Adresse"
+
+#: 
+msgid "Subject"
+msgstr "Betreff"
+
+#: 
+msgid "Header title"
+msgstr "Titel der Kopfzeile"
+
+#: 
+msgid "E-mail template settings"
+msgstr "Einstellungen für E-Mail-Vorlagen"
+
+#: 
+msgid "This section allows you to customize the Court Reservation emails."
+msgstr "In diesem Abschnitt können Sie die E-Mail-Benachrichtigungen von Platzreservation anpassen."
+
+#: 
+msgid "Click here to view an email preview."
+msgstr "Klicken Sie hier, um eine E-Mail-Vorschau zu sehen."
+
+#: 
+msgid "Header image"
+msgstr "Bild im Header"
+
+#: 
+msgid "Footer text"
+msgstr "Footer Text"
+
+#: 
+msgid "Header color"
+msgstr "Header Farbe"
+
+#: 
+msgid "Background color"
+msgstr "Hintergrundfarbe"
+
+#: 
+msgid "Footer background color"
+msgstr "Footer Hintergrundfarbe"
+
+#: 
+msgid "Text color"
+msgstr "Textfarbe"
+
+#: 
+msgid "Add New"
+msgstr "Neu hinzufügen"
+
+#: 
+msgid "E-mail Notifications"
+msgstr "E-Mail-Benachrichtigungen"
+
+#: 
 msgid "Type or click to select"
-msgstr "Zum Auswählen tippen oder klicken"
+msgstr "Tippen oder klicken Sie zum Auswählen"
 
-msgid "January"
-msgstr "Januar"
-
-msgid "February"
-msgstr "Februar"
-
-msgid "March"
-msgstr "März"
-
-msgid "April"
-msgstr "April"
-
-msgid "May"
-msgstr "Mai"
-
-msgid "June"
-msgstr "Juni"
-
-msgid "July"
-msgstr "Juli"
-
-msgid "August"
-msgstr "August"
-
-msgid "September"
-msgstr "September"
-
-msgid "October"
-msgstr "Oktober"
-
-msgid "November"
-msgstr "November"
-
-msgid "December"
-msgstr "Dezember"
