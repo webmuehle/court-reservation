@@ -127,7 +127,7 @@ foreach ( $court_ispis as $court_ispis_pojedini ) {
 	$courtID=$courts_ob; ?>
 
 <style>
-.mob_plus { display: none !important; }
+.mob_plus, .mob_plus_ { display: none !important; }
 
 @media (max-width: 900px)
 {
@@ -140,6 +140,7 @@ foreach ( $court_ispis as $court_ispis_pojedini ) {
 	table.reservations td { padding: .75rem; }
 	thead { background: transparent !important; }
 	.mob_plus { display: flex !important; }
+	.mob_plus_ { display: block !important; }
 }
 </style>
 
@@ -298,13 +299,11 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 				?>
 					<td class="mob_minus" style="border-left: 6px solid white; width: 0; border-top: none; border-right: none; border-bottom: none; height: auto; padding: 0;"></td>
 					<?php
-					echo "<th class='block_issue";
-					if ( $day != $fromDay ) {
-						echo ' mob_minus'; }
-					echo "' colspan='" . esc_attr( $broj_court ) . "'>" . esc_html(date_i18n( 'l', strtotime( '+' . $day . ' day', $nowTZTS ) )) . '<br/>' . esc_html(date_i18n( $dateformat, strtotime( '+' . $day . ' day', $nowTZTS ) )) . '</th>';
+					echo "<th class='block_issue mob_minus' colspan='" . esc_attr( $broj_court ) . "'>" . esc_html(date_i18n( 'l', strtotime( '+' . $day . ' day', $nowTZTS ) )) . '<br/>' . esc_html(date_i18n( $dateformat, strtotime( '+' . $day . ' day', $nowTZTS ) )) . '</th>';
 			}
 
-				echo "</tr><tr><th class='mob_width'> &nbsp; </th>";
+				echo "</tr><tr><th class='mob_width'><span class='mob_plus_'>" . 
+					 esc_html(date_i18n( 'l', strtotime( '+' . $day . ' day', $nowTZTS ) )) . '<br/>' . esc_html(date_i18n( $dateformat, strtotime( '+' . $day . ' day', $nowTZTS ) )) . "</span></th>";
 
 			for ( $day = $fromDay; $day < $tillDay; $day++ ) {
 				?>
@@ -365,7 +364,7 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 					<?php
 					for ( $day = $fromDay; $day < $tillDay; $day++ ) {
 						?>
-							<td class="mob_minus" style="border-left: 6px solid white; width: 0;"></td>
+							<td class="mob_minus" style="border-left: 6px solid white; border-bottom: none; border-right: none; border-top: none; width: 0;"></td>
 							<?php
 							foreach ( $court_ispis as $court_ispis_ ) {
 								$con_court     = $court_ispis_->id;
@@ -419,7 +418,7 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 
 						for ( $day = $fromDay;$day < $tillDay;$day++ ) {
 							?>
-								<td class="mob_minus" style="border-left: 6px solid white; width: 0;"></td>
+								<td class="mob_minus" style="border-left: 6px solid white; border-bottom: none; border-right: none; border-top: none; width: 0;"></td>
 								<?php
 								// echo $this->getTD( $court, $day, $j, 30, 0, date_i18n("Y-m-d", strtotime('+'.$day.' day', $nowTZTS)) );
 								foreach ( $court_ispis as $court_ispis_ ) {

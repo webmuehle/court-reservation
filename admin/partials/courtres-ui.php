@@ -433,7 +433,7 @@ if ( ! isset( $option_ui_link ) ) {
 	$option_ui_link               = new stdClass();
 	$option_ui_link->option_id    = 0;
 	$option_ui_link->option_name  = 'option_ui_link';
-	$option_ui_link->option_value = '0';
+	$option_ui_link->option_value = '1';
 }
 
 $option_ui_button_clr = $wpdb->get_row( "SELECT * FROM $table_name WHERE option_name = 'option_ui_button_clr'" );

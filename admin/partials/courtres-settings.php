@@ -21,6 +21,14 @@ if ( ! current_user_can( 'manage_options' ) ) {
 global $wpdb;
 $table_name = $this->getTable( 'settings' );
 
+if ( isset( $_POST['delete_all_events'] ) && $_POST['delete_all_events'] == "delete")
+{
+	// $wpdb->query( "DELETE FROM {$this->getTable('reserv_players')} WHERE `reservation_gid` = '$gid'" );
+	$wpdb->query( "TRUNCATE `wp_courtres_events`" );
+	$wpdb->query( "TRUNCATE `wp_courtres_reserv_players`" );
+	$wpdb->query( "TRUNCATE `wp_courtres_reservations`" );
+}
+
 if ( isset( $_POST['submit'] ) ) {
 	//echo "<pre>"; print_r($_POST); die;
 
@@ -158,6 +166,40 @@ if ( isset( $_POST['submit'] ) ) {
 			array(
 				'option_name'  => 'calender_view_navigator',
 				'option_value' => $option_calender_view_navigator_value,
+			),
+			array( '%s', '%s' )
+		);
+		$message = __( 'Successfully created!', 'court-reservation' );
+	}
+
+
+// name="option_anonymization_mode" <?php echo ( $option_anonymization_mode->option_value
+
+
+
+	$option_anonymization_mode_value = '1';
+	if ( isset( $_POST['option_anonymization_mode'] ) ) {
+		// Checkbox is selected
+		$option_anonymization_mode_value = '1';
+	} else {
+		$option_anonymization_mode_value = '0';
+	}
+	if ( isset( $_POST['option_anonymization_mode_id'] ) && (int) $_POST['option_anonymization_mode_id'] > 0 ) { // edit
+		$wpdb->update(
+			$table_name,
+			array(
+				'option_value' => $option_anonymization_mode_value,
+			),
+			array( 'option_id' => (int) $_POST['option_anonymization_mode_id'] ),
+			array( '%s' )
+		);
+		$message = __( 'Successfully changed!', 'court-reservation' );
+	} else { // create
+		$wpdb->insert(
+			$table_name,
+			array(
+				'option_name'  => 'option_anonymization_mode',
+				'option_value' => $option_anonymization_mode_value,
 			),
 			array( '%s', '%s' )
 		);
@@ -415,6 +457,14 @@ if ( ! isset( $option_calender_view_navigator ) ) {
 	$option_calender_view_navigator->option_value = '0';
 }
 
+$option_anonymization_mode = $wpdb->get_row( "SELECT * FROM $table_name WHERE option_name = 'option_anonymization_mode'" );
+if ( ! isset( $option_anonymization_mode ) ) {
+	$option_anonymization_mode 		      = new stdClass();
+	$option_anonymization_mode->option_id    = 0;
+	$option_anonymization_mode->option_name  = 'option_anonymization_mode';
+	$option_anonymization_mode->option_value = '0';
+}
+
 // List of possible reservations types
 $option_reservation_types = $this->getOption( 'reservation_types' );
 if ( ! isset( $option_reservation_types ) ) {
@@ -592,6 +642,7 @@ require 'courtres-notice-message.php';
 				<input type="hidden" name="option_half_hour_id" value="<?php echo esc_attr( $option_half_hour->option_id ); ?>" />
 				<input type="hidden" name="option_several_reserve_person_id" value="<?php echo esc_attr( $option_several_reserve_person->option_id ); ?>" />
 				<input type="hidden" name="option_calender_view_navigator_id" value="<?php echo esc_attr( $option_calender_view_navigator->option_id ); ?>" />
+				<input type="hidden" name="option_anonymization_mode_id" value="<?php echo esc_attr( $option_anonymization_mode->option_id ); ?>" />
 				<input type="hidden" name="option_reservation_types_id" value="<?php echo esc_attr( $option_reservation_types->option_id ); ?>" />
 				<input type="hidden" name="option_available_reservation_types_id" value="<?php echo esc_attr( $option_available_reservation_types->option_id ); ?>" />
 				<input type="hidden" name="option_email_template_id" value="<?php echo esc_attr( $option_email_template->option_id ); ?>" />
@@ -605,11 +656,30 @@ require 'courtres-notice-message.php';
 */ ?>
 
 				<table class="t-form">
+
 					<tr>
 						<td>
-							<?php echo esc_html__( 'Max. hours to reserve per reservation (used by if the Fixed Match Duration option for the reservation type not defined)', 'court-reservation' ); ?>
+							<?php echo esc_html__( 'Delete all previous bookings and events', 'court-reservation' ); ?>
 						</td>
 						<td>
+							<div id="delete_all_events_1">
+								<div class="button" onclick="document.getElementById('delete_all_events_1').style.display='none'; document.getElementById('delete_all_events_2').style.display='block';"><?php echo esc_html__( 'Delete', 'court-reservation' ); ?></div>
+							</div>
+							<div id="delete_all_events_2" style="display: none;">
+								<span style="display: inline-block; margin-top: 8px; margin-right: 10px;">
+									<?php echo esc_html__( 'Are you sure?', 'court-reservation' ); ?>
+								</span>
+								<button class="button" type="submit" name="delete_all_events" value="delete"><?php echo esc_html__( 'Yes', 'court-reservation' ); ?></button>
+								<div class="button" onclick="document.getElementById('delete_all_events_1').style.display='block'; document.getElementById('delete_all_events_2').style.display='none';"><?php echo esc_html__( 'No', 'court-reservation' ); ?></div>
+							</div>
+						</td>
+					</tr>
+
+					<tr>
+						<td style="border-top: 1px solid #ccc; padding-top: 10px;">
+							<?php echo esc_html__( 'Max. hours to reserve per reservation (used by if the Fixed Match Duration option for the reservation type not defined)', 'court-reservation' ); ?>
+						</td>
+						<td style="border-top: 1px solid #ccc; padding-top: 10px;">
 							<input type="number" name="option_max_h" min="0" max="24" maxlength="2" value="<?php echo esc_html( $option_max_h->option_value ); ?>">
 							<div class="tooltip">
 								<div class="symbol">
@@ -650,6 +720,17 @@ require 'courtres-notice-message.php';
 						<td>
 							<label class="switch">
 								<input type="checkbox" name="option_calender_view_navigator" <?php echo ( $option_calender_view_navigator->option_value === '1' ) ? 'checked' : ''; ?>>
+								<span class="slider round"></span>
+							</label>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<?php echo esc_html__( 'Anonymization mode', 'court-reservation' ); ?>
+						</td>
+						<td>
+							<label class="switch">
+								<input type="checkbox" name="option_anonymization_mode" <?php echo ( $option_anonymization_mode->option_value === '1' ) ? 'checked' : ''; ?>>
 								<span class="slider round"></span>
 							</label>
 						</td>

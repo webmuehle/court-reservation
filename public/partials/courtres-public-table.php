@@ -105,6 +105,7 @@ if ( $court == null ) {
 									'data-gid'  => array(),
 									'rowspan'   => array(),
 								),
+								'br' => array(),
 							);
 				echo wp_kses( $this->getTD( $court, $day, $j, 0, 30, date_i18n( 'Y-m-d', strtotime( '+' . $day . ' day', $nowTZTS ) ) ), $allowed_html );
 			}
@@ -131,6 +132,7 @@ if ( $court == null ) {
 									'data-min-start'    => array(),
 									'data-min-player'   => array(),
 								),
+								'br' => array(),
 							);
 				echo wp_kses( $fromto, $allowed_html );
 				?>

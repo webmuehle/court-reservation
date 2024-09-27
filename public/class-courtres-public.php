@@ -189,12 +189,22 @@ class Courtres_Public extends Courtres_Base {
 		global $wpdb;
 		$table_settings = $this->getTable( 'option' );
 		$colour      = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_reservation_type_color'" );
-		echo "SELECT * FROM $table_settings WHERE option_name = 'option_reservation_type_color'" ;
 		if ( ! $colour ) {
 			return static::DEFAULT_COLOUR;
 		}
 
 		return $colour->option_value;
+	}
+
+	public function getAnonymizationMode() {
+		global $wpdb;
+		$table_settings = $this->getTable( 'settings' );
+		$anonymization      = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_anonymization_mode'" );
+		if ( ! $anonymization ) {
+			return 0;
+		}
+
+		return $anonymization->option_value;
 	}
 
 	private function doesOverlap( $hour, $from, $to ) {
@@ -498,47 +508,58 @@ class Courtres_Public extends Courtres_Base {
 
 			$output       = '<td class="blocked" style="background-color: ' . $block_colours[$block_type] . '" rowspan="' . $rowpan . '" data-now="' . $now['hour'] . ':' . $now['minute'] . '"' . $style . $helper_title . '  data-gid="' . $reservation->gid . '">';
 
-			// Display players >
-			$output .= ( new WP_User( $reservation->userid ) )->display_name . '<br/>';
-			$output .= '<strong>';
-			$output .= esc_html( $reservation->type );
-			$output .= '</strong>';
+			$anonymization_mode = $this->getAnonymizationMode();
 
-			// from 1.5.0 >
-			if ( property_exists( $reservation, 'players' ) ) {
-				$partners = explode( ',', $reservation->players );
-
-				// remove author from result
-				$is_authors = explode( ',', $reservation->is_author );
-				$author_key = array_search( 1, $is_authors );
-				if ( $author_key !== false ) {
-					array_splice( $partners, $author_key, 1 );
-				}
-				if ( $partners ) {
-					$wp_users = get_users(
-						array(
-							'include' => $partners,
-							'orderby' => 'display_name',
-							'order'   => 'ASC',
-						)
-					);
-					if ( count( $wp_users ) ) {
-						$first_user = array_shift( $wp_users );
-						$output    .= '<br/>' . $first_user->display_name;
-					}
-					if ( count( $wp_users ) ) {
-						$output .= '<div class="cr-tooltip"><span class="cr-tooltiptext cr-tooltip-right">';
-						$counter = 0;
-						foreach ( $wp_users as $key => $wp_user ) {
-							$output .= ( $counter > -1 ? ', ' : '' ) . $wp_user->display_name;
-							$counter++;
-						}
-						$output .= '</span></div>';
-					}
-				}
+			if ( $anonymization_mode == 1 )
+			{
+				$output .= __( 'Booked', 'court-reservation' );
 			}
+			else
+			{
+
+				// Display players >
+				$output .= ( new WP_User( $reservation->userid ) )->display_name . '<br/>';
+				$output .= '<strong>';
+				$output .= esc_html( $reservation->type );
+				$output .= '</strong>';
+
+				// from 1.5.0 >
+				if ( property_exists( $reservation, 'players' ) ) {
+					$partners = explode( ',', $reservation->players );
+
+					// remove author from result
+					$is_authors = explode( ',', $reservation->is_author );
+					$author_key = array_search( 1, $is_authors );
+					if ( $author_key !== false ) {
+						array_splice( $partners, $author_key, 1 );
+					}
+					if ( $partners ) {
+						$wp_users = get_users(
+							array(
+								'include' => $partners,
+								'orderby' => 'display_name',
+								'order'   => 'ASC',
+							)
+						);
+						if ( count( $wp_users ) ) {
+							$first_user = array_shift( $wp_users );
+							$output    .= '<br/>' . $first_user->display_name;
+						}
+						if ( count( $wp_users ) ) {
+						//	$output .= '<div class="cr-tooltip"><span class="cr-tooltiptext cr-tooltip-right">';
+							$counter = 0;
+							foreach ( $wp_users as $key => $wp_user ) {
+								$output .= ( $counter > -1 ? ', ' : '' ) . $wp_user->display_name;
+								$counter++;
+							}
+						//	$output .= '</span></div>';
+						}
+					}
+				}
 			// <from 1.5.0
 			// < Display players
+
+			}
 
 			if ( ! $isPast ) {
 				if ( (int) $reservation->userid == wp_get_current_user()->ID ) {
@@ -749,47 +770,58 @@ class Courtres_Public extends Courtres_Base {
 			$helper_title = $helper ? ' title="' . $helper . '"' : '';
 			$output       = "<td class=\"blocked $klasa\" style=\"background-color: " . $block_colours[$block_type] . "\" rowspan=\"" . $rowpan . '" data-now="' . $now['hour'] . ':' . $now['minute'] . '"' . $style . $helper_title . '  data-gid="' . $reservation->gid . '">';
 
-			// Display players >
-			$output .= ( new WP_User( $reservation->userid ) )->display_name . '<br/>';
-			$output .= '<strong>';
-			$output .= esc_html( $reservation->type );
-			$output .= '</strong>';
+			$anonymization_mode = $this->getAnonymizationMode();
 
-			// from 1.5.0 >
-			if ( property_exists( $reservation, 'players' ) ) {
-				$partners = explode( ',', $reservation->players );
-
-				// remove author from result
-				$is_authors = explode( ',', $reservation->is_author );
-				$author_key = array_search( 1, $is_authors );
-				if ( $author_key !== false ) {
-					array_splice( $partners, $author_key, 1 );
-				}
-				if ( $partners ) {
-					$wp_users = get_users(
-						array(
-							'include' => $partners,
-							'orderby' => 'display_name',
-							'order'   => 'ASC',
-						)
-					);
-					if ( count( $wp_users ) ) {
-						$first_user = array_shift( $wp_users );
-						$output    .= '<br/>' . $first_user->display_name;
-					}
-					if ( count( $wp_users ) ) {
-						$output .= '<div class="cr-tooltip"> <span class="cr-tooltiptext cr-tooltip-right">';
-						$counter = 0;
-						foreach ( $wp_users as $key => $wp_user ) {
-							$output .= ( $counter > 0 ? ', ' : '' ) . $wp_user->display_name;
-							$counter++;
-						}
-						$output .= '</span></div>';
-					}
-				}
+			if ( $anonymization_mode == 1 )
+			{
+				$output .= __( 'Booked', 'court-reservation' );
 			}
+			else
+			{
+			
+				// Display players >
+				$output .= ( new WP_User( $reservation->userid ) )->display_name . '<br/>';
+				$output .= '<strong>';
+				$output .= esc_html( $reservation->type );
+				$output .= '</strong>';
+
+				// from 1.5.0 >
+				if ( property_exists( $reservation, 'players' ) ) {
+					$partners = explode( ',', $reservation->players );
+
+					// remove author from result
+					$is_authors = explode( ',', $reservation->is_author );
+					$author_key = array_search( 1, $is_authors );
+					if ( $author_key !== false ) {
+						array_splice( $partners, $author_key, 1 );
+					}
+					if ( $partners ) {
+						$wp_users = get_users(
+							array(
+								'include' => $partners,
+								'orderby' => 'display_name',
+								'order'   => 'ASC',
+							)
+						);
+						if ( count( $wp_users ) ) {
+							$first_user = array_shift( $wp_users );
+							$output    .= '<br/>' . $first_user->display_name;
+						}
+						if ( count( $wp_users ) ) {
+							// $output .= '<div class="cr-tooltip"> <span class="cr-tooltiptext cr-tooltip-right">';
+							$counter = 0;
+							foreach ( $wp_users as $key => $wp_user ) {
+								$output .= ( $counter > 0 ? ', ' : '' ) . $wp_user->display_name;
+								$counter++;
+							}
+							// $output .= '</span></div>';
+						}
+					}
+				}
 			// <from 1.5.0
 			// < Display players
+			}
+
 
 			if ( ! $isPast ) {
 				if ( (int) $reservation->userid == wp_get_current_user()->ID ) {

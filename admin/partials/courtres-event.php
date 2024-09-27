@@ -305,6 +305,42 @@ if ( $event ) {
 					</td>
 				</tr>
 				<tr>
+					<td><?php echo esc_html__( 'Select first Saturday', 'court-reservation' ); ?></td>
+					<td>
+						<select name="weekly_start" id="weekly_start">
+								<?php $saturday = strtotime('Next Saturday', time()); ?>
+									<option value="<?php echo date('Y-m-d', $saturday); ?>"><?php echo date('d. m. Y. ', $saturday); ?></option>
+
+								<?php for ($weeks=1;$weeks<=51;$weeks++)
+								{
+									$saturday = strtotime('+1 Week', $saturday); ?>
+									<option value="<?php echo date('Y-m-d', $saturday); ?>"><?php echo date('d. m. Y. ', $saturday); ?></option>
+
+								<?php } ?>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td><?php echo esc_html__( 'Select last Saturday', 'court-reservation' ); ?></td>
+					<td>
+						<select name="weekly_end" id="weekly_end">
+								<?php 
+									$saturday = strtotime('Next Saturday', time());
+									$saturday = strtotime('+1 Week', $saturday); 
+								?>
+
+									<option value="<?php echo date('Y-m-d', $saturday); ?>"><?php echo date('d. m. Y. ', $saturday); ?></option>
+
+								<?php for ($weeks=1;$weeks<=51;$weeks++)
+								{
+									$saturday = strtotime('+1 Week', $saturday); ?>
+									<option value="<?php echo date('Y-m-d', $saturday); ?>"><?php echo date('d. m. Y. ', $saturday); ?></option>
+
+								<?php } ?>
+						</select>
+					</td>
+				</tr>
+				<tr>
 					<td><?php echo esc_html__( 'Court', 'court-reservation' ); ?></td>
 					<td>
 						<select name="courtid">
