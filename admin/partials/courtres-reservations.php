@@ -14,6 +14,11 @@
 ?>
 
 <?php
+
+if (isset($_POST['delete_expired_reservations']) && $_POST['delete_expired_reservations'] == 1) {
+	$this->delete_expired_reservations();
+}
+
 if ( ! current_user_can( 'manage_options' ) ) {
 	wp_die();
 }
@@ -46,7 +51,24 @@ if ( $is_view_expired ) {
 
 <div class="wrap">
 	<h1 class="wp-heading-inline"><?php echo esc_html__( 'Upcoming Reservations', 'court-reservation' ); ?></h1>
+
+	<script>
+		function deleteExpiredReservations() {
+			if (confirm("<?php echo esc_html__( 'Are you sure?', 'court-reservation' ); ?>")) {
+			document.getElementById('delete_expired_reservations').submit();
+		}
+	}
+	</script>
+
 	<div class="cr-head-right">
+
+		<form id="delete_expired_reservations" method="post" action="<?php echo esc_url(admin_url( 'admin.php?page=courtres-reservations' )); ?>">
+			<input type="hidden" name="delete_expired_reservations" value="1" />
+			<p class="submit">
+				<button type="button" class="button button-primary" onclick="deleteExpiredReservations();"><?php echo esc_html__( 'Delete expired', 'court-reservation' ); ?></button>
+			</p>
+		</form>
+
 		<form method="post" action="<?php echo esc_url(admin_url( 'admin-ajax.php' )); ?>">
 		   <?php wp_nonce_field( 'export_expired', 'export_expired_nonce' ); ?>
 			<input type="hidden" name="target" value="reservations" />

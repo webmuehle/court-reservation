@@ -14,6 +14,11 @@
 ?>
 
 <?php
+
+if (isset($_POST['delete_all_events']) && $_POST['delete_all_events'] == 1) {
+	$this->delete_all_events();
+}
+
 if ( ! current_user_can( 'manage_options' ) ) {
 	wp_die();
 }
@@ -61,7 +66,25 @@ require 'courtres-notice-upgrade.php';
 		}
 		?>
 	</a>
+
+	<!-- on click of button first it will appear "Are you sure?" with yes or no button and yes will be this submit button. -->
+	<script>
+		function deleteEvents() {
+			if (confirm("<?php echo esc_html__( 'Are you sure?', 'court-reservation' ); ?>")) {
+			document.getElementById('delete_events').submit();
+		}
+	}
+	</script>
+
 	<div class="cr-head-right">
+
+		<form id="delete_events" method="post" action="<?php echo esc_url(admin_url( 'admin.php?page=courtres-events' )); ?>">
+			<input type="hidden" name="delete_all_events" value="1" />
+			<p class="submit">
+				<button type="button" class="button button-primary" onclick="deleteEvents();"><?php echo esc_html__( 'Delete all events', 'court-reservation' ); ?></button>
+			</p>
+		</form>
+
 		<form method="post" action="<?php echo esc_url(admin_url( 'admin-ajax.php')); ?>">
 		   <?php wp_nonce_field( 'export_expired', 'export_expired_nonce' ); ?>
 			<input type="hidden" name="target" value="events" />

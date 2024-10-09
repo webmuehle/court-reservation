@@ -102,6 +102,18 @@ class Courtres_Activator {
 				$wpdb->query( "ALTER TABLE $table_name ADD event_date date NULL DEFAULT NULL" );
 				error_log( 'Added new column event_date in table ' . print_r( $table_name, true ) );
 			};
+			if ( ! array_key_exists( 'event_first_date', $res ) ) {
+				$wpdb->query( "ALTER TABLE $table_name ADD event_first_date date NULL DEFAULT NULL" );
+				error_log( 'Added new column event_first_date in table ' . print_r( $table_name, true ) );
+			};
+			if ( ! array_key_exists( 'event_last_date', $res ) ) {
+				$wpdb->query( "ALTER TABLE $table_name ADD event_last_date date NULL DEFAULT NULL" );
+				error_log( 'Added new column event_last_date in table ' . print_r( $table_name, true ) );
+			};
+			if ( ! array_key_exists( 'courtres_forever', $res ) ) {
+				$wpdb->query( "ALTER TABLE $table_name ADD `courtres_forever` INT(1) NOT NULL DEFAULT '0'" );
+				error_log( 'Added new column courtres_forever in table ' . print_r( $table_name_courtres_events, true ) );
+			};
 			if ( ! array_key_exists( 'weekly_repeat', $res ) ) {
 				$wpdb->query( "ALTER TABLE $table_name ADD weekly_repeat boolean NULL DEFAULT NULL" );
 				error_log( 'Added new column weekly_repeat in table ' . print_r( $table_name, true ) );
@@ -127,6 +139,9 @@ class Courtres_Activator {
             name varchar(255) NOT NULL,
             dow smallint(1) NOT NULL CHECK(dow<8),
             event_date date NULL DEFAULT NULL,
+            event_first_date date NULL DEFAULT NULL,
+            event_last_date date NULL DEFAULT NULL,
+	    courtres_forever INT(1) NOT NULL DEFAULT '0',
             weekly_repeat boolean NULL DEFAULT NULL,
             start smallint(2) NOT NULL CHECK (start<=23),
             end smallint(2) NOT NULL CHECK (end<=23),
@@ -268,6 +283,18 @@ class Courtres_Activator {
 				if ( ! array_key_exists( 'event_date', $res ) ) {
 					$wpdb->query( "ALTER TABLE $table_name_courtres_events ADD event_date date NULL DEFAULT NULL" );
 					error_log( 'Added new column event_date in table ' . print_r( $table_name_courtres_events, true ) );
+				};
+				if ( ! array_key_exists( 'event_first_date', $res ) ) {
+					$wpdb->query( "ALTER TABLE $table_name_courtres_events ADD event_first_date date NULL DEFAULT NULL" );
+					error_log( 'Added new column event_first_date in table ' . print_r( $table_name_courtres_events, true ) );
+				};
+				if ( ! array_key_exists( 'event_last_date', $res ) ) {
+					$wpdb->query( "ALTER TABLE $table_name_courtres_events ADD event_last_date date NULL DEFAULT NULL" );
+					error_log( 'Added new column event_last_date in table ' . print_r( $table_name_courtres_events, true ) );
+				};
+				if ( ! array_key_exists( 'courtres_forever', $res ) ) {
+					$wpdb->query( "ALTER TABLE $table_name ADD `courtres_forever` INT(1) NOT NULL DEFAULT '0'" );
+					error_log( 'Added new column courtres_forever in table ' . print_r( $table_name_courtres_events, true ) );
 				};
 				if ( ! array_key_exists( 'weekly_repeat', $res ) ) {
 					$wpdb->query( "ALTER TABLE $table_name_courtres_events ADD weekly_repeat boolean NULL DEFAULT NULL" );

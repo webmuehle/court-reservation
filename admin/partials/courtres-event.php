@@ -13,6 +13,40 @@
  */
 ?>
 
+<script>
+function court_reservation_weekly(day)
+{ 
+	for (x=0;x<=6;x++) { document.getElementById("court_reservation_weekly_"+x+"_start").style.display="none"; }
+	for (x=0;x<=6;x++) { document.getElementById("court_reservation_weekly_"+x+"_end").style.display="none"; }
+	document.getElementById("court_reservation_weekly_"+day+"_start").style.display="table-row";
+	document.getElementById("court_reservation_weekly_"+day+"_end").style.display="table-row";
+}
+
+function court_reservation_forever_(day)
+{ 
+
+	if (document.getElementById("courtres_forever").checked == true) 
+	{ 
+		for (x=0;x<=6;x++) { document.getElementById("court_reservation_weekly_"+x+"_start").style.display="none"; }
+		for (x=0;x<=6;x++) { document.getElementById("court_reservation_weekly_"+x+"_end").style.display="none"; }
+	} 
+	else 
+	{ 
+		for (x=0;x<=6;x++) { document.getElementById("court_reservation_weekly_"+x+"_start").style.display="none"; }
+		for (x=0;x<=6;x++) { document.getElementById("court_reservation_weekly_"+x+"_end").style.display="none"; }
+
+		courtres_day=document.getElementById("courtres_date_week").value;
+		if (!courtres_day)  
+		{ 
+			document.getElementById("courtres_date_week").value=0;
+			courtres_day=0; 
+		}
+		document.getElementById("court_reservation_weekly_"+courtres_day+"_start").style.display="table-row";
+		document.getElementById("court_reservation_weekly_"+courtres_day+"_end").style.display="table-row";
+	}
+}
+</script>
+
 <?php
 wp_enqueue_style( 'jqueryui', plugin_dir_url( __FILE__ ) . '../vendor/jquery-ui/jquery-ui.css', false, null );
 // echo plugin_dir_url(__FILE__) . '../vendor/jquery-ui/jquery-ui.css'; die;
@@ -69,7 +103,14 @@ $end_h                = isset( $_POST['end'] ) && $_POST['end'] ? intval( $_POST
 $start_m              = isset( $_POST['start_m'] ) && $_POST['start_m'] ? sanitize_text_field( $_POST['start_m'] ) : false;
 $end_m                = isset( $_POST['end_m'] ) && $_POST['end_m'] ? sanitize_text_field( $_POST['end_m'] ) : false;
 $dow                  = isset( $_POST['event_date_week'] ) ? intval( $_POST['event_date_week'] ) : false;
-
+$courtres_forever     = isset( $_POST['courtres_forever'] ) ? 0 : 1;
+if (isset($dow) && is_numeric($dow)) 
+{
+	$weekly_start_ = "weekly_start_" . $dow; 
+	if (isset( $_POST[$weekly_start_] )) { $weekly_start = sanitize_text_field( $_POST[$weekly_start_] ); } else { unset($weekly_start); }
+	$weekly_end_ = "weekly_end_" . $dow; 
+	if (isset( $_POST[$weekly_end_] )) { $weekly_end = sanitize_text_field( $_POST[$weekly_end_] ); } else { unset($weekly_end); }
+}
 
 // submitted form >
 if ( isset( $_POST['submit'] ) ) {
@@ -140,11 +181,14 @@ if ( isset( $_POST['submit'] ) ) {
 				'event_id'               => $id,
 				'is_event_weekly_repeat' => $curEventWeeklyRepeat,
 				'event_date_week'        => $dow,
-				'check_all'              => true,
+				'event_first_date' 	 => $weekly_start,
+				'event_last_date' 	 => $weekly_end,
+				'courtres_forever' 	 => $courtres_forever,
 			)
 		);
 
 		$message_errors = $result['errors'];
+
 		if ( ! $message_errors ) {
 			$eventID    = $result['success']['event_id'];
 			$message    = $result['success']['message'];
@@ -269,7 +313,8 @@ if ( $event ) {
 					<tr>
 						<td><?php echo esc_html__( 'Date of weekly events', 'court-reservation' ); ?></td>
 						<td>
-							<select name="event_date_week">
+							<select id="courtres_date_week" name="event_date_week" onchange="court_reservation_weekly(this.value);">
+								<option value=""></option>
 								<?php for ( $dowi = 0; $dowi < sizeof( $days ); $dowi++ ) { ?>
 									<option value="<?php echo esc_attr( $dowi ); ?>" <?php selected( $dowi, $event->dow ); ?>><?php echo esc_html( $days[ $dowi ] ); ?></option>
 								<?php } ?>
@@ -304,42 +349,77 @@ if ( $event ) {
 						</select>
 					</td>
 				</tr>
+
+				<?php if ( $tab == '1' ) { ?>
+
 				<tr>
-					<td><?php echo esc_html__( 'Select first Saturday', 'court-reservation' ); ?></td>
 					<td>
-						<select name="weekly_start" id="weekly_start">
-								<?php $saturday = strtotime('Next Saturday', time()); ?>
-									<option value="<?php echo date('Y-m-d', $saturday); ?>"><?php echo date('d. m. Y. ', $saturday); ?></option>
-
-								<?php for ($weeks=1;$weeks<=51;$weeks++)
-								{
-									$saturday = strtotime('+1 Week', $saturday); ?>
-									<option value="<?php echo date('Y-m-d', $saturday); ?>"><?php echo date('d. m. Y. ', $saturday); ?></option>
-
-								<?php } ?>
-						</select>
+						<?php echo esc_html__( 'Forever', 'court-reservation' ); ?>
+					</td>
+					<td>
+						<label class="switch">
+							<input id="courtres_forever" type="checkbox" name="courtres_forever" <?php echo (!isset($event->courtres_forever) || $event->courtres_forever == 0 ) ? 'checked' : ''; ?> onchange="court_reservation_forever_();">
+							<span class="slider round"></span>
+						</label>
 					</td>
 				</tr>
-				<tr>
-					<td><?php echo esc_html__( 'Select last Saturday', 'court-reservation' ); ?></td>
+
+				<?php
+				$courtres_weekly_1 = array("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday");
+				foreach ($courtres_weekly_1 as $courtres_weekly_2 => $courtres_weekly_3)
+				{ ?>
+
+				<tr id="court_reservation_weekly_<?php echo $courtres_weekly_2; ?>_start" style="<?php if (!isset($event->dow) || $event->dow == "" || $event->dow != $courtres_weekly_2 || !isset($event->courtres_forever) || $event->courtres_forever == 0 ) { echo "display: none;"; } ?>">
+					<td><?php $courtres_weekly_4 = "Select first " . $courtres_weekly_3; echo esc_html__( $courtres_weekly_4, 'court-reservation' ); ?></td>
 					<td>
-						<select name="weekly_end" id="weekly_end">
+
+						<select name="weekly_start_<?php echo $courtres_weekly_2; ?>" id="weekly_start_<?php echo $courtres_weekly_2; ?>">
 								<?php 
-									$saturday = strtotime('Next Saturday', time());
-									$saturday = strtotime('+1 Week', $saturday); 
+
+									if (date('l') == $courtres_weekly_3) { $courtres_weekly_5 = "today"; }
+									else { $courtres_weekly_5 = "Next " . $courtres_weekly_3; }
+									$courtres_weekly_6 = strtotime($courtres_weekly_5, time()); 
+									if (isset($event->event_first_date) && $event->event_first_date != "") 
+									{ $event_first_date = $event->event_first_date; } else { $event_first_date = "1970-01-01"; }
 								?>
 
-									<option value="<?php echo date('Y-m-d', $saturday); ?>"><?php echo date('d. m. Y. ', $saturday); ?></option>
+									<option value="<?php echo date('Y-m-d', $courtres_weekly_6); ?>" <?php selected( date('Y-m-d', $courtres_weekly_6), $event_first_date ); ?>><?php echo date('d. m. Y. ', $courtres_weekly_6); ?></option>
 
 								<?php for ($weeks=1;$weeks<=51;$weeks++)
 								{
-									$saturday = strtotime('+1 Week', $saturday); ?>
-									<option value="<?php echo date('Y-m-d', $saturday); ?>"><?php echo date('d. m. Y. ', $saturday); ?></option>
+									$courtres_weekly_6 = strtotime('+1 Week', $courtres_weekly_6); ?>
+									<option value="<?php echo date('Y-m-d', $courtres_weekly_6); ?>" <?php selected( date('Y-m-d', $courtres_weekly_6), $event_first_date ); ?> ><?php echo date('d. m. Y. ', $courtres_weekly_6); ?></option>
 
 								<?php } ?>
 						</select>
 					</td>
 				</tr>
+				<tr id="court_reservation_weekly_<?php echo $courtres_weekly_2; ?>_end" style="<?php if (!isset($event->dow) || $event->dow == "" || $event->dow != $courtres_weekly_2 || !isset($event->courtres_forever) || $event->courtres_forever == 0 ) { echo "display: none;"; } ?>">
+					<td><?php $courtres_weekly_4 = "Select last " . $courtres_weekly_3; echo esc_html__( $courtres_weekly_4, 'court-reservation' ); ?></td>
+					<td>
+						<select name="weekly_end_<?php echo $courtres_weekly_2; ?>" id="weekly_end_<?php echo $courtres_weekly_2; ?>">
+								<?php 
+									$courtres_weekly_7 = strtotime($courtres_weekly_5, time()); 
+									$courtres_weekly_7 = strtotime('+1 Week', $courtres_weekly_7); 
+									if (isset($event->event_last_date) && $event->event_last_date != "") 
+									{ $event_last_date = $event->event_last_date; } else { $event_last_date = "1970-01-01"; }
+								?>
+
+									<option value="<?php echo date('Y-m-d', $courtres_weekly_7); ?>" <?php selected( date('Y-m-d', $courtres_weekly_7), $event_last_date ); ?>><?php echo date('d. m. Y. ', $courtres_weekly_7); ?></option>
+
+								<?php for ($weeks=1;$weeks<=51;$weeks++)
+								{
+									$courtres_weekly_7 = strtotime('+1 Week', $courtres_weekly_7); ?>
+									<option value="<?php echo date('Y-m-d', $courtres_weekly_7); ?>" <?php selected( date('Y-m-d', $courtres_weekly_7), $event_last_date ); ?>><?php echo date('d. m. Y. ', $courtres_weekly_7); ?></option>
+
+								<?php } ?>
+						</select>
+					</td>
+				</tr>
+
+				<?php } ?>
+				<?php } ?>
+
 				<tr>
 					<td><?php echo esc_html__( 'Court', 'court-reservation' ); ?></td>
 					<td>

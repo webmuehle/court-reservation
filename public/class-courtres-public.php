@@ -230,8 +230,33 @@ class Courtres_Public extends Courtres_Base {
 				$eventDate   = new DateTime( $block->event_date );
 				$interval    = $currentDate->diff( $eventDate );
 				if ( $interval->days % 7 === 0 ) {
-					if ( $this->doesOverlap( $hour, $event_start_time, $event_end_time ) ) {
-						return $block;
+					if ( $this->doesOverlap( $hour, $event_start_time, $event_end_time ) ) 
+					{
+
+						$courtres_event_first_day1 = "yes";
+						if (isset($block->event_first_date) && $block->event_first_date != "") 
+						{ 
+
+							$courtres_event_day_cur = $currentDate->format('Y-m-d');
+
+							$courtres_event__day_x = new DateTime($block->event_first_date); 
+							$courtres_event_first_day = $courtres_event__day_x->format('Y-m-d');
+
+							$courtres_event__day_x = new DateTime($block->event_last_date); 
+							$courtres_event_last_day = $courtres_event__day_x->format('Y-m-d');
+
+						}
+						else { $courtres_event_first_day1 = "no"; }
+
+						if 
+						( 
+						     (	
+							$courtres_event_first_day1 != "no" && 
+						    	$courtres_event_day_cur >= $courtres_event_first_day && 
+							$courtres_event_day_cur <= $courtres_event_last_day
+						     ) || ( isset($block->courtres_forever) && $block->courtres_forever == 0) 
+						) 
+						{ return $block; }
 					}
 				}
 			} else {
@@ -377,7 +402,10 @@ class Courtres_Public extends Courtres_Base {
 
 		$helper = ' date: ' . $date . ', hour: ' . $hour . ', hourD: ' . $hourD;
 
+
 		// Events >
+
+
 		$block = $this->isBlockedByDate( $date, $hourD );
 		if ( $block != null ) {
 
@@ -427,7 +455,13 @@ class Courtres_Public extends Courtres_Base {
 			else { $block_colours[$block_type]=$block_colours[$block_type] . " !important"; }
 
 			// $output       = '<td class="blocked" style="background-color: ' . $block_colours[$block_type] . '" rowspan="' . $rowpan . '" data-now="' . $now['hour'] . ':' . $now['minute'] . '"' . $style . $helper_title . '  data-gid="' . $reservation->gid . '">';
-			$output       = '<td class="blocked" style="background-color: ' . $block_colours[$block_type] . '" rowspan="' . $rowspan . '" data-now="' . $now['hour'] . ':' . $now['minute'] . '"' . $helper_title . '>' . esc_html( $block->name ) . '</td>';
+
+			$output       = '<td class="blocked" style="background-color: ' . $block_colours[$block_type] . '" rowspan="' . $rowspan . '" data-now="' . $now['hour'] . ':' . $now['minute'] . '"' . $helper_title . '>';
+
+			$anonymization_mode = $this->getAnonymizationMode();
+			if ( $anonymization_mode == 1 ) { $output .= __( 'Booked', 'court-reservation' ); }
+			else { $output .= esc_html( $block->name ) . '</td>'; }
+
 			return $output;
 		}
 		// < events
@@ -445,7 +479,16 @@ class Courtres_Public extends Courtres_Base {
 		if ( ! $this->ishalfhour() ) {
 			$mincheckres = -1;}
 		$reservation = $this->isReservated( $day, $hour, $mincheckres );
-		if ( $reservation != null ) {
+
+
+
+
+		// normal reservartion
+
+
+
+		if ( $reservation != null ) 
+		{
 			$style  = '';
 			$rowpan = 1;
 
@@ -690,8 +733,12 @@ class Courtres_Public extends Courtres_Base {
 			if ($block_colours[$block_type]=="0") { $block_colours[$block_type]="inherit"; }
 			else { $block_colours[$block_type]=$block_colours[$block_type] . " !important"; }
 
-			$output       = "<td class=\"blocked $klasa\" style='background-color: " . $block_colours[$block_type] . "' rowspan=\"" . $rowspan . '" data-now="' . $now['hour'] . ':' . $now['minute'] . '"' . $helper_title . '>' . esc_html( $block->name ) . '</td>';
+			$output       = "<td class=\"blocked $klasa\" style='background-color: " . $block_colours[$block_type] . "' rowspan=\"" . $rowspan . '" data-now="' . $now['hour'] . ':' . $now['minute'] . '"' . $helper_title . '>';
 			// $output       = '<td class="blocked" style="background-color: ' . $block_colours[$block_type] . '" rowspan="' . $rowspan . '" data-now="' . $now['hour'] . ':' . $now['minute'] . '"' . $helper_title . '>' . esc_html( $block->name ) . '</td>';
+
+			$anonymization_mode = $this->getAnonymizationMode();
+			if ( $anonymization_mode == 1 ) { $output .= __( 'Booked', 'court-reservation' ); }
+			else { $output .= esc_html( $block->name ) . '</td>'; }
 
 			return $output;
 		}

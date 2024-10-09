@@ -1298,6 +1298,9 @@ class Courtres_Admin extends Courtres_Base {
 				'start_ts'      => $start_ts,
 				'end_ts'        => $end_ts,
 				'type'          => $params['type'],
+				'event_first_date' => $params['event_first_date'],
+				'event_last_date' => $params['event_last_date'],
+				'courtres_forever' => $params['courtres_forever'],
 			);
 			$fields_format = array(
 				'%s',
@@ -1311,6 +1314,9 @@ class Courtres_Admin extends Courtres_Base {
 				'%d',
 				'%d',
 				'%s',
+				'%s',
+				'%s',
+				'%d',
 			);
 
 			if ( $params['event_id'] ) {
@@ -1329,6 +1335,25 @@ class Courtres_Admin extends Courtres_Base {
 		return $result;
 	}
 
+	/**
+	 * Delete all events
+	 *
+	 */
+	function delete_all_events() {
+		global $wpdb;
+		$table_name = $this->getTable( 'events' );
+		$wpdb->query( "TRUNCATE TABLE $table_name" );
+	}
+
+	/**
+	 * Delete expired reservations
+	 *
+	 */
+	function delete_expired_reservations() {
+		global $wpdb;
+		$table_name = $this->getTable( 'reservations' );
+		$wpdb->query( "DELETE FROM $table_name WHERE date < CURDATE()" );
+	}
 
 	/**
 	 * Export expired reservations
