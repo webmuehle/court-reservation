@@ -10,11 +10,11 @@ License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 
-With this plugin, it is easy and quick to integrate a reservation system for tennis, padel, squash, volleyball, badminton or all kinds of settings where a court needs to be reserved.
+With this plugin, integrating a reservation system for tennis, padel, and other sports is easy and quick.
 
 == Description ==
-With this plugin, it is easy and quick to integrate a reservation system on your WordPress site. With just a few clicks, you can create additional courts which can then be integrated via shortcode anywhere on your website.
-With our new ULTIMATE plan, you can create unlimited pyramid competitions/tournaments, where members of your club can challenge each other. Pyramids are as fast and easy to set up as our regular court reservations system and brings a lot of new excitement into your club.
+With this plugin, integrating a reservation system on your WordPress site is easy and quick. With just a few clicks, you can create additional courts that can then be integrated via shortcode anywhere on your website.
+With our new ULTIMATE plan, you can create unlimited pyramid competitions/tournaments, where your club members can challenge each other. Pyramids are as fast and easy to set up as our regular court reservations system and brings a lot of new excitement into your club.
 
  
 **FEATURES OF THE FREE VERSION**
