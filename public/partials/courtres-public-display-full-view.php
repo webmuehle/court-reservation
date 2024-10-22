@@ -303,7 +303,7 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 			}
 
 				echo "</tr><tr><th class='mob_width'><span class='mob_plus_'>" . 
-					 esc_html(date_i18n( 'l', strtotime( '+' . $day . ' day', $nowTZTS ) )) . '<br/>' . esc_html(date_i18n( $dateformat, strtotime( '+' . $day . ' day', $nowTZTS ) )) . "</span></th>";
+					 esc_html(date_i18n( 'l', strtotime( '+' . $fromDay . ' day', $nowTZTS ) )) . '<br/>' . esc_html(date_i18n( $dateformat, strtotime( '+' . $fromDay . ' day', $nowTZTS ) )) . "</span></th>";
 
 			for ( $day = $fromDay; $day < $tillDay; $day++ ) {
 				?>

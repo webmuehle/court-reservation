@@ -1422,7 +1422,7 @@ class Courtres_Public extends Courtres_Base {
 		 global $wpdb;
 		$table_settings                = $this->getTable( 'settings' );
 		$option_is_team_mate_mandatory = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_is_team_mate_mandatory'" );
-		$option_is_team_mate_mandatory->option_value=0; // always 0 because we are removing this function
+		if ($option_is_team_mate_mandatory && property_exists($option_is_team_mate_mandatory,'option_value')) { $option_is_team_mate_mandatory->option_value=0; }
 		if ( ! $option_is_team_mate_mandatory ) {
 			return false;
 		}
