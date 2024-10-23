@@ -1533,3 +1533,11 @@ msgstr "Abgelaufene löschen"
 msgid "Forever"
 msgstr "Bis auf Widerruf"
 
+#: 
+msgid "Close Court"
+msgstr "Platz sperren"
+
+#: 
+msgid "Closed"
+msgstr "Gesperrt"
+
