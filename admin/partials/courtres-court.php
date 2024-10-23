@@ -21,9 +21,19 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
 global $wpdb;
 $table_name = $this->getTable( 'courts' );
+$table_settings = $this->getTable( 'settings' );
 
 if ( isset( $_GET['courtID'] ) ) {
 	$courtID = (int) $_GET['courtID'];
+}
+
+if ( isset( $_POST['option_closed_court'] ) ) {
+	// Checkbox is selected
+	$form_closed_court = '1';
+} elseif ( !isset( $_POST['option_closed_court'] ) && $_POST['submit'] == "Save" ) {
+	$form_closed_court = '0';
+} else {
+	$form_closed_court = '';
 }
 
 // 17.01.2019, astoian - if not premium, stop it
@@ -77,6 +87,57 @@ if ( isset( $_POST['submit'] ) ) {
 	}
 }
 
+if (isset($courtID) && is_numeric($courtID))
+{
+	$courtres_option_closed_name = "option_closed_court_" . $courtID;
+
+	$database_closed_court = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$courtres_option_closed_name'" );
+
+	if ( isset( $database_closed_court ) && $database_closed_court->option_value != "" && $form_closed_court != '' ) {
+		$wpdb->update(
+			$table_settings,
+			array(
+				'option_value' => $form_closed_court,
+			),
+			array( 'option_id' => (int) $database_closed_court->option_id ),
+			array( '%s' )
+		);
+		$message = __( 'Successfully changed!', 'court-reservation' );
+
+	$option_closed_court = new stdClass();
+	$option_closed_court->option_id    = 0;
+	$option_closed_court->option_name  = $courtres_option_closed_name;
+	$option_closed_court->option_value = $form_closed_court;
+	}
+	elseif ( isset( $database_closed_court ) && $database_closed_court->option_value != "" && $form_closed_court == '' ) {
+		$option_closed_court = $database_closed_court;
+	}
+	elseif ( ( !isset( $database_closed_court ) || $database_closed_court->option_value == "")  && $form_closed_court != ''  ) {
+
+		$wpdb->insert(
+			$table_settings,
+			array(
+				'option_name'  => $courtres_option_closed_name,
+				'option_value' => $form_closed_court,
+			),
+			array( '%s', '%s' )
+		);
+		$message = __( 'Successfully changed!', 'court-reservation' );
+
+		$option_closed_court = new stdClass();
+		$option_closed_court->option_id    = 0;
+		$option_closed_court->option_name  = $courtres_option_closed_name;
+		$option_closed_court->option_value = $form_closed_court;
+	}
+	else
+	{
+		$option_closed_court = new stdClass();
+		$option_closed_court->option_id    = 0;
+		$option_closed_court->option_name  = $courtres_option_closed_name;
+		$option_closed_court->option_value = '0';
+	}
+}
+
 if ( isset( $courtID ) && $courtID > 0 ) {
 	$court = $wpdb->get_row( "SELECT * FROM $table_name WHERE id = $courtID" );
 }
@@ -115,6 +176,23 @@ if ( ! isset( $court ) ) {
 		<td><?php echo esc_html__( 'Reservation Days in Advance', 'court-reservation' ); ?></td>
 		<td><input type="number" name="days" min="0" max="9" maxlength="1" value="<?php echo esc_html( $court->days ); ?>" required /></td>
 	  </tr>
+
+     <?php if (isset($courtID) && is_numeric($courtID)) { ?>
+
+	  <tr>
+		<td>
+			<?php echo esc_html__( 'Close Court', 'court-reservation' ); ?>
+		</td>
+		<td>
+			<label class="switch">
+				<input type="checkbox" name="option_closed_court" <?php echo ( $option_closed_court->option_value == '1' ) ? 'checked' : ''; ?>>
+				<span class="slider round"></span>
+			</label>
+		</td>
+	  </tr>
+
+     <?php } ?>
+
 	  <tr>
 		<td></td>
 		<td><input class="button" type="submit" name="submit" value=<?php echo esc_html__( 'Save', 'court-reservation' ); ?> /></td>

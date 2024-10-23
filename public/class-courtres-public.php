@@ -207,6 +207,18 @@ class Courtres_Public extends Courtres_Base {
 		return $anonymization->option_value;
 	}
 
+	public function getCourtresClosed($courtID) {
+		global $wpdb;
+		$table_settings = $this->getTable( 'settings' );
+		$court_option = "option_closed_court_" . $courtID->id;
+		$court_closed = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$court_option'" );
+		if ( ! $court_closed ) {
+			return 0;
+		}
+
+		return $court_closed->option_value;
+	}
+
 	private function doesOverlap( $hour, $from, $to ) {
 		return ( $hour >= $from && $hour < $to );
 	}
@@ -403,6 +415,14 @@ class Courtres_Public extends Courtres_Base {
 		$helper = ' date: ' . $date . ', hour: ' . $hour . ', hourD: ' . $hourD;
 
 
+		$courtres_closed_mode = $this->getCourtresClosed($court);
+
+		if ( $courtres_closed_mode == 1 )
+		{
+			$output = '<td class="unavailable" data-now="' . $now['hour'] . ':' . $now['minute'] . '">' . __( 'Closed', 'court-reservation' ) . '</td>';
+			return $output;
+		}
+
 		// Events >
 
 
@@ -459,6 +479,7 @@ class Courtres_Public extends Courtres_Base {
 			$output       = '<td class="blocked" style="background-color: ' . $block_colours[$block_type] . '" rowspan="' . $rowspan . '" data-now="' . $now['hour'] . ':' . $now['minute'] . '"' . $helper_title . '>';
 
 			$anonymization_mode = $this->getAnonymizationMode();
+
 			if ( $anonymization_mode == 1 ) { $output .= __( 'Booked', 'court-reservation' ); }
 			else { $output .= esc_html( $block->name ) . '</td>'; }
 
@@ -684,6 +705,15 @@ class Courtres_Public extends Courtres_Base {
 		}
 
 		$helper = ' date: ' . $date . ', hour: ' . $hour . ', hourD: ' . $hourD;
+
+		$courtres_closed_mode = $this->getCourtresClosed($court);
+
+		if ( $courtres_closed_mode == 1 )
+		{
+			$output = '<td class="unavailable" data-now="' . $now['hour'] . ':' . $now['minute'] . '">' . __( 'Closed', 'court-reservation' ) . '</td>';
+			return $output;
+		}
+
 
 		// Events >
 		$block = $this->isBlockedByDate_multi( $date, $hourD, $court->id );
