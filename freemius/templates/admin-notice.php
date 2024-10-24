@@ -6,108 +6,107 @@
 	 * @since       1.0.3
 	 */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
+	/**
+	 * @var array $VARS
+	 */
 
 	$dismiss_text = fs_text_x_inline( 'Dismiss', 'as close a window', 'dismiss' );
 
 	$slug = '';
 	$type = '';
 
-if ( ! empty( $VARS['manager_id'] ) ) {
-	/**
-	 * @var array $VARS
-	 */
-	$slug = $VARS['manager_id'];
+	if ( ! empty( $VARS['manager_id'] ) ) {
+		/**
+		 * @var array $VARS
+		 */
+		$slug = $VARS['manager_id'];
 
-	$type = WP_FS__MODULE_TYPE_PLUGIN;
+		$type = WP_FS__MODULE_TYPE_PLUGIN;
 
-	if ( false !== strpos( $slug, ':' ) ) {
-		$parts = explode( ':', $slug );
+		if ( false !== strpos( $slug, ':' ) ) {
+			$parts = explode( ':', $slug );
 
-		$slug = $parts[0];
+			$slug = $parts[0];
 
-		$parts_count = count( $parts );
+			$parts_count = count( $parts );
 
-		if ( 1 < $parts_count && WP_FS__MODULE_TYPE_THEME == $parts[1] ) {
-			$type = $parts[1];
+			if ( 1 < $parts_count && WP_FS__MODULE_TYPE_THEME == $parts[1] ) {
+				$type = $parts[1];
+			}
 		}
 	}
-}
-?>
-<div
-<?php
-if ( ! empty( $VARS['id'] ) ) :
-	?>
-	 data-id="<?php echo $VARS['id']; ?>"<?php endif ?>
-	<?php
-	if ( ! empty( $VARS['manager_id'] ) ) :
-		?>
-	 data-manager-id="<?php echo $VARS['manager_id']; ?>"<?php endif ?>
-	<?php
-	if ( ! empty( $slug ) ) :
-		?>
-	 data-slug="<?php echo $slug; ?>"<?php endif ?>
-	<?php
-	if ( ! empty( $type ) ) :
-		?>
-	 data-type="<?php echo $type; ?>"<?php endif ?>
-	class="
-	<?php
+
+	$attributes = array();
+	if ( ! empty( $VARS['id'] ) ) {
+		$attributes['data-id'] = $VARS['id'];
+	}
+	if ( ! empty( $VARS['manager_id'] ) ) {
+		$attributes['data-manager-id'] = $VARS['manager_id'];
+	}
+	if ( ! empty( $slug ) ) {
+		$attributes['data-slug'] = $slug;
+	}
+	if ( ! empty( $type ) ) {
+		$attributes['data-type'] = $type;
+	}
+
+	$classes = array( 'fs-notice' );
 	switch ( $VARS['type'] ) {
 		case 'error':
-			echo 'error form-invalid';
+			$classes[] = 'error';
+			$classes[] = 'form-invalid';
 			break;
 		case 'promotion':
-			echo 'updated promotion';
+			$classes[] = 'updated';
+			$classes[] = 'promotion';
+			break;
+		case 'warn':
+			$classes[] = 'notice';
+			$classes[] = 'notice-warning';
 			break;
 		case 'update':
-			// echo 'update-nag update';
-			// break;
 		case 'success':
 		default:
-			echo 'updated success';
+			$classes[] = 'updated';
+			$classes[] = 'success';
 			break;
 	}
-	?>
-	 fs-notice
-	 <?php
-		if ( ! empty( $VARS['sticky'] ) ) {
-				echo ' fs-sticky';
-		}
-		?>
-	
-	<?php
+	if ( ! empty( $VARS['sticky'] ) ) {
+		$classes[] = 'fs-sticky';
+	}
 	if ( ! empty( $VARS['plugin'] ) ) {
-		echo ' fs-has-title';
+		$classes[] = 'fs-has-title';
 	}
-	?>
-	
-	<?php
 	if ( ! empty( $slug ) ) {
-		echo " fs-slug-{$slug}";
+		$classes[] = "fs-slug-{$slug}";
 	}
-	?>
-	
-	<?php
 	if ( ! empty( $type ) ) {
-		echo " fs-type-{$type}";
+		$classes[] = "fs-type-{$type}";
 	}
-	?>
-	"><?php if ( ! empty( $VARS['plugin'] ) ) : ?>
-		<label class="fs-plugin-title"><?php echo $VARS['plugin']; ?></label>
+?>
+<div class="<?php echo fs_html_get_classname( $classes ); ?>" <?php echo fs_html_get_attributes( $attributes ); ?>>
+	<?php if ( ! empty( $VARS['plugin'] ) ) : ?>
+		<label class="fs-plugin-title">
+			<?php echo esc_html( $VARS['plugin'] ); ?>
+		</label>
 	<?php endif ?>
-	<?php if ( ! empty( $VARS['sticky'] ) ) : ?>
-		<div class="fs-close"><i class="dashicons dashicons-no"
-								 title="<?php echo esc_attr( $dismiss_text ); ?>"></i> <span><?php echo esc_html( $dismiss_text ); ?></span>
+
+	<?php if ( ! empty( $VARS['sticky'] ) && ( ! isset( $VARS['dismissible'] ) || false !== $VARS['dismissible'] ) ) : ?>
+		<div class="fs-close">
+			<i class="dashicons dashicons-no" title="<?php echo esc_attr( $dismiss_text ) ?>"></i>
+			<span><?php echo esc_html( $dismiss_text ); ?></span>
 		</div>
 	<?php endif ?>
+
 	<div class="fs-notice-body">
-		<?php
-		if ( ! empty( $VARS['title'] ) ) :
-			?>
-			<b><?php echo $VARS['title']; ?></b> <?php endif ?>
-		<?php echo $VARS['message']; ?>
+		<?php if ( ! empty( $VARS['title'] ) ) : ?>
+			<strong><?php echo fs_html_get_sanitized_html( $VARS['title'] ); ?></strong>
+		<?php endif ?>
+
+		<?php echo fs_html_get_sanitized_html( $VARS['message'] ); ?>
 	</div>
 </div>
