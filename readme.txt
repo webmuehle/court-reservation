@@ -32,6 +32,7 @@ With our new ULTIMATE plan, you can create unlimited pyramid competitions/tourna
 
 **FEATURES OF THE ULTIMATE VERSION**
 * All of the PREMIUM VERSION, and
+* Anonymization-Mode  - No visible names for 100% GDP compliance
 * Ladder Competitions / Pyramid Tournaments
 * Individual colors for reservation types
 * For just 199,99$ a year
