@@ -30,7 +30,7 @@ if ( isset( $_GET['courtID'] ) ) {
 if ( isset( $_POST['option_closed_court'] ) ) {
 	// Checkbox is selected
 	$form_closed_court = '1';
-} elseif ( !isset( $_POST['option_closed_court'] ) && $_POST['submit'] == "Save" ) {
+} elseif ( !isset( $_POST['option_closed_court'] ) && isset($_POST['submit']) ) {
 	$form_closed_court = '0';
 } else {
 	$form_closed_court = '';
@@ -93,7 +93,7 @@ if (isset($courtID) && is_numeric($courtID))
 
 	$database_closed_court = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$courtres_option_closed_name' ORDER BY `option_id` DESC LIMIT 1" );
 
-	if ( isset( $database_closed_court ) && $database_closed_court->option_value != "" && $form_closed_court != '' ) {
+	if ( $database_closed_court !== null  && $form_closed_court != '' ) {
 		$wpdb->update(
 			$table_settings,
 			array(
@@ -109,10 +109,13 @@ if (isset($courtID) && is_numeric($courtID))
 	$option_closed_court->option_name  = $courtres_option_closed_name;
 	$option_closed_court->option_value = $form_closed_court;
 	}
-	elseif ( isset( $database_closed_court ) && $database_closed_court->option_value != "" && $form_closed_court == '' ) {
-		$option_closed_court = $database_closed_court;
+	elseif ( $database_closed_court !== null  && $form_closed_court == '' ) {
+		$option_closed_court = new stdClass();
+		$option_closed_court->option_id    = 0;
+		$option_closed_court->option_name  = $courtres_option_closed_name;
+		$option_closed_court->option_value = (int) $database_closed_court->option_value;
 	}
-	elseif ( ( !isset( $database_closed_court ) || $database_closed_court->option_value == "")  && $form_closed_court != ''  ) {
+	elseif ( $database_closed_court === null  && $form_closed_court != ''  ) {
 
 		$wpdb->insert(
 			$table_settings,

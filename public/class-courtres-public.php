@@ -211,7 +211,7 @@ class Courtres_Public extends Courtres_Base {
 		global $wpdb;
 		$table_settings = $this->getTable( 'settings' );
 		$court_option = "option_closed_court_" . $courtID->id;
-		$court_closed = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$court_option'" );
+		$court_closed = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$court_option' ORDER BY `option_id` DESC LIMIT 1" );
 		if ( ! $court_closed ) {
 			return 0;
 		}
