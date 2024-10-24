@@ -89,9 +89,9 @@ if ( isset( $_POST['submit'] ) ) {
 
 if (isset($courtID) && is_numeric($courtID))
 {
-	$courtres_option_closed_name = "option_closed_court_" . $courtID;
+	$courtres_option_closed_name = "option_closed_court_" . (int) $courtID;
 
-	$database_closed_court = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$courtres_option_closed_name'" );
+	$database_closed_court = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$courtres_option_closed_name' ORDER BY `option_id` DESC LIMIT 1" );
 
 	if ( isset( $database_closed_court ) && $database_closed_court->option_value != "" && $form_closed_court != '' ) {
 		$wpdb->update(
@@ -118,7 +118,7 @@ if (isset($courtID) && is_numeric($courtID))
 			$table_settings,
 			array(
 				'option_name'  => $courtres_option_closed_name,
-				'option_value' => $form_closed_court,
+				'option_value' => (int) $form_closed_court,
 			),
 			array( '%s', '%s' )
 		);
@@ -127,7 +127,7 @@ if (isset($courtID) && is_numeric($courtID))
 		$option_closed_court = new stdClass();
 		$option_closed_court->option_id    = 0;
 		$option_closed_court->option_name  = $courtres_option_closed_name;
-		$option_closed_court->option_value = $form_closed_court;
+		$option_closed_court->option_value = (int) $form_closed_court;
 	}
 	else
 	{

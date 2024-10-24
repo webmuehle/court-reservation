@@ -710,7 +710,7 @@ class Courtres_Public extends Courtres_Base {
 
 		if ( $courtres_closed_mode == 1 )
 		{
-			$output = '<td class="unavailable" data-now="' . $now['hour'] . ':' . $now['minute'] . '">' . __( 'Closed', 'court-reservation' ) . '</td>';
+			$output = '<td class="unavailable ' . $klasa . '" data-now="' . $now['hour'] . ':' . $now['minute'] . '">' . __( 'Closed', 'court-reservation' ) . '</td>';
 			return $output;
 		}
 
