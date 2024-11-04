@@ -14,7 +14,7 @@ With this plugin, integrating a reservation system for tennis, padel, and other 
 
 == Description ==
 With this plugin, integrating a reservation system on your WordPress site is easy and quick. With just a few clicks, you can create additional courts that can then be integrated via shortcode anywhere on your website.
-With our new ULTIMATE plan, you can create unlimited pyramid competitions/tournaments, where your club members can challenge each other. Pyramids are as fast and easy to set up as our regular court reservations system and brings a lot of new excitement into your club.
+With our new ULTIMATE plan, you can create unlimited pyramid competitions/tournaments, where your club members can challenge each other. Pyramids are as fast and easy to set up as our regular court reservations system and bring a lot of new excitement into your club.
 
  
 **FEATURES OF THE FREE VERSION**
@@ -25,6 +25,7 @@ With our new ULTIMATE plan, you can create unlimited pyramid competitions/tourna
 * Member management within the Plugin Settings (limited to 100 members)
 * Customize the design of the reservation table
 * "Calendar View"
+* Close Courts (e.g. if damaged)
 
 **FEATURES OF THE PREMIUM VERSION**
 * All of the FREE VERSION, but no limitation in possible courts or members
@@ -155,8 +156,8 @@ Upload the plugin via ZIP or install and activate it via the WordPress plugin in
 * added ladder competitions
 * added half-hour events
 * added filter by gid on Upcoming Reservations page in admin
-* if event overlaps in time with another reservations added link to this reservations in admin
-* if event overlaps in time with another events added link to this events in admin
+* if event overlaps in time with another reservation added link to this reservations in admin
+* if event overlaps in time with another event added link to this events in admin
 
 = 1.4.12 =
 * Freemius update
@@ -176,8 +177,8 @@ Issue fixed: Allow to reserve a court till the end of the current hour or half-h
 
 = 1.4.7 = 
 Allow to reserve a court till the end of the current hour or half-hour
-Show blocked events or reserveration till the end of its time 
-Issue fixed: mirgate events after update of the previus version
+Show blocked events or reservation till the end of its time 
+Issue fixed: migrate events after update of the previous version
 
 = 1.4.6 =
 UTC-Timezone issue fixed
@@ -189,7 +190,7 @@ Event bugs fixed
 Timezone issue fixed
 
 = 1.4.3 =
-Serveral bugs fixed
+Several bugs fixed
 
 = 1.4.1 =
 
@@ -254,6 +255,3 @@ Serveral bugs fixed
 * Implemented basic features
 
 == Upgrade Notice ==
-
-readme.txt
-readme.txt wird angezeigt.
