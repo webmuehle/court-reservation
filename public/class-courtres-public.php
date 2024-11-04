@@ -1666,7 +1666,11 @@ class Courtres_Public extends Courtres_Base {
 	// get Time select row
 	function get_more_rows_html() {
 		$html  = $this->get_time_row( $_POST );
-		$html .= $this->get_teammate_row( $_POST ); 
+
+		$anonymization_mode = $this->getAnonymizationMode();
+		if ( $anonymization_mode != 1 ) {
+			$html .= $this->get_teammate_row( $_POST );
+		}
 
 		$allowed_html = array(
 			'tr'  => array(
