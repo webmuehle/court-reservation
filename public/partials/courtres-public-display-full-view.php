@@ -178,7 +178,12 @@ if (!property_exists("court", "id")) { $court->id=""; }
 				<td>
 					<?php if ( $mayEdit ) { ?>
 						<?php echo esc_html( $username ); ?>
-					<?php } else { ?>
+					<?php } else { 
+
+					    $anonymization_mode = $this->getAnonymizationMode();
+
+					    if ( $anonymization_mode != 1 ) { ?>
+
 						<input list="playerid" placeholder="<?php echo __('Type or click to select', 'court-reservation'); ?>">
 						<datalist name="playerid" id="playerid">
 							<option value="0" selected>-</option>
@@ -190,6 +195,9 @@ if (!property_exists("court", "id")) { $court->id=""; }
 								<option value="<?php echo esc_attr( $player->user_login ); ?>"><?php echo esc_html( $player->display_name ); ?></option>
 							<?php } ?>
 						</datalist>
+
+					    <?php } ?>
+
 						<div>
 							<a class="login_button" id="cr-show-login"><?php echo esc_html__( 'Login', 'court-reservation' ); ?></a>
 						</div>
