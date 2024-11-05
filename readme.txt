@@ -4,7 +4,7 @@ Donate link: https://www.webmuehle.at/
 Tags: Court Reservation, Padel, Tennis, Padel, Pickleball
 Requires at least: 3.0.1
 Tested up to: 6.6.1
-Stable tag: 1.9.1
+Stable tag: 1.9.2
 Requires PHP: 5.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -74,6 +74,9 @@ Upload the plugin via ZIP or install and activate it via the WordPress plugin in
 [youtube https://www.youtube.com/watch?v=twkmSQSuGME]
 
 == Changelog ==
+
+= 1.9.2 =
+* Anonymization mode optimized
 
 = 1.9.1 =
 * Close court feature added
