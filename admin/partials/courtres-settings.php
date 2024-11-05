@@ -458,8 +458,8 @@ if ( ! isset( $option_calender_view_navigator ) ) {
 }
 
 $option_anonymization_mode = $wpdb->get_row( "SELECT * FROM $table_name WHERE option_name = 'option_anonymization_mode'" );
-if ( ! isset( $option_anonymization_mode ) ) {
-	$option_anonymization_mode 		      = new stdClass();
+if ( ! isset( $option_anonymization_mode ) || ! cr_fs()->is_plan( 'ultimate' ) ) {
+	$option_anonymization_mode 		 = new stdClass();
 	$option_anonymization_mode->option_id    = 0;
 	$option_anonymization_mode->option_name  = 'option_anonymization_mode';
 	$option_anonymization_mode->option_value = '0';
@@ -724,6 +724,7 @@ require 'courtres-notice-message.php';
 							</label>
 						</td>
 					</tr>
+				     <?php if ( cr_fs()->is_plan( 'ultimate' ) ) { ?>
 					<tr>
 						<td>
 							<?php echo esc_html__( 'Anonymization mode', 'court-reservation' ); ?>
@@ -735,6 +736,9 @@ require 'courtres-notice-message.php';
 							</label>
 						</td>
 					</tr>
+
+				    <?php } ?>
+
 <?php /* removing this function
 					<tr>
 						<td>

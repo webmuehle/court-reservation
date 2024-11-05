@@ -198,6 +198,7 @@ class Courtres_Public extends Courtres_Base {
 
 	public function getAnonymizationMode() {
 		global $wpdb;
+ 		if ( ! cr_fs()->is_plan( 'ultimate' ) ) { return 0; }
 		$table_settings = $this->getTable( 'settings' );
 		$anonymization      = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_anonymization_mode'" );
 		if ( ! $anonymization ) {
