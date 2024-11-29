@@ -4,7 +4,7 @@ Donate link: https://www.webmuehle.at/
 Tags: Court Reservation, Padel, Tennis, Padel, Pickleball
 Requires at least: 3.0.1
 Tested up to: 6.6.1
-Stable tag: 1.9.2
+Stable tag: 2.0.0
 Requires PHP: 5.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -33,10 +33,11 @@ With our new ULTIMATE plan, you can create unlimited pyramid competitions/tourna
 
 **FEATURES OF THE ULTIMATE VERSION**
 * All of the PREMIUM VERSION, and
+* WooCommerce Payment Gateway - Add individual prices for bookings
 * Anonymization-Mode  - No visible names for 100% GDP compliance
 * Ladder Competitions / Pyramid Tournaments
 * Individual colors for reservation types
-* For just 199,99$ a year
+* For just 299,99$ a year
 
 
 A detailed list of all functions can be found on <a href="https://www.courtreservation.io" target="_blank">https://www.courtreservation.io</a>.
@@ -74,6 +75,9 @@ Upload the plugin via ZIP or install and activate it via the WordPress plugin in
 [youtube https://www.youtube.com/watch?v=twkmSQSuGME]
 
 == Changelog ==
+
+= 1.10.0 =
+* WooCommerce Payment Gateway added
 
 = 1.9.2 =
 * Anonymization mode optimized
