@@ -336,6 +336,8 @@ class Courtres_Admin extends Courtres_Base {
 
 		// all good!
 		$gid = uniqid();
+		echo json_encode(['gid' => $gid]);
+
 		// 16.03.2019, astoian - if half hour then
 		// Save the reseravation
 		if ( $half_hour ) {
@@ -354,7 +356,7 @@ class Courtres_Admin extends Courtres_Base {
 						'date'       => $dateStr,
 						'time'       => (int) $timeStep->format( 'H' ),
 						'minute'     => (int) $timeStep->format( 'i' ),
-						'gid'        => $gid,
+						'gid'        => sanitize_text_field($gid),
 					),
 					array(
 						'%d',
@@ -776,6 +778,9 @@ class Courtres_Admin extends Courtres_Base {
 				break;
 			case '5preview':
 				require_once plugin_dir_path( __FILE__ ) . 'partials/courtres-emailtemplatepreview.php';
+				break;
+			case '6':
+				require_once plugin_dir_path( __FILE__ ) . 'partials/courtres-payment-options.php';
 				break;
 
 			default:

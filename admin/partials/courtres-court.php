@@ -36,6 +36,24 @@ if ( isset( $_POST['option_closed_court'] ) ) {
 	$form_closed_court = '';
 }
 
+if ( isset( $_POST['option_payment'] ) ) {
+	// Checkbox is selected
+	$form_payment = '1';
+} elseif ( !isset( $_POST['option_payment'] ) && isset($_POST['submit']) ) {
+	$form_payment = '0';
+} else {
+	$form_payment = '';
+}
+
+if ( isset( $_POST['option_payment_id'] ) ) {
+	// Checkbox is selected
+	$form_payment_id = $_POST['option_payment_id'];
+} elseif ( !isset( $_POST['option_payment_id'] ) && isset($_POST['submit']) ) {
+	$form_payment_id = '0';
+} else {
+	$form_payment_id = '';
+}
+
 // 17.01.2019, astoian - if not premium, stop it
 if ( isset( $courtID ) && ! $this->isCourtPremium( $courtID ) ) {
 	include 'courtres-notice-upgrade.php';
@@ -90,7 +108,6 @@ if ( isset( $_POST['submit'] ) ) {
 if (isset($courtID) && is_numeric($courtID))
 {
 	$courtres_option_closed_name = "option_closed_court_" . (int) $courtID;
-
 	$database_closed_court = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$courtres_option_closed_name' ORDER BY `option_id` DESC LIMIT 1" );
 
 	if ( $database_closed_court !== null  && $form_closed_court != '' ) {
@@ -139,6 +156,108 @@ if (isset($courtID) && is_numeric($courtID))
 		$option_closed_court->option_name  = $courtres_option_closed_name;
 		$option_closed_court->option_value = '0';
 	}
+
+
+
+	$courtres_option_payment = "option_payment_" . (int) $courtID;
+	$database_payment = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$courtres_option_payment' ORDER BY `option_id` DESC LIMIT 1" );
+
+	if ( $database_payment !== null  && $form_payment != '' ) {
+		$wpdb->update(
+			$table_settings,
+			array(
+				'option_value' => $form_payment,
+			),
+			array( 'option_id' => (int) $database_payment->option_id ),
+			array( '%s' )
+		);
+		$message = __( 'Successfully changed!', 'court-reservation' );
+
+	$option_payment = new stdClass();
+	$option_payment->option_id    = 0;
+	$option_payment->option_name  = $courtres_option_payment;
+	$option_payment->option_value = $form_payment;
+	}
+	elseif ( $database_payment !== null  && $form_payment == '' ) {
+		$option_payment = new stdClass();
+		$option_payment->option_id    = 0;
+		$option_payment->option_name  = $courtres_option_payment;
+		$option_payment->option_value = (int) $database_payment->option_value;
+	}
+	elseif ( $database_payment === null  && $form_payment != ''  ) {
+
+		$wpdb->insert(
+			$table_settings,
+			array(
+				'option_name'  => $courtres_option_payment,
+				'option_value' => (int) $form_payment,
+			),
+			array( '%s', '%s' )
+		);
+		$message = __( 'Successfully changed!', 'court-reservation' );
+
+		$option_payment = new stdClass();
+		$option_payment->option_id    = 0;
+		$option_payment->option_name  = $courtres_option_payment;
+		$option_payment->option_value = (int) $form_payment;
+	}
+	else
+	{
+		$option_payment = new stdClass();
+		$option_payment->option_id    = 0;
+		$option_payment->option_name  = $courtres_option_payment;
+		$option_payment->option_value = '0';
+	}
+
+	$courtres_option_payment_id = "option_payment_id_" . (int) $courtID;
+	$database_payment_id = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$courtres_option_payment_id' ORDER BY `option_id` DESC LIMIT 1" );
+
+	if ( $database_payment_id !== null  && $form_payment_id != '' ) {
+		$wpdb->update(
+			$table_settings,
+			array(
+				'option_value' => $form_payment_id,
+			),
+			array( 'option_id' => (int) $database_payment_id->option_id ),
+			array( '%s' )
+		);
+		$message = __( 'Successfully changed!', 'court-reservation' );
+
+	$option_payment_id = new stdClass();
+	$option_payment_id->option_id    = 0;
+	$option_payment_id->option_name  = $courtres_option_payment_id;
+	$option_payment_id->option_value = $form_payment_id;
+	}
+	elseif ( $database_payment_id !== null  && $form_payment_id == '' ) {
+		$option_payment_id = new stdClass();
+		$option_payment_id->option_id    = 0;
+		$option_payment_id->option_name  = $courtres_option_payment_id;
+		$option_payment_id->option_value = (int) $database_payment_id->option_value;
+	}
+	elseif ( $database_payment_id === null  && $form_payment_id != ''  ) {
+
+		$wpdb->insert(
+			$table_settings,
+			array(
+				'option_name'  => $courtres_option_payment_id,
+				'option_value' => (int) $form_payment_id,
+			),
+			array( '%s', '%s' )
+		);
+		$message = __( 'Successfully changed!', 'court-reservation' );
+
+		$option_payment_id = new stdClass();
+		$option_payment_id->option_id    = 0;
+		$option_payment_id->option_name  = $courtres_option_payment_id;
+		$option_payment_id->option_value = (int) $form_payment_id;
+	}
+	else
+	{
+		$option_payment_id = new stdClass();
+		$option_payment_id->option_id    = 0;
+		$option_payment_id->option_name  = $courtres_option_payment_id;
+		$option_payment_id->option_value = '0';
+	}
 }
 
 if ( isset( $courtID ) && $courtID > 0 ) {
@@ -183,10 +302,10 @@ if ( ! isset( $court ) ) {
      <?php if (isset($courtID) && is_numeric($courtID)) { ?>
 
 	  <tr>
-		<td>
+		<td style="padding-top: 10px;">
 			<?php echo esc_html__( 'Close Court', 'court-reservation' ); ?>
 		</td>
-		<td>
+		<td style="padding-top: 10px;">
 			<label class="switch">
 				<input type="checkbox" name="option_closed_court" <?php echo ( $option_closed_court->option_value == '1' ) ? 'checked' : ''; ?>>
 				<span class="slider round"></span>
@@ -197,9 +316,30 @@ if ( ! isset( $court ) ) {
      <?php } ?>
 
 	  <tr>
+		<td style="padding-top: 10px; padding-bottom: 10px;">
+			<?php echo esc_html__( 'Payment for Guest Players', 'court-reservation' ); ?>
+		</td>
+		<td style="padding-top: 10px; padding-bottom: 10px;">
+			<label class="switch">
+				<input type="checkbox" name="option_payment" <?php echo ( $option_payment->option_value == '1' ) ? 'checked' : ''; ?>>
+				<span class="slider round"></span>
+			</label>
+		</td>
+	  </tr>
+
+	<?php if ($option_payment->option_value == '1') { ?>
+	  <tr>
+		<td style="padding-bottom: 10px;"><?php echo esc_html__( 'Product ID in Woocommerce', 'court-reservation' ); ?></td>
+		<td style="padding-bottom: 10px;"><input style="max-width: 70px;" type="number" name="option_payment_id" value="<?php echo $option_payment_id->option_value; ?>" /></td>
+	  </tr> 
+
+	  <?php } ?>
+
+	  <tr>
 		<td></td>
 		<td><input class="button" type="submit" name="submit" value=<?php echo esc_html__( 'Save', 'court-reservation' ); ?> /></td>
 	  </tr>
+
 	  <?php if ( isset( $court ) && $court->id > 0 ) { ?>
 		<tr>
 		  <td colspan="2"><hr/></td>

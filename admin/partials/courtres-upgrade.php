@@ -49,6 +49,12 @@ require 'courtres-notice-upgrade.php';
 					<a href="<?php echo esc_url(admin_url( 'admin.php?page=courtres&tab=3' )); ?>" class="nav-tab">
 						<?php echo esc_html__( 'User Interface', 'court-reservation' ); ?>
 					</a>
+					<a href="<?php echo esc_html(admin_url( 'admin.php?page=courtres&tab=5' )); ?>" class="nav-tab">
+						<?php echo esc_html__( 'E-mail Notifications', 'court-reservation' ); ?>
+					</a>
+					<a href="<?php echo esc_html(admin_url( 'admin.php?page=courtres&tab=6' )); ?>" class="nav-tab">
+						<?php echo esc_html__( 'Payment options', 'court-reservation' ); ?>
+					</a>
 					<?php if ( ! cr_fs()->is_plan( 'ultimate' ) ) { ?>
 						<a href="<?php echo esc_url(admin_url( 'admin.php?page=courtres&tab=4' )); ?>" class="nav-tab nav-tab-active">
 							<?php echo esc_html__( 'Upgrade', 'court-reservation' ); ?>

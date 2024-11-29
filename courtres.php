@@ -85,6 +85,7 @@ if ( function_exists( 'cr_fs' ) ) {
 	cr_fs()->add_action( 'after_uninstall', 'cr_fs_uninstall_cleanup' );
 	function cr_fs_uninstall_cleanup() {
 		remove_role( 'player' );
+		remove_role( 'guest_player' );
 
 		$role = get_role( 'administrator' );
 		$role->remove_cap( 'place_reservation', true );

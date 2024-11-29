@@ -31,6 +31,7 @@ class Courtres_Uninstaller {
 	 */
 	public static function uninstall() {
 		remove_role( 'player' );
+		remove_role( 'guest_player' );
 
 		$role = get_role( 'administrator' );
 		$role->remove_cap( 'place_reservation', true );

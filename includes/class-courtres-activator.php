@@ -33,9 +33,16 @@ class Courtres_Activator {
 	public static function activate() {
 		// create role and capabilities
 		$cap = 'place_reservation';
+
 		add_role(
 			'player',
 			__( 'Player', 'court-reservation' ),
+			array( $cap => true )
+		);
+
+		add_role(
+			'guest_player',
+			__( 'Guest player', 'court-reservation' ),
 			array( $cap => true )
 		);
 

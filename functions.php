@@ -5,6 +5,14 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+add_action('woocommerce_checkout_create_order_line_item', 'my_plugin_add_reservation_date_to_order_item', 10, 4);
+function my_plugin_add_reservation_date_to_order_item($item, $cart_item_key, $values, $order) {
+    if (isset($values['gid'])) {
+        // Dodaj meta podatak na stavku narudžbe
+        $item->add_meta_data('court_gid', $values['gid']);
+    }
+}
+
 /**
  * get array of current date with summer time (DST) correction
  *

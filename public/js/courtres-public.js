@@ -281,6 +281,7 @@
 				const $cr_table         = $( "#cr-table-" + id );
 				const $cr_dlg_reserve   = $( "#cr-dialog-reserve-" + id );
 				const $cr_frm_reserve   = $( "#cr-form-reserve-" + id );
+				const $cr_frm_product_id   = $( "#cr-form-reserve-" + id ).find('input[name="product_id"]').val();
 				const $url_reserve      = $cr_frm_reserve.attr( 'action' );
 				const $court_hour_close = $cr_table.attr( 'data-hour-close' );
 
@@ -397,10 +398,24 @@
 										url: $url_reserve,
 										data: $cr_frm_reserve.serialize(), // $(this).find('#cr-form-reserve').serialize(),
 										success: function (msg) {
+											const parsedMsg = JSON.parse(msg);
 											$( preloader ).fadeOut();
 											$( '#cr-ui-save' ).removeAttr( "disabled" );
 											// console.log(msg);
-											window.location.href = window.location.href.replace( window.location.hash, "" ); // window.location.href;
+
+											var cr_frm_hourplus   = $("#hourplus").val();
+											if (cr_frm_hourplus % 30 === 0) { // The number is divisible by 30
+  												var cr_frm_quantity = cr_frm_hourplus / 30;
+												} else { var cr_frm_quantity = 0; }
+
+    											const params = new URLSearchParams();
+    											params.append('gid', parsedMsg.gid); // Replace with dynamic value if needed
+    											params.append('product_id', $cr_frm_product_id); // Replace with dynamic value if needed
+    											params.append('quantity', cr_frm_quantity); // Replace with dynamic value if needed
+    											params.append('add_cart', true);
+
+    											// Redirect to the current page with query parameters
+    											window.location.href = window.location.origin + window.location.pathname + '?' + params.toString();
 										},
 										error: function (err) {
 											// console.error(err.responseText);

@@ -192,13 +192,36 @@ class Courtres_Base {
 		}
 		$userExcludes = array_unique( $userExcludes );
 
-		$players = get_users(
+		$players_free = get_users(
 			array(
 				'role__in' => array( 'Player', 'Administrator' ),
 				'fields'   => array( 'display_name', 'id', 'user_login' ),
 				'exclude'  => $userExcludes,
 			)
 		);
+
+		if (isset($players_free[0])) { 
+			foreach ($players_free as $key => $player) {
+				$players_free[$key]->role = 'Player';
+			}
+		}
+
+		$players_with_payment = get_users(
+			array(
+				'role__in' => array( 'guest_player' ),
+				'fields'   => array( 'display_name', 'id', 'user_login' ),
+				'exclude'  => $userExcludes,
+			)
+		);
+
+		if (isset($players_with_payment[0])) { 
+			foreach ($players_with_payment as $key => $player) {
+				$players_with_payment[$key]->role = 'Guest_Player';
+			}
+		}
+
+		$players = array_merge( $players_free, $players_with_payment );
+
 		return $players;
 	}
 

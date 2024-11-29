@@ -22,6 +22,7 @@ global $wpdb;
 $table_name = $this->getTable( 'settings' );
 
 if ( isset( $_POST['submit'] ) ) {
+	/*
 	$option_ui_link = '0';
 	if ( isset( $_POST['option_ui_link'] ) ) {
 		// Checkbox is selected
@@ -386,8 +387,11 @@ if ( isset( $_POST['submit'] ) ) {
 		);
 		$message = __( 'Successfully created!', 'court-reservation' );
 	}
+	 */
 }
 
+
+/*
 $option_ui_tbl_brdr_clr = $wpdb->get_row( "SELECT * FROM $table_name WHERE option_name = 'option_ui_tbl_brdr_clr'" );
 if ( ! isset( $option_ui_tbl_brdr_clr ) ) {
 	$option_ui_tbl_brdr_clr               = new stdClass();
@@ -510,6 +514,7 @@ if ( ! isset( $option_ui_dateformat ) ) {
 	$option_ui_dateformat->option_name  = 'option_ui_dateformat';
 	$option_ui_dateformat->option_value = $dateformats[0]['format']; // German format as default. Date format must be in format for date_i18n()
 }
+ */
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
@@ -542,13 +547,13 @@ require 'courtres-notice-message.php';
 					<?php echo esc_html__( 'Pyramids', 'court-reservation' ); ?>
 				</a>
 				<a href="<?php echo esc_html(admin_url( 'admin.php?page=courtres&tab=2' )); ?>" class="nav-tab"><?php echo esc_html__( 'Settings', 'court-reservation' ); ?></a>
-				<a href="<?php echo esc_html(admin_url( 'admin.php?page=courtres&tab=3' )); ?>" class="nav-tab nav-tab-active">
+				<a href="<?php echo esc_html(admin_url( 'admin.php?page=courtres&tab=3' )); ?>" class="nav-tab">
 					<?php echo esc_html__( 'User Interface', 'court-reservation' ); ?>
 				</a>
 				<a href="<?php echo esc_html(admin_url( 'admin.php?page=courtres&tab=5' )); ?>" class="nav-tab">
 					<?php echo esc_html__( 'E-mail Notification', 'court-reservation' ); ?>
 				</a>
-				<a href="<?php echo esc_html(admin_url( 'admin.php?page=courtres&tab=6' )); ?>" class="nav-tab">
+				<a href="<?php echo esc_html(admin_url( 'admin.php?page=courtres&tab=6' )); ?>" class="nav-tab nav-tab-active">
 					<?php echo esc_html__( 'Payment options', 'court-reservation' ); ?>
 				</a>
 				<?php if ( ! cr_fs()->is_plan( 'ultimate' ) ) { ?>
@@ -576,15 +581,60 @@ require 'courtres-notice-message.php';
 				<input type="hidden" name="option_dateformats_id" value="<?php echo esc_attr( $option_dateformats->option_id ); ?>" />
 				<input type="hidden" name="option_ui_dateformat_id" value="<?php echo esc_attr( $option_ui_dateformat->option_id ); ?>" />
 
+
+                                <div style="clear: both; margin-bottom: 16px;"> </div>
+
+                                <table class="t-form">
+                                        <tr>
+                                                <td>
+                                                        <?php echo esc_html__( 'Enable payment', 'court-reservation' ); ?>
+                                                </td>
+                                                <td>
+                                                        <label class="switch">
+                                                                <input type="checkbox" name="email_notify_players" 
+                                                                <?php
+                                                                echo ( $option_email->option_value ===
+                                                                '1' ) ? 'checked' : ''
+                                                                ?>
+                                                                >
+                                                                <span class="slider round"></span>
+                                                        </label>
+                                                        <div class="tooltip">
+                                                                <div class="symbol">
+                                                                        <span>?</span>
+                                                                </div>
+                                                                <span class="tooltiptext tooltip-right">
+									<?php echo esc_html__( 'Enable connecting with Woocommerce.', 'court-reservation' ); ?>
+								</span>
+                                                        </div>
+                                                </td>
+                                        </tr>
+                                </table>
+
+                            <div id="email-conf">
+
 				<table class="t-form">
+				<tr>
+					<td>
+						ENABLE PAYMENTS - only for ultimate subscriptions - moguće samo ultimate, ostali imaju uvijek ugašeno
+					</td>
+				</tr> 
 					<tr>
 						<td>
-							<?php echo esc_html__( 'Table border color', 'court-reservation' ); ?>
+							<?php echo esc_html__( 'Cost per hour (or half hours) € $ something', 'court-reservation' ); ?><br />
+TU NISAM SIGURAN. Možda je bolje to sve složiti kroz Woocommerce a ovdje samo staviti ID proizvoda i vidjeti je li pola sata ili sat
 						</td>
 						<td>
 							<input class="color-input" data-huebee name="option_ui_tbl_brdr_clr" value="<?php echo esc_attr( $option_ui_tbl_brdr_clr->option_value ); ?>" placeholder="<?php echo esc_attr__( 'default', 'court-reservation' ); ?>">
 						</td>
 					</tr>
+				<tr>
+					<td>
+						New role Guest player<br />
+						To ide kroz add_role i remove_role funkcije koje su u courters.php i activate i uninstall
+					</td>
+				</tr> 
+<?php /*
 					<tr>
 						<td>
 							<?php echo esc_html__( 'Table cell background color', 'court-reservation' ); ?>
@@ -726,6 +776,8 @@ require 'courtres-notice-message.php';
 						</td>
 						<td></td>
 					</tr>
+ */ ?>
+				</table>
 			</form>
 		</div>
 
