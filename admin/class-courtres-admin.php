@@ -338,6 +338,8 @@ class Courtres_Admin extends Courtres_Base {
 		$gid = uniqid();
 		echo json_encode(['gid' => $gid]);
 
+		$courtres_reservation_time =  gmdate('Y-m-d H:i:s');
+
 		// 16.03.2019, astoian - if half hour then
 		// Save the reseravation
 		if ( $half_hour ) {
@@ -353,6 +355,7 @@ class Courtres_Admin extends Courtres_Base {
 						'partnerid'  => $partnerid,
 						'partnerid2' => $partnerid2,
 						'partnerid3' => $partnerid3,
+						'reservation_time' => $courtres_reservation_time,
 						'date'       => $dateStr,
 						'time'       => (int) $timeStep->format( 'H' ),
 						'minute'     => (int) $timeStep->format( 'i' ),
@@ -365,6 +368,7 @@ class Courtres_Admin extends Courtres_Base {
 						'%d',
 						'%d',
 						'%d',
+						'%s',
 						'%s',
 						'%d',
 						'%d',
@@ -389,6 +393,7 @@ class Courtres_Admin extends Courtres_Base {
 						'partnerid'  => $partnerid,
 						'partnerid2' => $partnerid2,
 						'partnerid3' => $partnerid3,
+						'reservation_time' => $courtres_reservation_time,
 						'date'       => $dateStr,
 						'time'       => (int) $timeStep->format( 'H' ),
 						'minute'     => (int) $timeStep->format( 'i' ),
@@ -401,6 +406,7 @@ class Courtres_Admin extends Courtres_Base {
 						'%d',
 						'%d',
 						'%d',
+						'%s',
 						'%s',
 						'%d',
 						'%d',

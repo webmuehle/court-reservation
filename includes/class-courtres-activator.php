@@ -77,10 +77,22 @@ class Courtres_Activator {
 
 		// reservations table
 		$table_name = $wpdb->prefix . 'courtres_reservations';
-		// 23.05.2019, astoian - check if tables existe, then do not creates
+
 		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) ) === $table_name ) {
-			error_log( 'Table exists' . ': ' . print_r( $table_name, true ) );
+    		    error_log( 'Tabelle existiert: ' . $table_name );
+
+    		    // Überprüfen, ob die Spalte 'reservation_time' existiert
+    		    $column = $wpdb->get_results( "SHOW COLUMNS FROM $table_name LIKE 'reservation_time'" );
+    		    if ( empty( $column ) ) {
+        		// Spalte existiert nicht, daher hinzufügen
+        		$wpdb->query( "ALTER TABLE $table_name ADD COLUMN reservation_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL" );
+        		error_log( 'Spalte reservation_time wurde hinzugefügt.' );
+    		    } else {
+        		error_log( 'Spalte reservation_time existiert bereits.' );
+		    }
+
 		} else {
+
 			$sql = "CREATE TABLE $table_name (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             courtid mediumint(9) NOT NULL,
@@ -89,6 +101,7 @@ class Courtres_Activator {
             partnerid mediumint(9),
                   partnerid2 mediumint(9),
                   partnerid3 mediumint(9),
+            reservation_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
             date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
             time smallint(2) NOT NULL,
                   minute smallint(2) DEFAULT 0 NOT NULL,

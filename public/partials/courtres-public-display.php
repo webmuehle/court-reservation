@@ -1,4 +1,4 @@
-<?php
+<?phc
 
 /**
  * Provide a public-facing view for the plugin
@@ -38,34 +38,7 @@ if ( $court == null ) {
 	$mayEdit  = current_user_can( 'place_reservation' );
 	$username = '';
 
-
-
-    if ( isset($_GET['add_cart']) && $_GET['add_cart'] === 'true' ) {
-        $product_id = intval($_GET['product_id']);
-        $quantity = intval($_GET['quantity']);
-	$gid =  sanitize_text_field($_GET['gid']);
-
-        if ( $product_id > 0 && $quantity > 0 ) {
-            if ( WC()->cart ) {
-
-
-    		$cart_item_data = array(
-        	'gid' => $gid
-    		);
-
-    		// Add the product to the cart with custom data
-    		WC()->cart->add_to_cart($product_id, $quantity, 0, array(), $cart_item_data);
-            }
-        }
-
-        // Optionally redirect to clean the URL (remove query parameters)
-        wp_safe_redirect( remove_query_arg(['product_id', 'quantity', 'add_cart']) );
-        exit;
-    }
-
-
-
-
+$this->court_add_to_cart();
 
 if ( is_user_logged_in() ) {
 	$username = wp_get_current_user()->display_name;
@@ -74,6 +47,8 @@ if ( is_user_logged_in() ) {
 	$players = $this->getAvailablePlayers();
 
 	$this->blocks                        = $this->getBlocksRepeatFutureByID( $court->id );
+	$this->reservations                  = $this->getCurrentReservationsByID( $court->id, $court->days + 1 );
+	$this->court_payable_check 	     ( $this->reservations, $this->getTable('reservations') );
 	$this->reservations                  = $this->getCurrentReservationsByID( $court->id, $court->days + 1 );
 	$this->isReservatedPerPersonInFuture = $this->countUpcomingUserReservations( wp_get_current_user()->ID );
 	$this->isSeveralReservePerson        = $this->getOptionValue( 'several_reserve_person' );

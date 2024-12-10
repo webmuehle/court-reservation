@@ -66,6 +66,8 @@ if ( ! isset( $atts['id'] ) ) {
 	$mayEdit  = current_user_can( 'place_reservation' );
 	$username = '';
 
+$this->court_add_to_cart();
+
 if ( is_user_logged_in() ) {
 	$username = wp_get_current_user()->display_name;
 }
@@ -74,19 +76,22 @@ if ( is_user_logged_in() ) {
 
 if (!isset($court_ispis) || !is_array($court_ispis)) { $court_ispis=array(); }
 
-foreach ( $court_ispis as $court_ispis_pojedini ) {
+	foreach ( $court_ispis as $court_ispis_pojedini ) {
 
 
-	if ( ! isset( $this->blocks[0] ) ) {
+	    if ( ! isset( $this->blocks[0] ) ) {
 		$this->blocks = $this->getBlocksRepeatFutureByID( $court_ispis_pojedini->id );
-	} else {
+	    } else {
 		$blokici = $this->getBlocksRepeatFutureByID( $court_ispis_pojedini->id );
-		foreach ( $blokici as $blokic ) {
-			$this->blocks[] = $blokic;
-		}
+			foreach ( $blokici as $blokic ) {
+				$this->blocks[] = $blokic;
+			}
+	    }
+	    $this->reservations = $this->getCurrentReservationsByID( $court_ispis_pojedini->id, $court_ispis_pojedini->days + 1 ); 
+	    $this->court_payable_check ( $this->reservations, $this->getTable('reservations') );
+	    $this->reservations = $this->getCurrentReservationsByID( $court_ispis_pojedini->id, $court_ispis_pojedini->days + 1 ); 
 	}
-	$this->reservations = $this->getCurrentReservationsByID( $court_ispis_pojedini->id, $court_ispis_pojedini->days + 1 );
-}
+
 
 	$this->isReservatedPerPersonInFuture = $this->countUpcomingUserReservations( wp_get_current_user()->ID );
 	$this->isSeveralReservePerson        = $this->getOptionValue( 'several_reserve_person' );
@@ -159,6 +164,7 @@ if (!property_exists("court", "id")) { $court->id=""; }
 		<input type="hidden" name="courtid" value="<?php echo esc_attr( $court->id ); ?>" />
 		<input type="hidden" name="maxhours" value="<?php echo esc_attr( $maxhours ); ?>" />
 		<input type="hidden" name="halfhour" value="<?php echo esc_attr( $halfhour ); ?>" />
+		<input type="hidden" name="product_id" value="98" />
 		<input type="hidden" name="date" />
 		<input type="hidden" name="day" />
 		<input type="hidden" name="hour" />

@@ -402,8 +402,9 @@
 											$( preloader ).fadeOut();
 											$( '#cr-ui-save' ).removeAttr( "disabled" );
 											// console.log(msg);
-
-											var cr_frm_hourplus   = $("#hourplus").val();
+											let court_hourplus_form = $cr_frm_reserve[0];
+											var cr_frm_hourplus = $(court_hourplus_form).find('#hourplus').val();
+											var cr_frm_courtid = $(court_hourplus_form).find('[name="courtid"]').val();
 											if (cr_frm_hourplus % 30 === 0) { // The number is divisible by 30
   												var cr_frm_quantity = cr_frm_hourplus / 30;
 												} else { var cr_frm_quantity = 0; }
@@ -411,6 +412,7 @@
     											const params = new URLSearchParams();
     											params.append('gid', parsedMsg.gid); // Replace with dynamic value if needed
     											params.append('product_id', $cr_frm_product_id); // Replace with dynamic value if needed
+    											params.append('court_id', cr_frm_courtid); 
     											params.append('quantity', cr_frm_quantity); // Replace with dynamic value if needed
     											params.append('add_cart', true);
 

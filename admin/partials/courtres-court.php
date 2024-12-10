@@ -315,6 +315,7 @@ if ( ! isset( $court ) ) {
 
      <?php } ?>
 
+	<?php if ( cr_fs()->is_plan( 'ultimate' ) ) { ?>
 	  <tr>
 		<td style="padding-top: 10px; padding-bottom: 10px;">
 			<?php echo esc_html__( 'Payment for Guest Players', 'court-reservation' ); ?>
@@ -334,6 +335,7 @@ if ( ! isset( $court ) ) {
 	  </tr> 
 
 	  <?php } ?>
+	<?php } ?>
 
 	  <tr>
 		<td></td>

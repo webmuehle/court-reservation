@@ -62,8 +62,7 @@ foreach ( $court_ispis as $court_ispis_pojedini ) {
 			$this->blocks[] = $blokic;
 		}
 	}
-	$this->reservations = $this->getCurrentReservationsByID( $court_ispis_pojedini->id, $court_ispis_pojedini->days + 1 );
-}
+	$this->reservations = $this->getCurrentReservationsByID( $court_ispis_pojedini->id, $court_ispis_pojedini->days + 1 ); }
 
 	$this->isReservatedPerPersonInFuture = $this->countUpcomingUserReservations( wp_get_current_user()->ID );
 	$this->isSeveralReservePerson        = $this->getOptionValue( 'several_reserve_person' );

@@ -598,15 +598,38 @@ class Courtres_Public extends Courtres_Base {
 			// ********************************************************************************************************************
 
 			$court_payment_status = "none";
+			$court_user_id = $reservation->userid;
 
-			if ( is_user_logged_in() ) {
+			if (isset($court->payable) && is_numeric ($court->payable) && $court->payable > 0 && $reservation->reservation_time > 0) {
+
+
+				/*
+				$court_user_meta = get_userdata($court_user_id);
+				$court_userroles = $court_user_meta->roles;
+
+				if (in_array('guest_player', $court_userroles)) {
+
+					$court_current_utc_time = new DateTime('now', new DateTimeZone('UTC'));
+					$court_reservation_time_obj = DateTime::createFromFormat('Y-m-d H:i:s', $reservation->reservation_time, new DateTimeZone('UTC'));
+					$court_reservation_time_obj_plus_15 = $court_reservation_time_obj->modify('+15 minutes');
+					// print_r($court_current_utc_time); echo "<br>";
+					// print_r($court_reservation_time_obj_plus_15); echo "<br>";
+	
+					if ($court_current_utc_time > $court_reservation_time_obj_plus_15) {
+						$court_delete = "DELETE FROM {$this->getTable('reservations')} WHERE gid = '" . $reservation->gid . "';";
+						$wpdb->query( $court_delete );
+					}
+				}
+				 */
+
+			    if ( is_user_logged_in() && get_current_user_id() == $reservation->userid ) {
 				$court_userroles = wp_get_current_user()->roles;
 				if (in_array('guest_player', $court_userroles)) {
 
 					if (isset($court->payable) && is_numeric ($court->payable) && $court->payable > 0) {
 
 
-						$court_payment_status = "(unknown)";
+						$court_payment_status = "(on hold)";
 
 
 						$court_payment_meta = $wpdb->get_row("select order_item_id from wp_woocommerce_order_itemmeta where meta_value='" 
@@ -615,14 +638,14 @@ class Courtres_Public extends Courtres_Base {
 							$court_payment_order_id = $wpdb->get_row("select order_id from wp_woocommerce_order_items where order_item_id='" 
 								. $court_payment_meta->order_item_id . "';");
 							if (isset($court_payment_order_id->order_id) && is_numeric($court_payment_order_id->order_id) && $court_payment_order_id->order_id > 0) {
-							$court_payment_order = wc_get_order($court_payment_order_id->order_id);
-							$court_payment_status=$court_payment_order->get_status();
+								$court_payment_order = wc_get_order($court_payment_order_id->order_id);
+								$court_payment_status=$court_payment_order->get_status();
 							}
-						}
-
+						} else { $court_payment_status = "Nije plaćeno"; }
 					}
 
 				}
+			    }
 			}
 
 			// ********************************************************************************************************************
@@ -1034,11 +1057,19 @@ class Courtres_Public extends Courtres_Base {
 
 		$ctr_btn_save_ = 'Save';
 
-		if ( is_user_logged_in() ) {
-			$court_userroles = wp_get_current_user()->roles;
-			if (in_array('guest_player', $court_userroles)) {
-				$ctr_btn_save_ = 'Proceed to payment';
+		if (isset($atts['id']) && is_numeric($atts['id'])) {
+
+			$court = $this->getCourtByID( $atts['id'] ); {
+				if (isset( $court->payable ) && is_numeric( $court->payable ) && $court->payable > 0) {
+					if ( is_user_logged_in() ) {
+						$court_userroles = wp_get_current_user()->roles;
+						if (in_array('guest_player', $court_userroles)) {
+							$ctr_btn_save_ = 'Proceed to payment';
+						}
+					}
+				}
 			}
+
 		}
 
 		wp_localize_script(
@@ -1069,12 +1100,14 @@ class Courtres_Public extends Courtres_Base {
 
 		$ctr_btn_save_ = 'Save';
 
+		/*
 		if ( is_user_logged_in() ) {
 			$court_userroles = wp_get_current_user()->roles;
 			if (in_array('guest_player', $court_userroles)) {
 				$ctr_btn_save_ = 'Proceed to payment';
 			}
 		}
+		 */
 
 		wp_localize_script(
 			$this->plugin_name,
@@ -1814,5 +1847,116 @@ class Courtres_Public extends Courtres_Base {
 		echo wp_kses( $html, $allowed_html );
 		wp_die();
 	}
+
+    function court_payable_check($reservations,$table)
+    {
+	global $wpdb;
+	$args = array( 'role'    => 'guest_player' );
+	$court_player_guest_users_ = get_users( $args );
+	$court_player_guest_users = array();
+
+	if ( ! empty( $court_player_guest_users_ ) ) {
+		foreach ( $court_player_guest_users_ as $court_player_guest_user ) {
+			$court_player_guest_users[] = $court_player_guest_user->ID;
+		}
+	}
+
+	foreach ($reservations as $key => $reservation) {
+		// print_r($reservation); echo "<br>";
+		$player_id = $reservation->userid;
+		if ( in_array($player_id, $court_player_guest_users) ) {
+			$court_current_utc_time = new DateTime('now', new DateTimeZone('UTC'));
+			$court_reservation_time_obj = DateTime::createFromFormat('Y-m-d H:i:s', $reservation->reservation_time, new DateTimeZone('UTC'));
+			$court_reservation_time_obj_plus_15 = $court_reservation_time_obj->modify('+15 minutes');
+			// print_r($court_current_utc_time); echo "<br>";
+			// print_r($court_reservation_time_obj_plus_15); echo "<br>";
+	
+			if ($court_current_utc_time > $court_reservation_time_obj_plus_15) {
+				$court_delete = "DELETE FROM $table WHERE gid = '" . $reservation->gid . "';";
+				$wpdb->query( $court_delete );
+				if ( is_user_logged_in() && get_current_user_id() == $player_id ) {
+				    WC()->cart->empty_cart();
+				}
+			}
+		}
+	}
+
+	if ( is_user_logged_in()) {
+		$court_this_user_ = "SELECT id,date,time,minute FROM $table WHERE userid = " . get_current_user_id() . ";";
+		if (!isset($wpdb)) {
+			global $wpdb;
+		}
+		$court_this_user = $wpdb->get_results( $court_this_user_ );
+
+		$court_current_utc_time_ = new DateTime('now', new DateTimeZone('UTC'));
+		$court_current_utc_time = $court_current_utc_time_->format('Y-m-d H:i:s'); 
+
+		$court_numbers = 0;
+
+		if ( ! empty($court_this_user) ) {
+
+			foreach ( $court_this_user as $court_reservation_time ) {
+				$court_reservation_time_date = explode(" ", $court_reservation_time->date);
+				$court_reservation_time_date = $court_reservation_time_date[0];
+				if ( $court_reservation_time->time < 10 ) {
+					$court_reservation_time->time = "0" . $court_reservation_time->time;
+				}
+				if ( $court_reservation_time->minute < 10 ) {
+					$court_reservation_time->minute = "0" . $court_reservation_time->minute;
+				}
+				$court_reservation_time_full = $court_reservation_time_date . " " . $court_reservation_time->time . ":" . $court_reservation_time->minute . ":00";
+
+				if ( $court_reservation_time_full > $court_current_utc_time ) { $court_numbers = 1; } }
+
+		}
+
+		if ( $court_numbers == 0 ) {
+			WC()->cart->empty_cart();
+		}
+	}
+    }
+
+    function court_add_to_cart() {
+
+      if ( isset($_GET['add_cart']) && $_GET['add_cart'] === 'true' ) {
+	if (is_numeric($_GET['court_id']) && $_GET['court_id'] > 0) {
+
+	    if ( $this->ishalfhour() ) { 
+        	$quantity = intval($_GET['quantity']);
+	    } else {
+        	$quantity = round(intval($_GET['quantity'])/2);
+	    }
+		      
+	    $court_id = intval($_GET['court_id']);
+	    $table_settings = $this->getTable( 'settings' );
+	    $courtres_option_payment = "option_payment_" . (int) $court_id;
+	    if (!isset($wpdb)) { global $wpdb; }
+	    
+	    $database_payment = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$courtres_option_payment' ORDER BY `option_id` DESC LIMIT 1" );
+	    if ( isset($database_payment->option_value ) && $database_payment->option_value === '1') {
+
+	        $courtres_option_payment_id = "option_payment_id_" . (int) $court_id;
+		$database_payment_id = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$courtres_option_payment_id' ORDER BY `option_id` DESC LIMIT 1" );
+		if ( isset( $database_payment_id->option_value ) && is_numeric ( $database_payment_id->option_value ) && $database_payment_id->option_value > 0 ) {
+
+		    $product_id = $database_payment_id->option_value;
+		    $gid =  sanitize_text_field($_GET['gid']);
+		    $cart_item_data = array( 'gid' => $gid);
+
+		    WC()->cart->add_to_cart($product_id, $quantity, 0, array(), $cart_item_data);
+	    	    wp_safe_redirect( remove_query_arg(['court_id', 'add_cart', 'gid', 'product_id', 'quantity']) );
+		    exit;
+		}
+
+	    }
+
+	    wp_safe_redirect( remove_query_arg(['court_id', 'add_cart', 'gid', 'product_id', 'quantity']) );
+	    exit;
+
+	}
+
+    }
+
+  }
 
 }
