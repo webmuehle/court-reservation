@@ -88,7 +88,11 @@ if (!isset($court_ispis) || !is_array($court_ispis)) { $court_ispis=array(); }
 			}
 	    }
 	    $this->reservations = $this->getCurrentReservationsByID( $court_ispis_pojedini->id, $court_ispis_pojedini->days + 1 ); 
-	    $this->court_payable_check ( $this->reservations, $this->getTable('reservations') );
+
+	    if (isset($court_ispis_pojedini->payable) && is_numeric($court_ispis_pojedini->payable) && $court_ispis_pojedini->payable>0) {
+	    	$this->court_payable_check ( $this->reservations, $this->getTable('reservations') );
+	    }
+
 	    $this->reservations = $this->getCurrentReservationsByID( $court_ispis_pojedini->id, $court_ispis_pojedini->days + 1 ); 
 	}
 

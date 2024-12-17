@@ -328,10 +328,25 @@ if ( ! isset( $court ) ) {
 		</td>
 	  </tr>
 
-	<?php if ($option_payment->option_value == '1') { ?>
+
+	<?php if ($option_payment->option_value == '1') { 
+
+		$court_args = array();
+		$court_products = array();
+		if (function_exists('wc_get_products')) { $court_products = wc_get_products( $args ); }
+		?>
+
 	  <tr>
 		<td style="padding-bottom: 10px;"><?php echo esc_html__( 'Product ID in Woocommerce', 'court-reservation' ); ?></td>
-		<td style="padding-bottom: 10px;"><input style="max-width: 70px;" type="number" name="option_payment_id" value="<?php echo $option_payment_id->option_value; ?>" /></td>
+		<td style="padding-bottom: 10px;">
+			<select name="option_payment_id">
+				<option value="0">Select a product</option>
+				<?php foreach ($court_products as $court_product) { ?>
+					<option value="<?php echo (int)$court_product->get_id(); ?>" <?php echo ($option_payment_id->option_value == $court_product->get_id()) ? 'selected' : ''; ?>>
+						<?php echo esc_html($court_product->get_name()); ?>
+					</option>
+				<?php } ?>
+			</select>
 	  </tr> 
 
 	  <?php } ?>

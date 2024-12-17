@@ -321,6 +321,9 @@
 						var start_m    = $( this ).attr( 'data-min-start' );
 						var min_player = $( this ).attr( 'data-min-player' );
 						var start_ts   = start_h * 3600 + start_m * 60;
+						var dodatak = 1;
+
+						$( '#cr-ui-save' ).html( courtres_params.cr_btn_save_1[courtid] );
 
 						// Reservation Type Select
 						// (RA) Adding partner-select after reservation type selected
@@ -410,10 +413,10 @@
 												} else { var cr_frm_quantity = 0; }
 
     											const params = new URLSearchParams();
-    											params.append('gid', parsedMsg.gid); // Replace with dynamic value if needed
-    											params.append('product_id', $cr_frm_product_id); // Replace with dynamic value if needed
+    											params.append('gid', parsedMsg.gid); 
+    											params.append('product_id', $cr_frm_product_id); 
     											params.append('court_id', cr_frm_courtid); 
-    											params.append('quantity', cr_frm_quantity); // Replace with dynamic value if needed
+    											params.append('quantity', cr_frm_quantity); 
     											params.append('add_cart', true);
 
     											// Redirect to the current page with query parameters
