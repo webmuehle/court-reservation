@@ -12,7 +12,18 @@
  * @subpackage Courtres/admin/partials
  */
 ?>
-
+<?php if ( ! cr_fs()->is_plan( 'ultimate' ) ) { ?>                                                        
+        <div class="cr-widget-head nav-tab-wrapper">
+                <span class="nav-tab"><?php echo esc_html__( 'New Features for Court Reservation Ultimate - GET IT NOW!', 'court-reservation' ); ?></span>     
+        </div>
+        <div class="cr-widget-item">+ <?php echo esc_html__( 'WooCommerce Payment Gateway - Earn more by enabling online booking for your Courts', 'court-reservation' ); ?></div>
+        <div class="cr-widget-item">+ <?php echo esc_html__( 'Anonymization Mode - for 100% GDPR Compliance', 'court-reservation' ); ?></div>
+        <div class="cr-widget-item">+ <?php echo esc_html__( 'Colored Events and Reservations', 'court-reservation' ); ?></div>
+        <div class="cr-widget-item">+ <?php echo esc_html__( 'Pyramid Challenges', 'court-reservation' ); ?></div>
+        <div class="cr-widget-item">
+                <a href="https://checkout.freemius.com/plugin/3086/plan/12626/" class="button"><?php echo esc_html__( 'Upgrade Now', 'court-reservation' ); ?></a>
+        </div>
+<?php } ?>
 <?php
 if ( ! cr_fs()->is_plan( 'premium' ) ) {
 	?>

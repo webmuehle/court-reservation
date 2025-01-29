@@ -1056,14 +1056,13 @@ class Courtres_Public extends Courtres_Base {
 
 		$ctr_btn_save_ = 'Save';
 
-		/*
+		$court_userroles = array();
 		if ( is_user_logged_in() ) {
 			$court_userroles = wp_get_current_user()->roles;
 			if (in_array('guest_player', $court_userroles)) {
 				$ctr_btn_save_ = 'Proceed to payment';
 			}
 		}
-		 */
 
 		$ctr_btn_save_ = 'Save';
 
@@ -1078,6 +1077,7 @@ class Courtres_Public extends Courtres_Base {
 				}
 			    }
 		}
+
 		wp_localize_script(
 			$this->plugin_name,
 			$this->plugin_name . '_params',
@@ -1752,8 +1752,11 @@ class Courtres_Public extends Courtres_Base {
 
 		$html  = $this->get_time_row( $_POST );
 
+		if ( is_user_logged_in() ) { $court_userroles = wp_get_current_user()->roles; } else { $court_userroles = array(); }
+
 		$table_settings = $this->getTable( 'settings' );
-		if (isset($_POST['court_id']) && is_numeric($_POST['court_id'])) 
+
+		if (isset($_POST['court_id']) && is_numeric($_POST['court_id']) && in_array('guest_player', $court_userroles)) 
 		{ 
 
 			// print_r($_POST); die;
@@ -1764,23 +1767,21 @@ class Courtres_Public extends Courtres_Base {
 
 				$court_product = new WC_Product($is_court_payable);
 
-		$html .= '
-		<tr class="type-depending-row time-row">
-			<td>' . __( 'Price', 'court-reservation' ) . ":";
+			$html .= '
+				<tr class="type-depending-row time-row">
+					<td>' . __( 'Price', 'court-reservation' ) . ":";
 
-		$html .= '</td>
-			<td>' . $court_product->get_price_html() . ' ';
+				$html .= '
+					</td>
+					<td>' . $court_product->get_price_html() . ' ';
 
-		if ( isset($_POST['is_halfhour']) && $_POST['is_halfhour'] == 1 ) { $html .= __( ' per half-hour', 'court-reservation' ); }
-		else { $html .= __( 'per hour', 'court-reservation' ); }
-
-		$html .= '
-			</td>
-		</tr>
-		';
-
-
-
+				if ( isset($_POST['is_halfhour']) && $_POST['is_halfhour'] == 1 ) { $html .= __( ' per half-hour', 'court-reservation' ); }
+				else { $html .= __( 'per hour', 'court-reservation' ); }
+	
+				$html .= '
+					</td>
+				</tr>
+				';
 
 			}
 		}

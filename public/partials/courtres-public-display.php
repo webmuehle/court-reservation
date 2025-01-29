@@ -278,6 +278,7 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 			<?php } ?>
 		</tbody>
 	</table>
+<div style="font-size: 12px;">Powered by <a href="https://www.courtreservation.io/" target="_blank">Court Reservation</a></div>
 </div>
 
 <!-- CR-DIALOG-LOGIN -->
