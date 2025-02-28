@@ -3,7 +3,7 @@ Contributors: webmuehle
 Donate link: https://www.webmuehle.at/
 Tags: Court Reservation, Padel, Tennis, Padel, Pickleball
 Requires at least: 3.0.1
-Tested up to: 6.6.1
+Tested up to: 6.7.2
 Stable tag: 1.10.0
 Requires PHP: 5.2.4
 License: GPLv2 or later
