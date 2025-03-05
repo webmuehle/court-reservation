@@ -206,6 +206,9 @@ if ( isset( $_POST['submit'] ) ) {
 		$message = __( 'Successfully created!', 'court-reservation' );
 	}
 
+	// if there are no reservation types save anyway
+	if ( !isset( $_POST['option_available_reservation_types'] ) ) { $_POST['option_available_reservation_types'] = array(); }
+
 	// save option_available_reservation_types
 	if ( isset( $_POST['option_available_reservation_types'] ) ) {
 

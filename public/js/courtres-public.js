@@ -315,6 +315,8 @@
 						d.find( '[name="minplayer"]' ).val( $( this ).attr( 'data-min-player' ) );
 						d.find( '[name="courtid"]' ).val( $( this ).attr( 'court-id' ) );
 						var halfhour = d.find( '[name="halfhour"]' ).val();
+						var maxhours_general = d.find( '[name="maxhours"]' ).val();
+						maxhours_general = maxhours_general ? maxhours_general * 3600 : 3600;
 
 						var courtid    = $( this ).attr( 'court-id' );
 						var start_h    = $( this ).attr( 'data-hour' );
@@ -373,6 +375,18 @@
 
 						d.dialog( 'open' );
 						updatePartnersList( $url_reserve );
+						var opcije = d.find(".reservation-type-select option").length;
+						var courtres_empty = document.getElementById("courtres_type_select");
+
+						if (opcije == 1 || courtres_empty.value == "-----") {
+
+							document.getElementById("courtres_type").style.display = "none";
+
+    							var praznaOpcija = new Option("-", "-----");
+    							courtres_empty.add(praznaOpcija, courtres_empty.firstChild);
+							courtres_empty.value = "-----";
+							get_more_rows_html( {court_id: courtid, is_halfhour: halfhour, start_ts: start_ts, duration_ts: maxhours_general, player_counter: 0, max_players: 8, min_players: 0} );
+						}
 					}
 				);
 

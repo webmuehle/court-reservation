@@ -129,10 +129,10 @@ if ( is_user_logged_in() ) {
 					<?php } ?>
 				</td>
 			</tr>
-			<tr>
+			<tr id="courtres_type">
 				<td><?php echo esc_html__( 'Type', 'court-reservation' ); ?>*</td>
 				<td>
-					<select name="type" class="reservation-type-select" autocomplete="off" required>
+					<select id="courtres_type_select" name="type" class="reservation-type-select" autocomplete="off" required>
 						<option value=""><?php echo esc_html__( 'Select from list', 'court-reservation' ); ?></option>
 						<?php foreach ( $availableReservationTypes as $type ) : ?>
 							<option value="<?php echo esc_html__( $type, 'court-reservation' ); ?>" data-maxplayers="<?php echo esc_attr( $maxPlayers[ $type ] ); ?>" data-minplayers="<?php echo esc_attr( $minPlayers[ $type ] ); ?>" data-duration="<?php echo esc_attr( $matchDurations[ $type ] ); ?>"><?php echo esc_html__( $type, 'court-reservation' ); ?></option>
