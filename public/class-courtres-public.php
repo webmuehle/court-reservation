@@ -1032,7 +1032,7 @@ class Courtres_Public extends Courtres_Base {
 			array(
 				'cr_ids'                  => $cr_ids,
 				'cr_url'                  => plugins_url( '', __FILE__ ),
-				'cr_btn_save_1'           => __( $ctr_btn_save_, 'court-reservation' ),
+				'cr_btn_save_1'           => array( $court_id => __( $ctr_btn_save_[$court_id], 'court-reservation' )),
 				'cr_btn_cancel'           => __( 'Cancel', 'court-reservation' ),
 				'cr_option_ui_dateformat' => $this->getDateFormat(),
 				'ajax_url'                => admin_url( 'admin-ajax.php' ),
@@ -1975,9 +1975,11 @@ class Courtres_Public extends Courtres_Base {
 		}
 
 		if ( $court_numbers == 0 ) {
+		    if ( class_exists( 'WooCommerce' ) ) {
 			if ( WC()->cart && WC()->cart->get_cart_contents_count() > 0 ) {
 				WC()->cart->empty_cart();
 			}
+		    }
 		}
 	}
     }
@@ -1985,7 +1987,7 @@ class Courtres_Public extends Courtres_Base {
     function court_add_to_cart() {
 
       if ( isset($_GET['add_cart']) && $_GET['add_cart'] === 'true' ) {
-	if (is_numeric($_GET['court_id']) && $_GET['court_id'] > 0) {
+	if (is_numeric($_GET['court_id']) && $_GET['court_id'] > 0 && class_exists( 'WooCommerce' )) {
 
 	    if ( $this->ishalfhour() ) { 
         	$quantity = intval($_GET['quantity']);
@@ -2035,7 +2037,6 @@ class Courtres_Public extends Courtres_Base {
 	    exit;
 
 	    }
-
     	}
 
   }

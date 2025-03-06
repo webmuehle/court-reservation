@@ -385,7 +385,7 @@
     							var praznaOpcija = new Option("-", "-----");
     							courtres_empty.add(praznaOpcija, courtres_empty.firstChild);
 							courtres_empty.value = "-----";
-							get_more_rows_html( {court_id: courtid, is_halfhour: halfhour, start_ts: start_ts, duration_ts: maxhours_general, player_counter: 0, max_players: 8, min_players: 0} );
+							get_more_rows_html( {court_id: courtid, is_halfhour: halfhour, start_ts: start_ts, duration_ts: maxhours_general, player_counter: 0, max_players: 3, min_players: 0} );
 						}
 					}
 				);
