@@ -91,7 +91,7 @@ require 'courtres-notice-upgrade.php';
 										<h4><?php echo esc_html__( 'Most Popular', 'court-reservation' ); ?></h4><i class="left"></i><i class="right"></i>
 									</div>
 									<h2><?php echo esc_html__( 'Premium', 'court-reservation' ); ?></h2>
-									<h3><?php echo esc_html__( 'more courtes', 'court-reservation' ); ?></h3>
+									<h3><?php echo esc_html__( 'more courts', 'court-reservation' ); ?></h3>
 									<h3><?php echo esc_html__( 'more members', 'court-reservation' ); ?></h3>
 									<h3><?php echo esc_html__( 'E-Mail notifications', 'court-reservation' ); ?></h3>
 									<h3><?php echo esc_html__( '24/7 E-Mail-Support', 'court-reservation' ); ?></h3>
@@ -124,10 +124,12 @@ require 'courtres-notice-upgrade.php';
 							<article class="card featured" data-plan-id="4903">
 								<header>
 									<h2><?php echo esc_html__( 'Ultimate', 'court-reservation' ); ?></h2>
-									<h3><?php echo esc_html__( 'more courtes', 'court-reservation' ); ?></h3>
+									<h3><?php echo esc_html__( 'more courts', 'court-reservation' ); ?></h3>
 									<h3><?php echo esc_html__( 'more members', 'court-reservation' ); ?></h3>
 									<h3><?php echo esc_html__( 'E-Mail notifications', 'court-reservation' ); ?></h3>
 									<h3><?php echo esc_html__( '24/7 E-Mail-Support', 'court-reservation' ); ?></h3>
+									<h3 class='ultimate-h'><?php echo esc_html__( 'WooCommerce Payment Gateway', 'court-reservation' ); ?></h3>
+									<h3 class='ultimate-h'><?php echo esc_html__( 'Anonymization Mode', 'court-reservation' ); ?></h3>
 									<h3 class='ultimate-h'><?php echo esc_html__( 'Ladder Competitions', 'court-reservation' ); ?></h3>
 								</header>
 								<div class="body">
