@@ -1898,7 +1898,7 @@ class Courtres_Public extends Courtres_Base {
 			$court_delete = 0;
 			$court_current_utc_time = new DateTime('now', new DateTimeZone('UTC'));
 			$court_reservation_time_obj = DateTime::createFromFormat('Y-m-d H:i:s', $reservation->reservation_time, new DateTimeZone('UTC'));
-			$court_reservation_time_obj_plus_15 = $court_reservation_time_obj->modify('+2 minutes');
+			$court_reservation_time_obj_plus_15 = $court_reservation_time_obj->modify('+15 minutes');
 			// print_r($court_current_utc_time); echo "<br>";
 			// print_r($court_reservation_time_obj_plus_15); echo "<br>";
 
@@ -1933,12 +1933,12 @@ class Courtres_Public extends Courtres_Base {
 			    { 
 			    
 				$court_delete = "DELETE FROM $table WHERE gid = '" . $reservation->gid . "';";
-				echo $court_delete;
 				$wpdb->query( $court_delete );
-				if ( is_user_logged_in() && get_current_user_id() == $player_id ) {
-				// WC()->cart->empty_cart();
-			    
-			    	}
+				if ( class_exists( 'WooCommerce' ) ) {
+					if ( WC()->cart && WC()->cart->get_cart_contents_count() > 0 ) {
+						WC()->cart->empty_cart();
+					}
+				}
 
 			    }
 
