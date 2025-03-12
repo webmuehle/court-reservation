@@ -340,6 +340,7 @@ class Courtres_Public extends Courtres_Base {
 
 
 	private function isReservated( $day, $hour, $min ) {
+		if ( $hour >= 24 ) { $hour = $hour - 24; }
 		$theTime  = getCurrentDateTime();
 		$datetime = new DateTime( $theTime['datetime'] );
 		$datetime->modify( '+' . $day . ' day' );
@@ -363,6 +364,7 @@ class Courtres_Public extends Courtres_Base {
 	}
 
 	private function isReservated_byID( $day, $hour, $min, $court ) {
+		if ( $hour >= 24 ) { $hour = $hour - 24; }
 		$theTime  = getCurrentDateTime();
 		$datetime = new DateTime( $theTime['datetime'] );
 		$datetime->modify( '+' . $day . ' day' );

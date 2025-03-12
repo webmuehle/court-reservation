@@ -193,11 +193,12 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 					<?php
 						// 2020-06-18 astoian: bug for ngix, time is not formated correcty for AM:FM
 						// date_i18n( $timeFormat, strtotime( '2000-01-01 ' . $j . ':00' ) );
-						$t0 = date( $timeFormat, strtotime( $j . ':00' ) );
+						if ($j >= 24) { $j_ = $j - 24; } else { $j_ = $j; }
+						$t0 = date( $timeFormat, strtotime( $j_ . ':00' ) );
 					if ( $this->ishalfhour() ) {
-						$t1 = date( $timeFormat, strtotime( $j . ':00 + 30 min' ) );
+						$t1 = date( $timeFormat, strtotime( $j_ . ':00 + 30 min' ) );
 					} else {
-						$t1 = date( $timeFormat, strtotime( $j . ':00 + 1 hour' ) );
+						$t1 = date( $timeFormat, strtotime( $j_ . ':00 + 1 hour' ) );
 					}
 						echo '<th>' . esc_html( $t0 ) . ' &ndash; ' . esc_html( $t1 ) . '</th>';
 					?>
@@ -237,8 +238,9 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 				<?php if ( $this->ishalfhour() ) { ?>
 					<tr>
 						<?php
-							$t0     = date( $timeFormat, strtotime( $j . ':00 + 30 min' ) );
-							$t1     = date( $timeFormat, strtotime( $j . ':00 + 1 hour' ) );
+							if ($j >= 24) { $j_ = $j - 24; } else { $j_ = $j; }
+							$t0     = date( $timeFormat, strtotime( $j_ . ':00 + 30 min' ) );
+							$t1     = date( $timeFormat, strtotime( $j_ . ':00 + 1 hour' ) );
 							$fromto = '<th>' . esc_html( $t0 ) . ' &ndash; ' . esc_html( $t1 ) . '</th>';
 							echo '<th>' . esc_html( $t0 ) . ' &ndash; ' . esc_html( $t1 ) . '</th>';
 						?>

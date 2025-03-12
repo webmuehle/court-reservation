@@ -106,7 +106,9 @@ require 'courtres-notice-upgrade.php';
 				?>
 			  <tr>
 				<td><?php echo esc_html( $item->name ); ?></td>
-				<td><?php echo esc_html( $item->open ); ?>-<?php echo esc_html( $item->close ); ?> <?php echo esc_html__( 'Hour', 'court-reservation' ); ?></td>
+				<td><?php 
+					if ($item->close >= 24) { $courtres_close = "0" . $item->close - 24; } else { $courtres_close = $item->close; }
+					echo esc_html( $item->open ); ?>-<?php echo esc_html( $courtres_close ); ?> <?php echo esc_html__( 'Hour', 'court-reservation' ); ?></td>
 				<td><?php echo esc_html( $item->days ); ?></td>
 				<td><code>[courtreservation id=<?php echo esc_html($item->id); ?>]</code></td>
 				<td><a class="page-action" href="<?php echo esc_url(admin_url( "admin.php?page=courtres-court&courtID={$item->id}" )); ?>"><?php echo esc_html__( 'Edit', 'court-reservation' ); ?></a>

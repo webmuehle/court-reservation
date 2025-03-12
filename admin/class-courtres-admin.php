@@ -259,6 +259,7 @@ class Courtres_Admin extends Courtres_Base {
 
 		for ( $minStep = 30; $minStep <= $minuteplus; $minStep += 30 ) {
 			$res_time_step = (int) $timeStep->format( 'H' ) + (int) $timeStep->format( 'i' ) / 60;
+			if ($res_time_step >= 0 && $res_time_step <= 2) { $res_time_step = 24 + $res_time_step; }
 			if ( $res_time_step < $court->open || $res_time_step >= $court->close ) {
 				return $this->handleError( __( 'Invalid close hour.', 'court-reservation' ) );
 			}

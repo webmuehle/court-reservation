@@ -67,7 +67,7 @@ class Courtres_Activator {
                 id mediumint(9) NOT NULL AUTO_INCREMENT,
                 name varchar(255) NOT NULL,
                 open smallint(2) NOT NULL CHECK (open<=23),
-                close smallint(2) NOT NULL CHECK (close<=23),
+                close smallint(2) NOT NULL CHECK (close<=26),
                 days smallint(1) NOT NULL CHECK (days>0),
                 CHECK (open<close),
                 UNIQUE KEY id (id)
@@ -164,7 +164,7 @@ class Courtres_Activator {
 	    courtres_forever INT(1) NOT NULL DEFAULT '0',
             weekly_repeat boolean NULL DEFAULT NULL,
             start smallint(2) NOT NULL CHECK (start<=23),
-            end smallint(2) NOT NULL CHECK (end<=23),
+            end smallint(2) NOT NULL CHECK (end<=26),
             repeatone datetime NULL DEFAULT NULL,
             start_ts bigint unsigned,
             end_ts bigint unsigned,
@@ -224,6 +224,7 @@ class Courtres_Activator {
 		Courtres_Entity_Challenges::create_table();
 
 		// < from 1.5.0
+	
 	}
 
 	/**
@@ -236,7 +237,7 @@ class Courtres_Activator {
 		global $wpdb;
 		$charset_collate = $wpdb->get_charset_collate();
 
-				$table_name_courtres_events = $wpdb->prefix . 'courtres_events';
+		$table_name_courtres_events 	    = $wpdb->prefix . 'courtres_events';
 		$table_name_courtres_settings       = $wpdb->prefix . 'courtres_settings';
 		$table_reserv_players               = $wpdb->prefix . 'courtres_reserv_players';
 		$table_reserv                       = $wpdb->prefix . 'courtres_reservations';
@@ -523,6 +524,12 @@ class Courtres_Activator {
 			}
 		}
 		// < Changes in v1.5.0
+
+		$courtres_version_check = str_replace('.', '', $option_courtres_version->option_value);
+
+		$table_courts = $wpdb->prefix . 'courtres_courts';
+		$wpdb->query("ALTER TABLE $table_courts CHANGE close close SMALLINT(2) NOT NULL CHECK (close<=26);");
+
 	}
 
 }

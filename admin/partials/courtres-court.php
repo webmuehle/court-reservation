@@ -288,11 +288,23 @@ if ( ! isset( $court ) ) {
 	  </tr>
 	  <tr>
 		<td><?php echo esc_html__( 'Opens (hour)', 'court-reservation' ); ?></td>
-		<td><input type="number" name="open" min="0" max="23" maxlength="2" value="<?php echo esc_html( $court->open ); ?>" required /></td>
+		<?php /* <td><input type="number" name="open" min="0" max="23" maxlength="2" value="<?php echo esc_html( $court->open ); ?>" required /></td> */ ?>
+		<td><select name="open">
+			<?php for ( $i = 3; $i < 24; $i++ ) { ?>
+			<option value="<?php echo esc_html( $i ); ?>" <?php echo ( $court->open == $i ) ? 'selected' : ''; ?> ><?php
+				if ($i < 10) { $i_ = "0" . $i; } else { $i_ = $i; }
+				echo esc_html( $i_ ); ?></option>
+			<?php } ?>
 	  </tr>
 	  <tr>
 		<td><?php echo esc_html__( 'Closes (hour)', 'court-reservation' ); ?></td>
-		<td><input type="number" name="close" min="0" max="24" maxlength="2" value="<?php echo esc_html( $court->close ); ?>" required /></td>
+		<?php /* <td><input type="number" name="close" min="3" max="26" maxlength="2" value="<?php echo esc_html( $court->close ); ?>" required /></td> */ ?>
+		<td><select name="close">
+			<?php for ( $i = 3; $i < 27; $i++ ) { ?>
+			<option value="<?php echo esc_html( $i ); ?>" <?php echo ( $court->close == $i ) ? 'selected' : ''; ?> ><?php
+				if ($i >= 24) { $i_ = "0" . $i - 24; } else { $i_ = $i; }
+				echo esc_html( $i_ ); ?></option>
+			<?php } ?>
 	  </tr>
 	  <tr>
 		<td><?php echo esc_html__( 'Reservation Days in Advance', 'court-reservation' ); ?></td>
