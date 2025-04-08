@@ -2076,7 +2076,7 @@ function court_payment_status($court_user_id, $court, $reservation) {
 					if (isset($court->payable) && is_numeric ($court->payable) && $court->payable > 0) {
 
 
-						$court_payment_status = "(on hold)";
+						$court_payment_status = "Booked";
 
 
 						$court_payment_meta = $wpdb->get_row("select order_item_id from wp_woocommerce_order_itemmeta where meta_value='" 
@@ -2087,12 +2087,19 @@ function court_payment_status($court_user_id, $court, $reservation) {
 							if (isset($court_payment_order_id->order_id) && is_numeric($court_payment_order_id->order_id) && $court_payment_order_id->order_id > 0) {
 								$court_payment_order = wc_get_order($court_payment_order_id->order_id);
 								$court_payment_status=$court_payment_order->get_status();
+								if ($court_payment_status != 'checkout-draft') {
+									$court_payment_status = "Booked";
+								}
+								else 
+								{
+									$court_payment_status = "Pending";
+								}
 								return $court_payment_status;
 							}
 						} 
 						else 
 						{ 
-							$court_payment_status = "(unknow status)"; 
+							$court_payment_status = "Booked"; 
 							return $court_payment_status;
 						}
 					}
