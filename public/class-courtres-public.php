@@ -323,7 +323,30 @@ class Courtres_Public extends Courtres_Base {
 					$interval    = $currentDate->diff( $eventDate );
 					if ( $interval->days % 7 === 0 ) {
 						if ( $this->doesOverlap( $hour, $event_start_time, $event_end_time ) ) {
-							return $block;
+						$courtres_event_first_day1 = "yes";
+						if (isset($block->event_first_date) && $block->event_first_date != "") 
+						{ 
+
+							$courtres_event_day_cur = $currentDate->format('Y-m-d');
+
+							$courtres_event__day_x = new DateTime($block->event_first_date); 
+							$courtres_event_first_day = $courtres_event__day_x->format('Y-m-d');
+
+							$courtres_event__day_x = new DateTime($block->event_last_date); 
+							$courtres_event_last_day = $courtres_event__day_x->format('Y-m-d');
+
+						}
+						else { $courtres_event_first_day1 = "no"; }
+
+						if 
+						( 
+						     (	
+							$courtres_event_first_day1 != "no" && 
+						    	$courtres_event_day_cur >= $courtres_event_first_day && 
+							$courtres_event_day_cur <= $courtres_event_last_day
+						     ) || ( isset($block->courtres_forever) && $block->courtres_forever == 0) 
+						) 
+						{ return $block; }
 						}
 					}
 				} else {
