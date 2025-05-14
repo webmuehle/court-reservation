@@ -1,0 +1,1538 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: Court Reservation\n"
+"Language: ro\n"
+
+#: admin/class-courtres-admin.php:170
+msgid "No permission."
+msgstr "Fără permisiune."
+
+#: admin/class-courtres-admin.php:176
+msgid "Wrong ID or no permissions."
+msgstr "ID greșit sau fără permisiuni."
+
+#: admin/class-courtres-admin.php:200
+msgid "Missing Data."
+msgstr "Date lipsă."
+
+#: admin/class-courtres-admin.php:218
+msgid "Invalid open hour."
+msgstr "Ora de deschidere invalidă."
+
+#: admin/class-courtres-admin.php:237
+msgid "Invalid close hour."
+msgstr "Ora de închidere invalidă."
+
+#: admin/class-courtres-admin.php:264
+msgid "You can't make a reservation that overlaps in time with an event."
+msgstr "Nu puteți face o rezervare care se suprapune în timp cu un eveniment."
+
+#: admin/class-courtres-admin.php:281
+msgid "You can't make a reservation that overlaps in time with another one."
+msgstr "Nu puteți face o rezervare care se suprapune în timp cu o alta."
+
+#: admin/class-courtres-admin.php:304
+msgid "You can't make more than one reservation. This time slot is already reserved."
+msgstr "Nu puteți face mai mult de o rezervare. Acest interval orar este deja rezervat."
+
+#: admin/class-courtres-admin.php:448
+msgid "E-Mail is not sent."
+msgstr "E-mailul nu este trimis."
+
+#: admin/class-courtres-admin.php:502
+msgid "Wrong username or password."
+msgstr "Nume de utilizator sau parolă greșite."
+
+#: admin/class-courtres-admin.php:507
+msgid "Login successful, redirecting..."
+msgstr "Autentificare reușită, redirecționare..."
+
+#: admin/class-courtres-admin.php:517 admin/class-courtres-admin.php:603
+msgid "Reservations"
+msgstr "Rezervări"
+
+#: admin/class-courtres-admin.php:528 admin/partials/courtres-courts.php:59
+#: admin/partials/courtres-piramids.php:53
+#: admin/partials/courtres-settings.php:445
+#: admin/partials/courtres-settings.php:465 admin/partials/courtres-ui.php:492
+#: admin/partials/courtres-ui.php:512 admin/partials/courtres-upgrade.php:48
+msgid "Settings"
+msgstr "Setări"
+
+#: admin/class-courtres-admin.php:537
+msgid "Members"
+msgstr "Membri"
+
+#: admin/class-courtres-admin.php:558 admin/partials/courtres-courts.php:65
+#: admin/partials/courtres-piramids.php:59
+#: admin/partials/courtres-settings.php:471 admin/partials/courtres-ui.php:518
+#: admin/partials/courtres-upgrade.php:29
+#: admin/partials/courtres-upgrade.php:54
+msgid "Upgrade"
+msgstr "Actualizare"
+
+#: admin/class-courtres-admin.php:585
+msgid "Events"
+msgstr "Evenimente"
+
+#: admin/class-courtres-admin.php:926
+msgid "Sunday"
+msgstr "Duminică"
+
+#: admin/class-courtres-admin.php:927
+msgid "Monday"
+msgstr "Luni"
+
+#: admin/class-courtres-admin.php:928
+msgid "Tuesday"
+msgstr "Marți"
+
+#: admin/class-courtres-admin.php:929
+msgid "Wednesday"
+msgstr "Miercuri"
+
+#: admin/class-courtres-admin.php:930
+msgid "Thursday"
+msgstr "Joi"
+
+#: admin/class-courtres-admin.php:931
+msgid "Friday"
+msgstr "Vineri"
+
+#: admin/class-courtres-admin.php:932
+msgid "Saturday"
+msgstr "Sâmbătă"
+
+#: admin/class-courtres-admin.php:938
+msgid "Yes"
+msgstr "Da"
+
+#: admin/class-courtres-admin.php:938
+msgid "No, at %1$s only"
+msgstr "Nu, doar la %1$s"
+
+#: admin/class-courtres-admin.php:1060
+msgid "New reservation type is empty"
+msgstr "Noul tip de rezervare este gol"
+
+#: admin/class-courtres-admin.php:1067
+msgid "Reservation types not found in the db"
+msgstr "Tipuri de rezervări care nu se găsesc în db"
+
+#: admin/class-courtres-admin.php:1081
+msgid "Reservation type not found to delete"
+msgstr "Tipul de rezervare nu a fost găsit pentru ștergere"
+
+#: admin/class-courtres-admin.php:1089
+msgid "Unknown action type"
+msgstr "Tip de acțiune necunoscut"
+
+#: admin/class-courtres-admin.php:1102
+msgid "Error updating reservation types"
+msgstr "Eroare la actualizarea tipurilor de rezervări"
+
+#: admin/class-courtres-admin.php:1104
+msgid "Reservation types successfully changed!"
+msgstr "Tipurile de rezervări au fost modificate cu succes!"
+
+#: admin/class-courtres-admin.php:1120
+msgid "Select partner"
+msgstr "Selectați partenerul"
+
+#: admin/class-courtres-admin.php:1161 admin/partials/courtres-event.php:80
+msgid "Please create a court first."
+msgstr "Vă rugăm să creați mai întâi o instanță."
+
+#: admin/class-courtres-admin.php:1187 admin/partials/courtres-event.php:101
+msgid "Start must be before end of event."
+msgstr "Startul trebuie să fie înainte de sfârșitul evenimentului."
+
+#: admin/class-courtres-admin.php:1227
+msgid "Updating error. Try to reactivate the plugin to solve this issue."
+msgstr "Eroare de actualizare. Încercați să reactivați pluginul pentru a rezolva această problemă."
+
+#: admin/class-courtres-admin.php:1227 admin/partials/courtres-court.php:56
+#: admin/partials/courtres-settings.php:41
+#: admin/partials/courtres-settings.php:61
+#: admin/partials/courtres-settings.php:88
+#: admin/partials/courtres-settings.php:115
+#: admin/partials/courtres-settings.php:142
+#: admin/partials/courtres-settings.php:164
+#: admin/partials/courtres-settings.php:186
+#: admin/partials/courtres-settings.php:228
+#: admin/partials/courtres-settings.php:251
+#: admin/partials/courtres-settings.php:278 admin/partials/courtres-ui.php:41
+#: admin/partials/courtres-ui.php:61 admin/partials/courtres-ui.php:81
+#: admin/partials/courtres-ui.php:101 admin/partials/courtres-ui.php:121
+#: admin/partials/courtres-ui.php:141 admin/partials/courtres-ui.php:161
+#: admin/partials/courtres-ui.php:181 admin/partials/courtres-ui.php:201
+#: admin/partials/courtres-ui.php:221 admin/partials/courtres-ui.php:241
+#: admin/partials/courtres-ui.php:261 admin/partials/courtres-ui.php:281
+#: admin/partials/courtres-ui.php:301 admin/partials/courtres-ui.php:323
+msgid "Successfully changed!"
+msgstr "Schimbare reușită!"
+
+#: admin/class-courtres-admin.php:1232
+msgid "Creating error. Try to reactivate the plugin to solve this issue."
+msgstr "Crearea unei erori. Încercați să reactivați pluginul pentru a rezolva această problemă."
+
+#: admin/class-courtres-admin.php:1232 admin/partials/courtres-court.php:71
+#: admin/partials/courtres-settings.php:50
+#: admin/partials/courtres-settings.php:70
+#: admin/partials/courtres-settings.php:97
+#: admin/partials/courtres-settings.php:124
+#: admin/partials/courtres-settings.php:151
+#: admin/partials/courtres-settings.php:173
+#: admin/partials/courtres-settings.php:195
+#: admin/partials/courtres-settings.php:209
+#: admin/partials/courtres-settings.php:238
+#: admin/partials/courtres-settings.php:260
+#: admin/partials/courtres-settings.php:287 admin/partials/courtres-ui.php:50
+#: admin/partials/courtres-ui.php:70 admin/partials/courtres-ui.php:90
+#: admin/partials/courtres-ui.php:110 admin/partials/courtres-ui.php:130
+#: admin/partials/courtres-ui.php:150 admin/partials/courtres-ui.php:170
+#: admin/partials/courtres-ui.php:190 admin/partials/courtres-ui.php:210
+#: admin/partials/courtres-ui.php:230 admin/partials/courtres-ui.php:250
+#: admin/partials/courtres-ui.php:270 admin/partials/courtres-ui.php:290
+#: admin/partials/courtres-ui.php:310 admin/partials/courtres-ui.php:333
+#: admin/partials/courtres-ui.php:355
+msgid "Successfully created!"
+msgstr "Creat cu succes!"
+
+#: admin/partials/courtres-challenges.php:44
+#: admin/partials/courtres-courts.php:77 admin/partials/courtres-events.php:110
+#: admin/partials/courtres-piramids.php:73
+#: admin/partials/courtres-reservations.php:105
+msgid "Action"
+msgstr "Acțiune"
+
+#: admin/partials/courtres-challenges.php:72
+#: admin/partials/courtres-court.php:124 admin/partials/courtres-event.php:278
+#: admin/partials/courtres-piramid.php:116
+#: admin/partials/courtres-piramid.php:398
+#: admin/partials/courtres-reservations.php:136
+msgid "Delete"
+msgstr "Ștergeți"
+
+#: admin/partials/courtres-court.php:32
+#: public/partials/courtres-public-display.php:25
+#: public/partials/courtres-public-table.php:21
+msgid "Free version allow one Court only."
+msgstr "Versiunea gratuită permite o singură instanță."
+
+#: admin/partials/courtres-court.php:91 admin/partials/courtres-event.php:182
+msgid "Back"
+msgstr "Înapoi"
+
+#: admin/partials/courtres-court.php:92 admin/partials/courtres-piramid.php:184
+msgid " edit"
+msgstr " editare"
+
+#: admin/partials/courtres-court.php:92
+msgid "Create Court"
+msgstr "Creați o instanță"
+
+#: admin/partials/courtres-court.php:99 admin/partials/courtres-courts.php:73
+#: admin/partials/courtres-event.php:211 admin/partials/courtres-events.php:92
+#: includes/entity/challenges.php:27 includes/entity/piramid.php:29
+msgid "Name"
+msgstr "Nume și prenume"
+
+#: admin/partials/courtres-court.php:103
+msgid "Opens (hour)"
+msgstr "Deschidere (oră)"
+
+#: admin/partials/courtres-court.php:107
+msgid "Closes (hour)"
+msgstr "Închidere (oră)"
+
+#: admin/partials/courtres-court.php:111 admin/partials/courtres-courts.php:75
+msgid "Reservation Days in Advance"
+msgstr "Rezervare cu zile în avans"
+
+#: admin/partials/courtres-court.php:116 admin/partials/courtres-event.php:269
+#: admin/partials/courtres-piramid.php:41
+#: admin/partials/courtres-piramid.php:393
+#: admin/partials/courtres-settings.php:632
+#: admin/partials/courtres-settings.php:640 admin/partials/courtres-ui.php:687
+#: public/class-courtres-public.php:530
+msgid "Save"
+msgstr "Salvați"
+
+#: admin/partials/courtres-court.php:123
+msgid "Delete Court"
+msgstr "Ștergeți instanța"
+
+#: admin/partials/courtres-courts.php:37
+msgid "Manage Courts"
+msgstr "Gestionarea instanțelor"
+
+#: admin/partials/courtres-courts.php:39
+#: admin/partials/courtres-piramids.php:33
+msgid "Create"
+msgstr "Creați"
+
+#: admin/partials/courtres-courts.php:54
+#: admin/partials/courtres-piramids.php:48
+#: admin/partials/courtres-settings.php:460 admin/partials/courtres-ui.php:507
+#: admin/partials/courtres-upgrade.php:43
+msgid "Courts"
+msgstr "Instanțele judecătorești"
+
+#: admin/partials/courtres-courts.php:61
+#: admin/partials/courtres-piramid.php:296
+#: admin/partials/courtres-piramids.php:55
+#: admin/partials/courtres-settings.php:467 admin/partials/courtres-ui.php:514
+#: admin/partials/courtres-upgrade.php:50
+msgid "User Interface"
+msgstr "Interfața cu utilizatorul"
+
+#: admin/partials/courtres-courts.php:74
+msgid "Openinghours"
+msgstr "Orele de deschidere"
+
+#: admin/partials/courtres-courts.php:76
+#: admin/partials/courtres-piramids.php:72
+msgid "Shortcode"
+msgstr "Cod scurt"
+
+#: admin/partials/courtres-courts.php:84 admin/partials/courtres-events.php:116
+msgid "Hour"
+msgstr "Ora"
+
+#: admin/partials/courtres-courts.php:87 admin/partials/courtres-events.php:145
+#: admin/partials/courtres-piramids.php:96
+msgid "Edit"
+msgstr "Editare"
+
+#: admin/partials/courtres-event.php:187 admin/partials/courtres-events.php:53
+msgid "Create weekly event"
+msgstr "Creați un eveniment săptămânal"
+
+#: admin/partials/courtres-event.php:188
+msgid "Edit weekly event"
+msgstr "Editează evenimentul săptămânal"
+
+#: admin/partials/courtres-event.php:190 admin/partials/courtres-events.php:57
+msgid "Create individual event"
+msgstr "Crearea unui eveniment individual"
+
+#: admin/partials/courtres-event.php:191
+msgid "Edit individual event"
+msgstr "Editarea evenimentului individual"
+
+#: admin/partials/courtres-event.php:216
+msgid "Repeat weekly"
+msgstr "Repetați săptămânal"
+
+#: admin/partials/courtres-event.php:220
+msgid "Date of weekly events"
+msgstr "Data evenimentelor săptămânale"
+
+#: admin/partials/courtres-event.php:231
+msgid "Date of the event"
+msgstr "Data evenimentului"
+
+#: admin/partials/courtres-event.php:238 includes/entity/challenges.php:81
+msgid "Start"
+msgstr "Start"
+
+#: admin/partials/courtres-event.php:248 includes/entity/challenges.php:87
+msgid "End"
+msgstr "Sfârșit"
+
+#: admin/partials/courtres-event.php:258 admin/partials/courtres-events.php:93
+#: admin/partials/courtres-reservations.php:87
+#: public/partials/courtres-public-piramid.php:118
+msgid "Court"
+msgstr "Curtea"
+
+#: admin/partials/courtres-event.php:277
+msgid "Delete Event"
+msgstr "Ștergeți evenimentul"
+
+#: admin/partials/courtres-events.php:48
+msgid "Manage Events"
+msgstr "Gestionarea evenimentelor"
+
+#: admin/partials/courtres-events.php:82
+msgid "Individual events"
+msgstr "Probe individuale"
+
+#: admin/partials/courtres-events.php:85
+msgid "Weekly events"
+msgstr "Evenimente săptămânale"
+
+#: admin/partials/courtres-events.php:98
+msgid "Weekday"
+msgstr "Ziua săptămânii"
+
+#: admin/partials/courtres-events.php:104
+#: admin/partials/courtres-reservations.php:102
+#: public/partials/courtres-public-display.php:86
+msgid "Date"
+msgstr "Data"
+
+#: admin/partials/courtres-events.php:109
+msgid "Period"
+msgstr "Perioada"
+
+#: admin/partials/courtres-notice-message.php:22
+#: admin/partials/courtres-notice-upgrade.php:28
+#: admin/partials/courtres-notice-upgrade.php:43
+msgid "Dismiss this notice."
+msgstr "Respingeți această notificare."
+
+#: admin/partials/courtres-reservations.php:48
+msgid "Upcoming Reservations"
+msgstr "Rezervări viitoare"
+
+#: admin/partials/courtres-reservations.php:92
+#: includes/class-courtres-activator.php:39
+#: public/partials/courtres-public-display.php:93
+msgid "Player"
+msgstr "Jucător"
+
+#: admin/partials/courtres-reservations.php:97
+#: public/partials/courtres-public-display.php:111
+msgid "Type"
+msgstr "Tip"
+
+#: admin/partials/courtres-reservations.php:104
+#: public/class-courtres-public.php:1015
+#: public/partials/courtres-public-display.php:156
+#: public/partials/courtres-public-piramid.php:127
+#: public/partials/courtres-public-table.php:61
+msgid "Time"
+msgstr "Timp"
+
+#: admin/partials/courtres-settings.php:494
+#: admin/partials/courtres-upgrade.php:93
+#: admin/partials/courtres-upgrade.php:126
+msgid "E-Mail notifications"
+msgstr "Notificări prin e-mail"
+
+#: admin/partials/courtres-settings.php:507
+msgid "Players get an E-Mail when they reserve a court."
+msgstr "Jucătorii primesc un e-mail atunci când rezervă un teren."
+
+#: admin/partials/courtres-settings.php:513
+msgid "Customize text of e-mail confirmation"
+msgstr "Personalizarea textului de confirmare prin e-mail"
+
+#: admin/partials/courtres-settings.php:514
+msgid "Use the following placeholders:"
+msgstr "Utilizați următoarele marcaje:"
+
+#: admin/partials/courtres-settings.php:526
+msgid "Text of e-mail confirmation"
+msgstr "Textul confirmării prin e-mail"
+
+#: admin/partials/courtres-settings.php:541
+msgid "Max. hours a member is allowed to reserve a court."
+msgstr "Numărul maxim de ore în care un membru poate rezerva un teren."
+
+#: admin/partials/courtres-settings.php:548
+msgid "Half-hour reservation"
+msgstr "Rezervare pentru o jumătate de oră"
+
+#: admin/partials/courtres-settings.php:559
+msgid "Several reservations per person"
+msgstr "Mai multe rezervări pe persoană"
+
+#: admin/partials/courtres-settings.php:570
+msgid "Calendar navigation"
+msgstr "Navigare prin calendar"
+
+#: admin/partials/courtres-settings.php:581
+msgid "Team mate is mandatory"
+msgstr "Colegul de echipă este obligatoriu"
+
+#: admin/partials/courtres-settings.php:592
+msgid "Choose available reservation types"
+msgstr "Alegeți tipurile de rezervări disponibile"
+
+#: admin/partials/courtres-settings.php:629
+msgid "You can add reservation type"
+msgstr "Puteți adăuga tipul de rezervare"
+
+#: admin/partials/courtres-settings.php:631
+msgid "Add your reservation type"
+msgstr "Adăugați tipul dvs. de rezervare"
+
+#: admin/partials/courtres-ui.php:345
+msgid "Successfully changed"
+msgstr "Modificat cu succes"
+
+#: admin/partials/courtres-ui.php:544
+msgid "Table border color"
+msgstr "Culoarea marginii tabelului"
+
+#: admin/partials/courtres-ui.php:547 admin/partials/courtres-ui.php:555
+#: admin/partials/courtres-ui.php:563 admin/partials/courtres-ui.php:571
+#: admin/partials/courtres-ui.php:579 admin/partials/courtres-ui.php:598
+#: admin/partials/courtres-ui.php:606 admin/partials/courtres-ui.php:646
+#: admin/partials/courtres-ui.php:654
+msgid "default"
+msgstr "implicit"
+
+#: admin/partials/courtres-ui.php:552
+msgid "Table cell background color"
+msgstr "Culoarea de fundal a celulelor de tabel"
+
+#: admin/partials/courtres-ui.php:560
+msgid "Table cell background color for reservation"
+msgstr "Culoarea de fundal a celulei de tabel pentru rezervare"
+
+#: admin/partials/courtres-ui.php:568
+msgid "Table cell background color for unavailable"
+msgstr "Culoarea de fundal a celulelor de tabel pentru indisponibil"
+
+#: admin/partials/courtres-ui.php:576
+msgid "Table head background color"
+msgstr "Culoarea de fundal a capului de tabel"
+
+#: admin/partials/courtres-ui.php:584
+msgid "Button off/on"
+msgstr "Buton oprit/pornit"
+
+#: admin/partials/courtres-ui.php:595
+msgid "Button color"
+msgstr "Culoarea butonului"
+
+#: admin/partials/courtres-ui.php:603
+msgid "Link color"
+msgstr "Culoarea legăturii"
+
+#: admin/partials/courtres-ui.php:611
+msgid "Button title text reserve"
+msgstr "Rezervă text titlu buton"
+
+#: admin/partials/courtres-ui.php:614 public/class-courtres-public.php:705
+msgid "reserve"
+msgstr "rezervă"
+
+#: admin/partials/courtres-ui.php:619
+msgid "Button title text delete"
+msgstr "Ștergere text titlu buton"
+
+#: admin/partials/courtres-ui.php:622 public/class-courtres-public.php:716
+#: public/partials/courtres-public-challenges.php:52
+#: public/partials/courtres-public-challenges.php:72
+msgid "delete"
+msgstr "ștergere"
+
+#: admin/partials/courtres-ui.php:627
+msgid "Maximum cell width"
+msgstr "Lățimea maximă a celulei"
+
+#: admin/partials/courtres-ui.php:635
+msgid "Maximum cell height"
+msgstr "Înălțimea maximă a celulei"
+
+#: admin/partials/courtres-ui.php:643
+msgid "Mouseover background-color for table cell"
+msgstr "Culoarea de fundal Mouseover pentru celula tabelului"
+
+#: admin/partials/courtres-ui.php:651
+msgid "Mouseover linktext for table cell"
+msgstr "Mouseover linktext pentru celula tabelului"
+
+#: admin/partials/courtres-ui.php:659
+msgid "List of available date formats"
+msgstr "Lista formatelor de dată disponibile"
+
+#: admin/partials/courtres-ui.php:669
+msgid "Each format in new line. Date format must be in format for date_i18n()"
+msgstr "Fiecare format în linie nouă. Formatul datei trebuie să fie în format pentru date_i18n()"
+
+#: admin/partials/courtres-ui.php:675
+msgid "Date format for site"
+msgstr "Formatul datei pentru site"
+
+#: admin/partials/courtres-upgrade.php:64
+msgid "Lite"
+msgstr "Lite"
+
+#: admin/partials/courtres-upgrade.php:65
+msgid "Basic Features"
+msgstr "Caracteristici de bază"
+
+#: admin/partials/courtres-upgrade.php:69
+msgid "Free"
+msgstr "Gratuit"
+
+#: admin/partials/courtres-upgrade.php:71
+#: admin/partials/courtres-upgrade.php:107
+#: admin/partials/courtres-upgrade.php:141
+msgid "Billed Annually"
+msgstr "Facturat anual"
+
+#: admin/partials/courtres-upgrade.php:74
+#: admin/partials/courtres-upgrade.php:110
+#: admin/partials/courtres-upgrade.php:144
+msgid "Single Site"
+msgstr "Site unic"
+
+#: admin/partials/courtres-upgrade.php:79
+msgid "No Support"
+msgstr "Fără suport"
+
+#: admin/partials/courtres-upgrade.php:88
+msgid "Most Popular"
+msgstr "Cele mai populare"
+
+#: admin/partials/courtres-upgrade.php:90
+msgid "Premium"
+msgstr "Premium"
+
+#: admin/partials/courtres-upgrade.php:91
+#: admin/partials/courtres-upgrade.php:124
+msgid "more courtes"
+msgstr "mai multe curtezane"
+
+#: admin/partials/courtres-upgrade.php:92
+#: admin/partials/courtres-upgrade.php:125
+msgid "more members"
+msgstr "mai mulți membri"
+
+#: admin/partials/courtres-upgrade.php:94
+#: admin/partials/courtres-upgrade.php:127
+msgid "24/7 E-Mail-Support"
+msgstr "Suport prin e-mail 24/7"
+
+#: admin/partials/courtres-upgrade.php:104
+#: admin/partials/courtres-upgrade.php:138
+msgid "Year"
+msgstr "Anul"
+
+#: admin/partials/courtres-upgrade.php:115
+#: admin/partials/courtres-upgrade.php:149
+msgid "Priority E-Mail & Help Center Support"
+msgstr "E-mail prioritar și suport pentru centrul de asistență"
+
+#: admin/partials/courtres-widget-upgrade.php:24
+msgid "Upgrade to Court Reservation Premium"
+msgstr "Actualizați la Court Reservation Premium"
+
+#: admin/partials/courtres-widget-upgrade.php:26
+msgid "Create unlimited number of courts"
+msgstr "Crearea unui număr nelimitat de instanțe"
+
+#: admin/partials/courtres-widget-upgrade.php:27
+msgid "Be able to manage over 100 members in the members section"
+msgstr "Să fie capabil să gestioneze peste 100 de membri în secțiunea membri"
+
+#: admin/partials/courtres-widget-upgrade.php:28
+msgid "Get E-Mail Notifications for reservations"
+msgstr "Primiți notificări prin e-mail pentru rezervări"
+
+#: admin/partials/courtres-widget-upgrade.php:29
+msgid "24/7 E-Mail Support"
+msgstr "Asistență prin e-mail 24/7"
+
+#: admin/partials/courtres-widget-upgrade.php:31
+msgid "Upgrade to Premium"
+msgstr "Upgrade la Premium"
+
+#: includes/class-courtres-activator.php:212
+msgid "Single"
+msgstr "Singur"
+
+#: includes/class-courtres-activator.php:213
+msgid "Double"
+msgstr "Dublu"
+
+#: includes/class-courtres-activator.php:214
+msgid "Championship"
+msgstr "Campionat"
+
+#: includes/class-courtres-activator.php:215
+msgid "Training"
+msgstr "Formare profesională"
+
+#: includes/class-courtres-activator.php:216
+msgid "Competition"
+msgstr "Concurență"
+
+#: public/class-courtres-public.php:531
+msgid "Cancel"
+msgstr "Anulează"
+
+#: public/partials/courtres-public-display.php:20
+msgid "Court Reservation ID not set."
+msgstr "ID-ul de rezervare a instanței nu este stabilit."
+
+#: public/partials/courtres-public-display.php:22
+#: public/partials/courtres-public-table.php:18
+msgid "Court Reservation ID invalid."
+msgstr "Codul de rezervare al instanței nu este valabil."
+
+#: public/partials/courtres-public-display.php:31
+#: public/partials/courtres-public-table.php:27
+msgid "Court not found."
+msgstr "Instanța nu a fost găsită."
+
+#: public/partials/courtres-public-display.php:73
+msgid "Reservation"
+msgstr "Rezervare"
+
+#: public/partials/courtres-public-display.php:105
+#: public/partials/courtres-public-display.php:207
+#: public/partials/courtres-public-display.php:217
+msgid "Login"
+msgstr "Autentificare"
+
+#: public/partials/courtres-public-display.php:146
+msgid "Today"
+msgstr "Astăzi"
+
+#: public/partials/courtres-public-display.php:209
+msgid "ERROR"
+msgstr "ERROR"
+
+#: public/partials/courtres-public-display.php:210
+#: public/partials/courtres-public-display.php:225
+msgid "Forgot password?"
+msgstr "Ați uitat parola?"
+
+#: public/partials/courtres-public-display.php:223
+msgid "Password"
+msgstr "Parolă"
+
+#. Plugin Name of the plugin/theme
+#: 
+msgid "Court Reservation"
+msgstr "Rezervarea instanței"
+
+#. Description of the plugin/theme
+#: 
+msgid "Reservation system for tennis, squash and badminton"
+msgstr "Sistem de rezervare pentru tenis, squash și badminton"
+
+#. Author of the plugin/theme
+#: 
+msgid "Webmühle e.U."
+msgstr "Webmühle e.U."
+
+#: 
+msgid "Type or click to select"
+msgstr "Tastați sau faceți clic pentru a selecta"
+
+#: 
+msgid "January"
+msgstr "ianuarie"
+
+#: 
+msgid "February"
+msgstr "Februarie"
+
+#: 
+msgid "March"
+msgstr "Martie"
+
+#: 
+msgid "April"
+msgstr "Aprilie"
+
+#: 
+msgid "May"
+msgstr "Mai"
+
+#: 
+msgid "June"
+msgstr "iunie"
+
+#: 
+msgid "July"
+msgstr "iulie"
+
+#: 
+msgid "August"
+msgstr "August"
+
+#: 
+msgid "September"
+msgstr "Septembrie"
+
+#: 
+msgid "October"
+msgstr "octombrie"
+
+#: 
+msgid "November"
+msgstr "Noiembrie"
+
+#: 
+msgid "December"
+msgstr "decembrie"
+
+#: admin/class-courtres-admin.php:295
+msgid "You can't make more than one reservation or you are already invited."
+msgstr "Nu puteți face mai mult de o rezervare sau sunteți deja invitat."
+
+#: admin/class-courtres-admin.php:427
+msgid "New reservation on %1$s on %2$s at %3$s for %4$s and %5$s."
+msgstr "Rezervare nouă pe %1$s pe %2$s la %3$s pentru %4$s și %5$s."
+
+#: admin/class-courtres-admin.php:612 admin/partials/courtres-challenges.php:86
+#: public/class-piramids-public.php:211
+msgid "Challenges"
+msgstr "Provocări"
+
+#: admin/class-courtres-admin.php:1172
+msgid "Not all needed parameters was received"
+msgstr "Nu au fost primiți toți parametrii necesari"
+
+#: admin/class-courtres-admin.php:1249
+msgid "Wrong reservation type"
+msgstr "Tip de rezervare greșit"
+
+#: admin/partials/courtres-challenges.php:23
+msgid "You need a higher level of permission."
+msgstr "Aveți nevoie de un nivel mai ridicat de permisiune."
+
+#: admin/partials/courtres-challenges.php:24
+msgid "Sorry, you are not allowed to list users."
+msgstr "Ne pare rău, nu vi se permite să listați utilizatori."
+
+#: admin/partials/courtres-challenges.php:88
+#: admin/partials/courtres-reservations.php:70
+msgid "View Expired"
+msgstr "Vezi Expirat"
+
+#: admin/partials/courtres-challenges.php:89
+#: admin/partials/courtres-reservations.php:71
+msgid "Clear Filter"
+msgstr "Ștergeți filtrul"
+
+#: admin/partials/courtres-challenges.php:94
+#: admin/partials/courtres-events.php:67
+#: admin/partials/courtres-reservations.php:54
+msgid "Export Expired"
+msgstr "Export Expirat"
+
+#: admin/partials/courtres-courts.php:57
+#: admin/partials/courtres-piramids.php:51
+#: admin/partials/courtres-settings.php:463 admin/partials/courtres-ui.php:510
+#: admin/partials/courtres-upgrade.php:46
+msgid "Pyramids"
+msgstr "Piramide"
+
+#: admin/partials/courtres-event.php:48
+msgid "Succesfully deleted"
+msgstr "Șters cu succes"
+
+#: admin/partials/courtres-event.php:140
+msgid "You can not edit challenges here"
+msgstr "Nu puteți edita provocări aici"
+
+#: admin/partials/courtres-piramid.php:25
+msgid "Piramid creation is allowed in Ultimate Version only."
+msgstr "Crearea piramidelor este permisă doar în versiunea Ultimate."
+
+#: admin/partials/courtres-piramid.php:51 public/class-piramids-public.php:238
+#: public/class-piramids-public.php:307 public/class-piramids-public.php:366
+#: public/class-piramids-public.php:467 public/class-piramids-public.php:512
+msgid "Error checking security code"
+msgstr "Eroare la verificarea codului de securitate"
+
+#: admin/partials/courtres-piramid.php:54
+#: admin/partials/courtres-piramid.php:57
+#: admin/partials/courtres-piramid.php:60
+msgid "can not be zero"
+msgstr "nu poate fi zero"
+
+#: admin/partials/courtres-piramid.php:63
+msgid "The number of players must be more than"
+msgstr "Numărul de jucători trebuie să fie mai mare de"
+
+#: admin/partials/courtres-piramid.php:66
+msgid "The number of players must be less than"
+msgstr "Numărul de jucători trebuie să fie mai mic de"
+
+#: admin/partials/courtres-piramid.php:79
+msgid "Succesfully created!"
+msgstr "Creat cu succes!"
+
+#: admin/partials/courtres-piramid.php:105
+msgid "Succesfully changed!"
+msgstr "Schimbare reușită!"
+
+#: admin/partials/courtres-piramid.php:123
+msgid "Succesfully deleted!"
+msgstr "Șters cu succes!"
+
+#: admin/partials/courtres-piramid.php:183
+msgid "Back to list"
+msgstr "Înapoi la listă"
+
+#: admin/partials/courtres-piramid.php:184
+msgid "Create Pyramid"
+msgstr "Creați piramida"
+
+#: admin/partials/courtres-piramid.php:188
+msgid "Create new"
+msgstr "Crearea de noi"
+
+#: admin/partials/courtres-piramid.php:227
+#: admin/partials/courtres-piramid.php:238
+#: admin/partials/courtres-piramid.php:249
+msgid "hours"
+msgstr "ore"
+
+#: admin/partials/courtres-piramid.php:227
+#: admin/partials/courtres-piramid.php:238
+#: admin/partials/courtres-piramid.php:249
+msgid "min"
+msgstr "min"
+
+#: admin/partials/courtres-piramid.php:235
+msgid "This is the duration of the game. This setting has an influence on the player frontend. The player only chooses a starting point, let's say 16:00. The admin has set the game duration to 120 minutes. So the reservation is automatically set from 16:00 to 18:00."
+msgstr "Aceasta este durata jocului. Această setare are o influență asupra frontend-ului jucătorului. Jucătorul alege doar un punct de pornire, să spunem 16:00. Administratorul a setat durata jocului la 120 de minute. Astfel, rezervarea este setată automat de la 16:00 la 18:00."
+
+#: admin/partials/courtres-piramid.php:246
+msgid "The starting point should be the time when the player challenges another player(time stamp). After the expiry, the challenge should simply be deleted so that there are not too many open claims all at once. However, if it has been accepted and / or an appointment has been made, the challenge should no longer be deleted."
+msgstr "Punctul de plecare ar trebui să fie momentul în care jucătorul provoacă un alt jucător (marca de timp). După expirare, provocarea ar trebui să fie pur și simplu ștearsă, astfel încât să nu existe prea multe cereri deschise deodată. Cu toate acestea, dacă a fost acceptată și/sau a fost stabilită o întâlnire, provocarea nu mai trebuie ștearsă."
+
+#: admin/partials/courtres-piramid.php:257
+msgid "This is more relevant if the challenger loses and wants to play again right away. Then he should have to wait at least x days. But I would also say this also applies in the event that the challenger wins and he takes the place of the other. The loser should then only be able to claim back after x days."
+msgstr "Acest lucru este mai relevant dacă challengerul pierde și vrea să joace din nou imediat. Atunci el ar trebui să aștepte cel puțin x zile. Dar aș mai spune că acest lucru se aplică și în cazul în care challengerul câștigă și ia locul celuilalt. În acest caz, învinsul ar trebui să poată revendica jocul doar după x zile."
+
+#: admin/partials/courtres-piramid.php:263
+msgid "Select players"
+msgstr "Selectați jucătorii"
+
+#: admin/partials/courtres-piramid.php:263
+msgid "min. "
+msgstr "min. "
+
+#: admin/partials/courtres-piramid.php:263
+msgid ", max. "
+msgstr ", max. "
+
+#: admin/partials/courtres-piramid.php:278
+msgid "Selected players. You can assing the player position by drag-and-drop"
+msgstr "Jucători selectați. Aveți posibilitatea să ajustați poziția jucătorului prin drag-and-drop"
+
+#: admin/partials/courtres-piramid.php:305
+msgid "Fields text size with unit"
+msgstr "Câmpuri dimensiune text cu unitate"
+
+#: admin/partials/courtres-piramid.php:305
+#: admin/partials/courtres-piramid.php:313
+#: admin/partials/courtres-piramid.php:369
+#: admin/partials/courtres-piramid.php:377
+#: admin/partials/courtres-piramid.php:385
+msgid "example"
+msgstr "exemplu"
+
+#: admin/partials/courtres-piramid.php:313
+msgid "Fields text line height with unit"
+msgstr "Câmpuri înălțime linie text cu unitate"
+
+#: admin/partials/courtres-piramid.php:321
+msgid "Fields text color"
+msgstr "Culoarea textului câmpurilor"
+
+#: admin/partials/courtres-piramid.php:329
+msgid "Enabled fields color"
+msgstr "Culoarea câmpurilor activate"
+
+#: admin/partials/courtres-piramid.php:337
+msgid "Disabled fields color"
+msgstr "Culoarea câmpurilor dezactivate"
+
+#: admin/partials/courtres-piramid.php:345
+msgid "Field hover and active color"
+msgstr "Culoarea câmpului activ și hover"
+
+#: admin/partials/courtres-piramid.php:353
+msgid "Logged-in User Field color"
+msgstr "Utilizator conectat Culoarea câmpului"
+
+#: admin/partials/courtres-piramid.php:361
+msgid "Field border color"
+msgstr "Culoarea marginii câmpului"
+
+#: admin/partials/courtres-piramid.php:369
+msgid "Field border width with unit"
+msgstr "Lățimea marginii câmpului cu unitate"
+
+#: admin/partials/courtres-piramid.php:377
+msgid "Field width with unit"
+msgstr "Lățimea câmpului cu unitate"
+
+#: admin/partials/courtres-piramid.php:385
+msgid "Field height with unit"
+msgstr "Înălțimea câmpului cu unitate"
+
+#: admin/partials/courtres-piramid.php:397
+msgid "Delete Piramid"
+msgstr "Ștergeți Piramid"
+
+#: admin/partials/courtres-piramids.php:31
+msgid "Manage Pyramids"
+msgstr "Gestionați piramidele"
+
+#: admin/partials/courtres-reservations.php:69
+msgid "Filter"
+msgstr "Filtru"
+
+#: admin/partials/courtres-reservations.php:94
+msgid "Teammates"
+msgstr "Colegii de echipă"
+
+#: admin/partials/courtres-reservations.php:149
+msgid "Previous"
+msgstr "Articolul precedent"
+
+#: admin/partials/courtres-reservations.php:168
+msgid "Next"
+msgstr "Următorul"
+
+#: admin/partials/courtres-settings.php:369
+msgid "Court Reservation Plugin: You need to update your template for E-Mail notifications!"
+msgstr "Plugin rezervare instanță: Trebuie să vă actualizați șablonul pentru notificările prin e-mail!"
+
+#: admin/partials/courtres-settings.php:516
+msgid "Not supported placeholders from v1.5.0:"
+msgstr "Nu sunt acceptate spațiile libere de la v1.5.0:"
+
+#: admin/partials/courtres-settings.php:532
+msgid "Max. hours to reserve per reservation (used by if the Fixed Match Duration option for the reservation type not defined)"
+msgstr "Numărul maxim de ore de rezervat pentru fiecare rezervare (utilizat în cazul în care opțiunea Fixed Match Duration pentru tipul de rezervare nu este definită)"
+
+#: admin/partials/courtres-settings.php:542
+msgid "by default"
+msgstr "implicit"
+
+#: admin/partials/courtres-settings.php:607
+msgid "Max. Number of Other Players"
+msgstr "Max. Numărul de alți jucători"
+
+#: admin/partials/courtres-settings.php:615
+msgid "Fixed Match Duration"
+msgstr "Durata fixă a meciului"
+
+#: admin/partials/courtres-upgrade.php:123
+msgid "Ultimate"
+msgstr "Ultimate"
+
+#: admin/partials/courtres-upgrade.php:128
+msgid "Ladder Competitions"
+msgstr "Concursuri pe scări"
+
+#: admin/partials/courtres-widget-upgrade.php:37
+msgid "Upgrade to Court Reservation Ultimate"
+msgstr "Actualizați la Court Reservation Ultimate"
+
+#: admin/partials/courtres-widget-upgrade.php:39
+msgid "New feature: Revive your club life with Ladder Competitions"
+msgstr "Funcție nouă: Revigorați-vă viața de club cu competițiile Ladder"
+
+#: admin/partials/courtres-widget-upgrade.php:41
+msgid "Upgrade to Ultimate"
+msgstr "Actualizați la Ultimate"
+
+#: includes/class-courtres-activator.php:432
+msgid "Court Reservation Plugin: You need to update "
+msgstr "Plugin pentru rezervarea instanțelor: Trebuie să actualizați "
+
+#: includes/class-courtres-activator.php:433
+msgid "your template for E-Mail notifications"
+msgstr "șablonul dvs. pentru notificările prin e-mail"
+
+#: includes/class-courtres-base.php:333
+msgid "You can't make an event in the past"
+msgstr "Nu puteți face un eveniment în trecut"
+
+#: includes/class-courtres-base.php:374
+msgid "You can't make an event that overlaps in time with"
+msgstr "Nu puteți face un eveniment care se suprapune în timp cu"
+
+#: includes/class-courtres-base.php:375
+msgid "another one"
+msgstr "încă unul"
+
+#: includes/class-courtres-base.php:448
+msgid "You can't make a event that overlaps in time with"
+msgstr "Nu puteți face un eveniment care se suprapune în timp cu"
+
+#: includes/class-courtres-base.php:449
+msgid "another reservation"
+msgstr "o altă rezervare"
+
+#: includes/class-courtres-notices.php:53
+#: includes/class-courtres-notices.php:54 public/class-piramids-public.php:187
+msgid "You have been challenged by"
+msgstr "Ați fost provocat de"
+
+#: includes/class-courtres-notices.php:54
+msgid "Accept challenge"
+msgstr "Acceptați provocarea"
+
+#: includes/entity/challenges.php:33
+msgid "Court Id"
+msgstr "Curtea Id"
+
+#: includes/entity/challenges.php:39
+msgid "Piramid Id"
+msgstr "Piramid Id"
+
+#: includes/entity/challenges.php:45
+msgid "Challenger"
+msgstr "Challenger"
+
+#: includes/entity/challenges.php:51
+msgid "Challenged"
+msgstr "Provocat"
+
+#: includes/entity/challenges.php:57
+#: public/partials/courtres-public-piramid.php:158
+msgid "Winner"
+msgstr "Câștigător"
+
+#: includes/entity/challenges.php:63
+msgid "Results"
+msgstr "Rezultate"
+
+#: includes/entity/challenges.php:69
+msgid "Event"
+msgstr "Eveniment"
+
+#: includes/entity/challenges.php:75
+msgid "Status"
+msgstr "Statut"
+
+#: includes/entity/challenges.php:93 includes/entity/piramid.php:59
+#: includes/entity/piramids-players.php:45
+msgid "Active"
+msgstr "Activ"
+
+#: includes/entity/challenges.php:99
+msgid "Created date and time"
+msgstr "Data și ora creării"
+
+#: includes/entity/challenges.php:105
+msgid "Accepted date and time"
+msgstr "Data și ora acceptării"
+
+#: includes/entity/challenges.php:111
+msgid "Closed date and time"
+msgstr "Data și ora închiderii"
+
+#: includes/entity/challenges.php:117
+msgid "Modified date"
+msgstr "Data modificării"
+
+#: includes/entity/piramid.php:35
+msgid "Mode"
+msgstr "Modul"
+
+#: includes/entity/piramid.php:41
+msgid "Challenges duration"
+msgstr "Durata provocărilor"
+
+#: includes/entity/piramid.php:47
+msgid "Challenges life time"
+msgstr "Provocări de-a lungul vieții"
+
+#: includes/entity/piramid.php:53
+msgid "Challenges lock time"
+msgstr "Provocări timp de blocare"
+
+#: includes/entity/piramid.php:65
+msgid "Design"
+msgstr "Design"
+
+#: includes/entity/piramids-players.php:27
+msgid "Piramid id"
+msgstr "Piramid id"
+
+#: includes/entity/piramids-players.php:33
+msgid "Player id"
+msgstr "Id jucător"
+
+#: includes/entity/piramids-players.php:39
+msgid "Position"
+msgstr "Poziția"
+
+#: public/class-courtres-public.php:977
+msgid "Teammate"
+msgstr "Coechipier"
+
+#: public/class-courtres-public.php:978
+msgid "min."
+msgstr "min."
+
+#: public/class-courtres-public.php:979
+msgid "max."
+msgstr "max."
+
+#: public/class-courtres-public.php:980
+msgid "Hold Ctrl / Cmd for the selection of multipe players"
+msgstr "Țineți apăsat Ctrl / Cmd pentru selectarea mai multor jucători"
+
+#: public/class-courtres-public.php:998
+msgid "Court id is not received"
+msgstr "Identificarea instanței nu este primită"
+
+#: public/class-courtres-public.php:1023
+msgid "The court_id param not defined"
+msgstr "Parametrul court_id nu este definit"
+
+#: public/class-courtres-public.php:1028
+msgid "The start_ts param not defined"
+msgstr "Parametrul start_ts nu este definit"
+
+#: public/class-piramids-public.php:182
+msgid "Challenge someone"
+msgstr "Provoacă pe cineva"
+
+#: public/class-piramids-public.php:183
+msgid "Accepting the challenge"
+msgstr "Acceptarea provocării"
+
+#: public/class-piramids-public.php:184
+msgid "To comfirm the challenge you need to login as"
+msgstr "Pentru a confirma provocarea, trebuie să vă conectați ca"
+
+#: public/class-piramids-public.php:185
+msgid "login"
+msgstr "conectare"
+
+#: public/class-piramids-public.php:186
+msgid "You have been challenged"
+msgstr "Ați fost provocat"
+
+#: public/class-piramids-public.php:188
+msgid "Accept the challenge?"
+msgstr "Acceptați provocarea?"
+
+#: public/class-piramids-public.php:189
+msgid "The challenge accepted"
+msgstr "Provocare acceptată"
+
+#: public/class-piramids-public.php:190
+msgid "The challenge"
+msgstr "Provocarea"
+
+#: public/class-piramids-public.php:191
+msgid "was succeffully acepted!"
+msgstr "a fost acceptată cu succes!"
+
+#: public/class-piramids-public.php:192
+msgid "Game Date is required"
+msgstr "Data jocului este necesară"
+
+#: public/class-piramids-public.php:193
+msgid "Game Time is required"
+msgstr "Timpul de joc este necesar"
+
+#: public/class-piramids-public.php:194
+msgid "Court is required"
+msgstr "Curtea este necesară"
+
+#: public/class-piramids-public.php:195
+msgid "Winner is required"
+msgstr "Câștigătorul este necesar"
+
+#: public/class-piramids-public.php:196
+msgid "Delete Challenge?"
+msgstr "Delete Challenge?"
+
+#: public/class-piramids-public.php:248
+msgid "Not all required data received"
+msgstr "Nu s-au primit toate datele solicitate"
+
+#: public/class-piramids-public.php:263
+msgid "Player you challenge is already challenged by another player"
+msgstr "Jucătorul pe care îl provoci este deja provocat de un alt jucător"
+
+#: public/class-piramids-public.php:269
+msgid "Challenging more than one person is not allowed"
+msgstr "Provocarea mai multor persoane nu este permisă"
+
+#: public/class-piramids-public.php:284
+msgid "You cannot challenge"
+msgstr "Nu puteți contesta"
+
+#: public/class-piramids-public.php:284
+msgid " yet. The cool-down phase will be expired at"
+msgstr " încă. Faza de răcire va expira la"
+
+#: public/class-piramids-public.php:292
+msgid "Error inserting into db"
+msgstr "Eroare la inserarea în db"
+
+#: public/class-piramids-public.php:313 public/class-piramids-public.php:379
+#: public/class-piramids-public.php:473 public/class-piramids-public.php:517
+msgid "Challenge id is not received"
+msgstr "ID-ul de provocare nu este primit"
+
+#: public/class-piramids-public.php:320
+msgid "Error accepting the challenge"
+msgstr "Eroare de acceptare a provocării"
+
+#: public/class-piramids-public.php:383
+msgid "Start of game date and time is not received"
+msgstr "Data și ora de începere a jocului nu sunt primite"
+
+#: public/class-piramids-public.php:398
+msgid "The start of the game cannot be ealier than the opening hours of the court"
+msgstr "Începutul jocului nu poate fi mai devreme de ora de deschidere a terenului"
+
+#: public/class-piramids-public.php:402
+msgid "The end of the game cannot be later than the closing times of the court"
+msgstr "Sfârșitul jocului nu poate fi mai târziu de ora de închidere a terenului"
+
+#: public/class-piramids-public.php:420
+msgid "The court is already reserved at that time. Please find another time"
+msgstr "Curtea este deja rezervată la acea oră. Vă rugăm să găsiți un alt moment"
+
+#: public/class-piramids-public.php:450
+msgid "Error updating the challenge"
+msgstr "Eroare la actualizarea provocării"
+
+#: public/class-piramids-public.php:482
+msgid "Error deleting the challenge"
+msgstr "Eroare la ștergerea provocării"
+
+#: public/class-piramids-public.php:491
+msgid "No one challenge event deleted"
+msgstr "Nici un eveniment de provocare șters"
+
+#: public/class-piramids-public.php:522
+msgid "Winner is undefined"
+msgstr "Câștigătorul este nedefinit"
+
+#: public/class-piramids-public.php:527
+msgid "Games result is undefined"
+msgstr "Rezultatul jocurilor este nedefinit"
+
+#: public/class-piramids-public.php:559
+msgid "Error enter the challenge results"
+msgstr "Eroare introduceți rezultatele provocării"
+
+#: public/partials/courtres-public-challenges.php:36
+msgid "accept"
+msgstr "acceptați"
+
+#: public/partials/courtres-public-challenges.php:37
+msgid "Not yet accepted"
+msgstr "Nu a fost încă acceptat"
+
+#: public/partials/courtres-public-challenges.php:39
+#: public/partials/courtres-public-challenges.php:58
+msgid "Game date not yet scheduled"
+msgstr "Data jocului nu a fost încă stabilită"
+
+#: public/partials/courtres-public-challenges.php:47
+#: public/partials/courtres-public-challenges.php:67
+msgid "Will expire"
+msgstr "Va expira"
+
+#: public/partials/courtres-public-challenges.php:56
+msgid "Schedule game date"
+msgstr "Programează data jocului"
+
+#: public/partials/courtres-public-challenges.php:86
+msgid "record result"
+msgstr "înregistrare rezultat"
+
+#: public/partials/courtres-public-challenges.php:118
+msgid "Winner "
+msgstr "Câștigător "
+
+#: public/partials/courtres-public-challenges.php:118
+msgid "Played at "
+msgstr "Redat la "
+
+#: public/partials/courtres-public-display.php:114
+msgid "Select from list"
+msgstr "Selectați din listă"
+
+#: public/partials/courtres-public-piramid.php:19
+msgid "Piramid is allowed in Ultimate version only."
+msgstr "Piramid este permis doar în versiunea Ultimate."
+
+#: public/partials/courtres-public-piramid.php:92
+msgid "Active challenges"
+msgstr "Provocări active"
+
+#: public/partials/courtres-public-piramid.php:93
+msgid "Played challenges"
+msgstr "Provocări jucate"
+
+#: public/partials/courtres-public-piramid.php:96
+msgid "Create challenge"
+msgstr "Creați o provocare"
+
+#: public/partials/courtres-public-piramid.php:102
+#: public/partials/courtres-public-piramid.php:110
+msgid "Do you want to save the challenge?"
+msgstr "Doriți să salvați provocarea?"
+
+#: public/partials/courtres-public-piramid.php:108
+msgid "Schedule challenge"
+msgstr "Provocare de program"
+
+#: public/partials/courtres-public-piramid.php:114
+msgid "Game Date"
+msgstr "Data jocului"
+
+#: public/partials/courtres-public-piramid.php:115
+msgid "Select a game date"
+msgstr "Selectați o dată de joc"
+
+#: public/partials/courtres-public-piramid.php:120
+msgid "Choose court"
+msgstr "Alegeți instanța"
+
+#: public/partials/courtres-public-piramid.php:144
+msgid "Enter Results"
+msgstr "Introduceți rezultatele"
+
+#: public/partials/courtres-public-piramid.php:171
+msgid "Set"
+msgstr "Set"
+
+#: public/partials/courtres-public-piramid.php:187
+msgid "Dialog comfirm title"
+msgstr "Dialog comfirmare titlu"
+
+#: public/partials/courtres-public-piramid.php:188
+msgid "Dialog comfirm content"
+msgstr "Dialog de confirmare a conținutului"
+
+#. Plugin URI of the plugin/theme
+#: 
+msgid "https://www.courtreservation.io"
+msgstr "https://www.courtreservation.io"
+
+#. Author URI of the plugin/theme
+#: 
+msgid "https://www.webmuehle.at"
+msgstr "https://www.webmuehle.at"
+
+#: 
+msgid "Challenge"
+msgstr "Provocare"
+
+#: 
+msgid "Min. Number of Other Players"
+msgstr "Min. Număr de alți jucători"
+
+#: 
+msgid "Max Match Duration"
+msgstr "Durata maximă a meciului"
+
+#: 
+msgid "Choose a color"
+msgstr "Alegeți o culoare"
+
+#: 
+msgid "E-mail Notification"
+msgstr "Notificare prin e-mail"
+
+#: 
+msgid "E-mail sender settings"
+msgstr "Setări expeditor e-mail"
+
+#: 
+msgid "From - Name"
+msgstr "De la - Nume"
+
+#: 
+msgid "From - Address"
+msgstr "De la - Adresă"
+
+#: 
+msgid "Subject"
+msgstr "Subiect"
+
+#: 
+msgid "Header title"
+msgstr "Titlul antetului"
+
+#: 
+msgid "E-mail template settings"
+msgstr "Setări șablon e-mail"
+
+#: 
+msgid "This section allows you to customize the Court Reservation emails."
+msgstr "Această secțiune vă permite să personalizați e-mailurile de rezervare a instanței."
+
+#: 
+msgid "Click here to view an email preview."
+msgstr "Faceți clic aici pentru a vizualiza o previzualizare a e-mailului."
+
+#: 
+msgid "Header image"
+msgstr "Imagine antet"
+
+#: 
+msgid "Footer text"
+msgstr "Textul de subsol"
+
+#: 
+msgid "Header color"
+msgstr "Culoarea antetului"
+
+#: 
+msgid "Background color"
+msgstr "Culoarea de fundal"
+
+#: 
+msgid "Footer background color"
+msgstr "Culoarea de fundal a footer-ului"
+
+#: 
+msgid "Text color"
+msgstr "Culoarea textului"
+
+#: 
+msgid "Add New"
+msgstr "Adaugă nou"
+
+#: 
+msgid "E-mail Notifications"
+msgstr "Notificări prin e-mail"
+
+#: 
+msgid "Anonymization mode"
+msgstr "Modul de anonimizare"
+
+#: 
+msgid "Delete all events"
+msgstr "Ștergeți toate evenimentele"
+
+#: 
+msgid "Delete all previous bookings and events"
+msgstr "Ștergeți toate rezervările și evenimentele anterioare"
+
+#: 
+msgid "Add pixel input for \"Max. width viewport size for mobile design"
+msgstr "Adăugați pixel de intrare pentru \"Dimensiunea maximă a lățimii Viewport pentru design mobil"
+
+#: 
+msgid "Delete expired"
+msgstr "Ștergeți expirat"
+
+#: 
+msgid "Forever"
+msgstr "Pentru totdeauna"
+
+#: 
+msgid "Booked"
+msgstr "Rezervat"
+
+#: 
+msgid "Pending"
+msgstr "În așteptare"
+
