@@ -497,9 +497,9 @@ class Courtres_Activator {
 							<div id="message" class="notice notice-warning is-dismissible">
 								<p>
 								<?php echo esc_html__( 'Court Reservation Plugin: You need to update ', 'courtres' ); ?>
-					<a href="<?php echo esc_url(admin_url( 'admin.php?page=courtres&tab=1' )); ?>">
+			<a href="<?php echo esc_url(admin_url( 'admin.php?page=courtres&tab=1' )); ?>">
 									<?php echo esc_html__( 'your template for E-Mail notifications', 'court-reservation' ); ?>
-					</a>.
+			</a>.
 								</p>
 			</div> 
 							<?php
@@ -528,7 +528,37 @@ class Courtres_Activator {
 		$courtres_version_check = str_replace('.', '', $option_courtres_version->option_value);
 
 		$table_courts = $wpdb->prefix . 'courtres_courts';
-		$wpdb->query("ALTER TABLE $table_courts CHANGE close close SMALLINT(2) NOT NULL CHECK (close<=26);");
+		// Only run ALTER TABLE if needed
+		$needs_alter = false;
+		// Check column type
+		$column = $wpdb->get_row("SHOW COLUMNS FROM $table_courts LIKE 'close'", ARRAY_A);
+		if ( !$column || stripos($column['Type'], 'smallint') === false ) {
+			$needs_alter = true;
+		}
+
+		// Check for CHECK constraint for `close`
+		$create = $wpdb->get_row("SHOW CREATE TABLE $table_courts", ARRAY_A);
+		$has_close_check_26 = false;
+		$has_close_check_wrong = false;
+		if ($create && isset($create['Create Table'])) {
+			// Find all CHECK constraints for `close`
+			if (preg_match_all('/CHECK *\\(.*`close` *<= *([0-9]+).*\\)/i', $create['Create Table'], $matches)) {
+				foreach ($matches[1] as $limit) {
+					if ($limit == 26) {
+						$has_close_check_26 = true;
+					} else {
+						$has_close_check_wrong = true;
+					}
+				}
+			}
+		}
+		if ((!$has_close_check_26 && $has_close_check_wrong) || (!$has_close_check_26 && !$has_close_check_wrong)) {
+			$needs_alter = true;
+		}
+
+		if ($needs_alter) {
+			$wpdb->query("ALTER TABLE $table_courts CHANGE close close SMALLINT(2) NOT NULL CHECK (close<=26);");
+		}
 
 	}
 
