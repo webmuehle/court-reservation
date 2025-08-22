@@ -53,6 +53,15 @@ if ( is_user_logged_in() ) {
 	$this->isReservatedPerPersonInFuture = $this->countUpcomingUserReservations( wp_get_current_user()->ID );
 	$this->isSeveralReservePerson        = $this->getOptionValue( 'several_reserve_person' );
 
+	// enforce numeric limit if enabled (empty/0 = unlimited)
+	$__limit_opt = $this->getOption( 'several_reserve_person_number' );
+	$__limit_val = ( $__limit_opt && isset( $__limit_opt->option_value ) ) ? (int) $__limit_opt->option_value : 0;
+	if ( (string) $this->isSeveralReservePerson === '1' && $__limit_val > 0 ) {
+		if ( (int) $this->isReservatedPerPersonInFuture >= $__limit_val ) {
+			$this->isSeveralReservePerson = 0;
+		}
+	}
+
 	$maxhours                  = $this->getMaxHours();
 	$halfhour                  = $this->ishalfhour() ? '1' : '';
 	$fromDay                   = 0; // $court->days;

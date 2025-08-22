@@ -325,7 +325,8 @@
 						var start_ts   = start_h * 3600 + start_m * 60;
 						var dodatak = 1;
 
-						$( '#cr-ui-save' ).html( courtres_params.cr_btn_save_1[courtid] );
+						var __cr_btn_label = (window.courtres_params && courtres_params.cr_btn_save_1 && courtres_params.cr_btn_save_1[courtid]) || (window.courtres_params && courtres_params.cr_btn_save) || 'Save';
+						$( '#cr-ui-save' ).html( __cr_btn_label );
 
 						// Reservation Type Select
 						// (RA) Adding partner-select after reservation type selected
@@ -400,7 +401,7 @@
 						class: 'cr-ui-button'
 					},
 					'save': {
-						text: courtres_params.cr_btn_save, // 'Speichern',
+						text: (window.courtres_params && courtres_params.cr_btn_save) ? courtres_params.cr_btn_save : 'Save', // fallback safety
 						click: function () {
 							var preloader = $( '.cr-preloader-overlay#plo-add-reserv' );
 							$( preloader ).fadeIn();

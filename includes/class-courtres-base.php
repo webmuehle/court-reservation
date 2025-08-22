@@ -110,24 +110,22 @@ class Courtres_Base {
 		// ));
 
 		// From 1.5.0 >
-		$sql_join        = sprintf( ' LEFT JOIN %1$s ON %1$s.reservation_gid = %2$s.gid', $this->getTable( 'reserv_players' ), $this->getTable( 'reservations' ) );
-		$sql_select_more = sprintf( ', GROUP_CONCAT(%1$s.player_id) AS players, GROUP_CONCAT(%1$s.is_author) AS is_author', $this->getTable( 'reserv_players' ) );
-		$group_by        = ' GROUP BY ' . $this->getTable( 'reservations' ) . '.id';
-				$res     = $wpdb->get_var(
-					$wpdb->prepare(
-						"SELECT COUNT({$this->getTable('reservations')}.id) AS userReservations 
-			FROM {$this->getTable('reservations')}
-			{$sql_join}
-			WHERE ( {$this->getTable('reservations')}.`gid` = {$this->getTable('reserv_players')}.`reservation_gid` AND {$this->getTable('reserv_players')}.`player_id` = %d )
-				AND ( {$this->getTable('reservations')}.`date` > %s OR ({$this->getTable('reservations')}.`date` = %s AND {$this->getTable('reservations')}.`time` >= %d AND {$this->getTable('reservations')}.`minute` >= %d) )
-			{$group_by}",
-						$userID,
-						$theTime['date'],
-						$theTime['date'],
-						$theTime['hour'],
-						0
-					)
-				);
+		$sql_join = sprintf( ' LEFT JOIN %1$s ON %1$s.reservation_gid = %2$s.gid', $this->getTable( 'reserv_players' ), $this->getTable( 'reservations' ) );
+		// Count distinct reservations (gid) for the player in the future
+		$res     = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(DISTINCT {$this->getTable('reservations')}.gid) AS userReservations 
+				FROM {$this->getTable('reservations')}
+				{$sql_join}
+				WHERE {$this->getTable('reserv_players')}.`player_id` = %d
+					AND ( {$this->getTable('reservations')}.`date` > %s OR ( {$this->getTable('reservations')}.`date` = %s AND {$this->getTable('reservations')}.`time` >= %d AND {$this->getTable('reservations')}.`minute` >= %d ) )",
+				$userID,
+				$theTime['date'],
+				$theTime['date'],
+				$theTime['hour'],
+				0
+			)
+		);
 		// fppr($wpdb->last_query, __FILE__.' last_query');
 		// fppr($res , __FILE__.' countUpcomingUserReservations $res ');
 		// < From 1.5.0

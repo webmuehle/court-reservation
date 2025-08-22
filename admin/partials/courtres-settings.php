@@ -142,6 +142,33 @@ if ( isset( $_POST['submit'] ) ) {
 		);
 		$message = __( 'Successfully created!', 'court-reservation' );
 	}
+
+	// save option_several_reserve_person_number
+	$option_several_reserve_person_number_value = '';
+	if ( isset( $_POST['option_several_reserve_person_number'] ) && $_POST['option_several_reserve_person_number'] !== '' ) {
+		$option_several_reserve_person_number_value = (string) absint( $_POST['option_several_reserve_person_number'] );
+	}
+	if ( isset( $_POST['option_several_reserve_person_number_id'] ) && (int) $_POST['option_several_reserve_person_number_id'] > 0 ) { // edit
+		$wpdb->update(
+			$table_name,
+			array(
+				'option_value' => $option_several_reserve_person_number_value,
+			),
+			array( 'option_id' => (int) $_POST['option_several_reserve_person_number_id'] ),
+			array( '%s' )
+		);
+		$message = __( 'Successfully changed!', 'court-reservation' );
+	} else { // create
+		$wpdb->insert(
+			$table_name,
+			array(
+				'option_name'  => 'several_reserve_person_number',
+				'option_value' => $option_several_reserve_person_number_value,
+			),
+			array( '%s', '%s' )
+		);
+		$message = __( 'Successfully created!', 'court-reservation' );
+	}
 	// save option_several_reserve_person
 	$option_calender_view_navigator_value = '1';
 	if ( isset( $_POST['option_calender_view_navigator'] ) ) {
@@ -452,6 +479,14 @@ if ( ! isset( $option_several_reserve_person ) ) {
 	$option_several_reserve_person->option_value = '0';
 }
 
+$option_several_reserve_person_number = $wpdb->get_row( "SELECT * FROM $table_name WHERE option_name = 'several_reserve_person_number'" );
+if ( ! isset( $option_several_reserve_person_number ) ) {
+	$option_several_reserve_person_number               = new stdClass();
+	$option_several_reserve_person_number->option_id    = 0;
+	$option_several_reserve_person_number->option_name  = 'several_reserve_person_number';
+	$option_several_reserve_person_number->option_value = '';
+}
+
 $option_calender_view_navigator = $wpdb->get_row( "SELECT * FROM $table_name WHERE option_name = 'calender_view_navigator'" );
 if ( ! isset( $option_calender_view_navigator ) ) {
 	$option_calender_view_navigator               = new stdClass();
@@ -644,6 +679,7 @@ require 'courtres-notice-message.php';
 				<input type="hidden" name="option_max_h_id" value="<?php echo esc_attr( $option_max_h->option_id ); ?>" />
 				<input type="hidden" name="option_half_hour_id" value="<?php echo esc_attr( $option_half_hour->option_id ); ?>" />
 				<input type="hidden" name="option_several_reserve_person_id" value="<?php echo esc_attr( $option_several_reserve_person->option_id ); ?>" />
+				<input type="hidden" name="option_several_reserve_person_number_id" value="<?php echo esc_attr( $option_several_reserve_person_number->option_id ); ?>" />
 				<input type="hidden" name="option_calender_view_navigator_id" value="<?php echo esc_attr( $option_calender_view_navigator->option_id ); ?>" />
 				<input type="hidden" name="option_anonymization_mode_id" value="<?php echo esc_attr( $option_anonymization_mode->option_id ); ?>" />
 				<input type="hidden" name="option_reservation_types_id" value="<?php echo esc_attr( $option_reservation_types->option_id ); ?>" />
@@ -683,7 +719,7 @@ require 'courtres-notice-message.php';
 							<?php echo esc_html__( 'Max. hours to reserve per reservation (used by if the Fixed Match Duration option for the reservation type not defined)', 'court-reservation' ); ?>
 						</td>
 						<td style="border-top: 1px solid #ccc; padding-top: 10px;">
-							<input type="number" name="option_max_h" min="0" max="24" maxlength="2" value="<?php echo esc_html( $option_max_h->option_value ); ?>">
+							<input type="number" name="option_max_h" min="0" max="24" maxlength="2" value="<?php echo esc_html( $option_max_h->option_value ); ?>" style="max-width: 70px;">
 							<div class="tooltip">
 								<div class="symbol">
 									<span>?</span>
@@ -716,6 +752,16 @@ require 'courtres-notice-message.php';
 							</label>
 						</td>
 					</tr>
+					<?php if ( $option_several_reserve_person->option_value === '1' ) { ?>
+					<tr>
+						<td>
+							<?php echo esc_html__( 'Set the number of active reservations per person (empty or zero for unlimited)', 'court-reservation' ); ?>
+						</td>
+						<td>
+							<input type="number" min="1" name="option_several_reserve_person_number" value="<?php echo esc_attr( $option_several_reserve_person_number->option_value ); ?>" placeholder="" style="max-width: 70px;" />
+						</td>
+					</tr>
+					<?php } ?>
 					<tr>
 						<td>
 							<?php echo esc_html__( 'Calendar navigation', 'court-reservation' ); ?>

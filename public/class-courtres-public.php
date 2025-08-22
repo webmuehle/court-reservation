@@ -1057,6 +1057,7 @@ class Courtres_Public extends Courtres_Base {
 			array(
 				'cr_ids'                  => $cr_ids,
 				'cr_url'                  => plugins_url( '', __FILE__ ),
+				'cr_btn_save'             => __( $ctr_btn_save_[$court_id], 'court-reservation' ),
 				'cr_btn_save_1'           => array( $court_id => __( $ctr_btn_save_[$court_id], 'court-reservation' )),
 				'cr_btn_cancel'           => __( 'Cancel', 'court-reservation' ),
 				'cr_option_ui_dateformat' => $this->getDateFormat(),
