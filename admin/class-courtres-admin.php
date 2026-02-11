@@ -175,6 +175,11 @@ class Courtres_Admin extends Courtres_Base {
 			return $this->handleError( __( 'No permission.', 'court-reservation' ) );
 		}
 
+		// CSRF verification
+		if ( ! isset( $_REQUEST['courtres_add_reservation_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['courtres_add_reservation_nonce'] ) ), 'courtres_add_reservation' ) ) {
+			return $this->handleError( __( 'Security check failed.', 'court-reservation' ) );
+		}
+
 		if ( isset( $_REQUEST['delete'] ) && isset( $_REQUEST['id'] ) ) { // delete reservation
 			$reservation = $this->getReservationByID( sanitize_text_field( $_REQUEST['id'] ) );
 			if ( $reservation == null || $reservation->userid != wp_get_current_user()->ID ) {

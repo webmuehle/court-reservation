@@ -89,6 +89,7 @@ if ( is_user_logged_in() ) {
 <!-- CR-DIALOG-RESERVE -->
 <div id="cr-dialog-reserve-<?php echo esc_attr( $courtID ); ?>" class="cr-dialog-reserve" title="<?php echo esc_attr( $court->name ); ?> <?php echo esc_html__( 'Reservation', 'court-reservation' ); ?>" style="display:none;">
 	<form id="cr-form-reserve-<?php echo esc_attr( $courtID ); ?>" class="resform" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" >
+		<?php wp_nonce_field( 'courtres_add_reservation', 'courtres_add_reservation_nonce' ); ?>
 		<input type="hidden" name="action" value="add_reservation">
 		<input type="hidden" name="courtid" value="<?php echo esc_attr( $court->id ); ?>" />
 		<input type="hidden" name="maxhours" value="<?php echo esc_attr( $maxhours ); ?>" />

@@ -287,11 +287,12 @@
 
 				$cr_table.find( "table.reservations a.delete" ).click(
 					function () {
+						var $nonce = $cr_frm_reserve.find( 'input[name="courtres_add_reservation_nonce"]' ).val();
 						$.ajax(
 							{
 								type: "POST",
 								url: $url_reserve,
-								data: "action=add_reservation&id=" + $( this ).attr( 'data-id' ) + "&delete=true",
+								data: "action=add_reservation&id=" + $( this ).attr( 'data-id' ) + "&delete=true&courtres_add_reservation_nonce=" + ( $nonce || '' ),
 								success: function (msg) {
 									window.location.href = window.location.href.replace( window.location.hash, "" );
 								},

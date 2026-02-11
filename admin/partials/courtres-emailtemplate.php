@@ -22,6 +22,16 @@ global $wpdb;
 $table_name = $this->getTable( 'settings' );
 
 if ( isset( $_POST['submit'] ) ) {
+	if ( ! isset( $_POST['courtres_email_template_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['courtres_email_template_nonce'] ) ), 'courtres_email_template' ) ) {
+		wp_die(
+			esc_html__( 'Security check failed. Please try again.', 'court-reservation' ),
+			esc_html__( 'Error', 'court-reservation' ),
+			array(
+				'response'  => 403,
+				'back_link' => true,
+			)
+		);
+	}
 
 	if ( isset( $_POST['email_notify_players'] ) ) {
 		// Checkbox is selected
@@ -480,7 +490,7 @@ require 'courtres-notice-message.php';
 			</h2>
 
 			<form method="post">
-
+				<?php wp_nonce_field( 'courtres_email_template', 'courtres_email_template_nonce' ); ?>
 				<input type="hidden" name="option_email_id" value="<?php echo esc_attr( $option_email->option_id ); ?>" />
 				<input type="hidden" name="option_email_template_id" value="<?php echo wp_kses_post( $option_email_template->option_id ); ?>" />
 				<input type="hidden" name="option_email_1_id" value="<?php echo esc_attr( $option_email_1->option_id ); ?>" />

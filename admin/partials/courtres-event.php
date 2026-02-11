@@ -78,6 +78,16 @@ if ( isset( $_GET['eventID'] ) ) {
 }
 
 if ( isset( $_POST['delete'] ) && isset( $_POST['id'] ) && (int) $_POST['id'] > 0 ) { // delete
+	if ( ! isset( $_POST['courtres_event_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['courtres_event_nonce'] ) ), 'courtres_event' ) ) {
+		wp_die(
+			esc_html__( 'Security check failed. Please try again.', 'court-reservation' ),
+			esc_html__( 'Error', 'court-reservation' ),
+			array(
+				'response'  => 403,
+				'back_link' => true,
+			)
+		);
+	}
 	$res = $wpdb->delete( $table_name, array( 'id' => (int) $_POST['id'] ) );
 	if ( $res ) {
 		$is_deleted = true;
@@ -114,6 +124,16 @@ if (isset($dow) && is_numeric($dow))
 
 // submitted form >
 if ( isset( $_POST['submit'] ) ) {
+	if ( ! isset( $_POST['courtres_event_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['courtres_event_nonce'] ) ), 'courtres_event' ) ) {
+		wp_die(
+			esc_html__( 'Security check failed. Please try again.', 'court-reservation' ),
+			esc_html__( 'Error', 'court-reservation' ),
+			array(
+				'response'  => 403,
+				'back_link' => true,
+			)
+		);
+	}
 	// declare vars
 	$is_insert_update = true;
 	$event_timestamp  = $event_date ? strtotime( $event_date ) : false;
@@ -299,6 +319,7 @@ if ( $event ) {
 	<?php if ( $event->type != 'challenge' && ! $is_created && ! $is_deleted ) : ?>
 
 		<form method="post">
+			<?php wp_nonce_field( 'courtres_event', 'courtres_event_nonce' ); ?>
 			<input type="hidden" name="id" value="<?php echo esc_attr( $event->id ); ?>" />
 			<table class="t-form">
 				<tr>

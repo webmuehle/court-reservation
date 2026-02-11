@@ -31,6 +31,16 @@ if ( ! current_user_can( 'list_users' ) ) {
 
 	// deleting the challenge
 if ( isset( $_POST['id'] ) && isset( $_POST['delete'] ) ) {
+	if ( ! isset( $_POST['courtres_delete_challenge_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['courtres_delete_challenge_nonce'] ) ), 'courtres_delete_challenge' ) ) {
+		wp_die(
+			esc_html__( 'Security check failed. Please try again.', 'court-reservation' ),
+			esc_html__( 'Error', 'court-reservation' ),
+			array(
+				'response'  => 403,
+				'back_link' => true,
+			)
+		);
+	}
 	$challenge_class = new Courtres_Entity_Challenges( intval( $_POST['id'] ) );
 	// first delete linked challenge event
 	global $wpdb;
@@ -72,7 +82,7 @@ if ( isset( $_POST['id'] ) && isset( $_POST['delete'] ) ) {
 
 		$challenge = array_intersect_key( $challenge, $columns );
 
-		$challenge['action'] = ( $challenge['status'] == 'accepted' || $challenge['status'] == 'scheduled' ) ? sprintf( '<form method="POST"><input type="hidden" name="id" value="%d"><input class="button" type="submit" name="delete" value="%s"></form>', $challenge['id'], __( 'Delete', 'court-reservation' ) ) : false;  // Added delete action to accepted challenges only
+		$challenge['action'] = ( $challenge['status'] == 'accepted' || $challenge['status'] == 'scheduled' ) ? sprintf( '<form method="POST">%s<input type="hidden" name="id" value="%d"><input class="button" type="submit" name="delete" value="%s"></form>', wp_nonce_field( 'courtres_delete_challenge', 'courtres_delete_challenge_nonce', false ), $challenge['id'], __( 'Delete', 'court-reservation' ) ) : false;  // Added delete action to accepted challenges only
 	}
 
 	$challengesListTable = new Courtres_Base_List_Table();

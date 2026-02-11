@@ -21,8 +21,17 @@ if ( ! current_user_can( 'manage_options' ) ) {
 global $wpdb;
 $table_name = $this->getTable( 'settings' );
 
-if ( isset( $_POST['delete_all_events'] ) && $_POST['delete_all_events'] == "delete")
-{
+if ( isset( $_POST['delete_all_events'] ) && $_POST['delete_all_events'] == "delete" ) {
+	if ( ! isset( $_POST['courtres_delete_all_events_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['courtres_delete_all_events_nonce'] ) ), 'courtres_delete_all_events' ) ) {
+		wp_die(
+			esc_html__( 'Security check failed. Please try again.', 'court-reservation' ),
+			esc_html__( 'Error', 'court-reservation' ),
+			array(
+				'response'  => 403,
+				'back_link' => true,
+			)
+		);
+	}
 	// $wpdb->query( "DELETE FROM {$this->getTable('reserv_players')} WHERE `reservation_gid` = '$gid'" );
 	$wpdb->query( "TRUNCATE `wp_courtres_events`" );
 	$wpdb->query( "TRUNCATE `wp_courtres_reserv_players`" );
@@ -30,6 +39,16 @@ if ( isset( $_POST['delete_all_events'] ) && $_POST['delete_all_events'] == "del
 }
 
 if ( isset( $_POST['submit'] ) ) {
+	if ( ! isset( $_POST['courtres_delete_all_events_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['courtres_delete_all_events_nonce'] ) ), 'courtres_delete_all_events' ) ) {
+		wp_die(
+			esc_html__( 'Security check failed. Please try again.', 'court-reservation' ),
+			esc_html__( 'Error', 'court-reservation' ),
+			array(
+				'response'  => 403,
+				'back_link' => true,
+			)
+		);
+	}
 	//echo "<pre>"; print_r($_POST); die;
 
 	$email_notify_players = '1';
@@ -675,6 +694,7 @@ require 'courtres-notice-message.php';
 			</h2>
 
 			<form method="post">
+				<?php wp_nonce_field( 'courtres_delete_all_events', 'courtres_delete_all_events_nonce' ); ?>
 				<input type="hidden" name="option_email_id" value="<?php echo esc_attr( $option_email->option_id ); ?>" />
 				<input type="hidden" name="option_max_h_id" value="<?php echo esc_attr( $option_max_h->option_id ); ?>" />
 				<input type="hidden" name="option_half_hour_id" value="<?php echo esc_attr( $option_half_hour->option_id ); ?>" />

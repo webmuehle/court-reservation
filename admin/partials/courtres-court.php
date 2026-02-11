@@ -61,10 +61,30 @@ if ( isset( $courtID ) && ! $this->isCourtPremium( $courtID ) ) {
 }
 
 if ( isset( $_POST['delete'] ) && isset( $_POST['id'] ) && (int) $_POST['id'] > 0 ) { // delete
+	if ( ! isset( $_POST['courtres_court_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['courtres_court_nonce'] ) ), 'courtres_court' ) ) {
+		wp_die(
+			esc_html__( 'Security check failed. Please try again.', 'court-reservation' ),
+			esc_html__( 'Error', 'court-reservation' ),
+			array(
+				'response'  => 403,
+				'back_link' => true,
+			)
+		);
+	}
 	$wpdb->delete( $table_name, array( 'id' => (int) $_POST['id'] ) );
 }
 
 if ( isset( $_POST['submit'] ) ) {
+	if ( ! isset( $_POST['courtres_court_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['courtres_court_nonce'] ) ), 'courtres_court' ) ) {
+		wp_die(
+			esc_html__( 'Security check failed. Please try again.', 'court-reservation' ),
+			esc_html__( 'Error', 'court-reservation' ),
+			array(
+				'response'  => 403,
+				'back_link' => true,
+			)
+		);
+	}
 	if ( isset( $_POST['id'] ) && (int) $_POST['id'] > 0 ) { // edit
 		$wpdb->update(
 			$table_name,
@@ -280,6 +300,7 @@ if ( ! isset( $court ) ) {
   <hr class="wp-header-end">
 
   <form method="post">
+	<?php wp_nonce_field( 'courtres_court', 'courtres_court_nonce' ); ?>
 	<input type="hidden" name="id" value="<?php echo esc_html( $court->id ); ?>" />
 	<table>
 	  <tr>

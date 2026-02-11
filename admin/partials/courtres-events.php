@@ -15,7 +15,17 @@
 
 <?php
 
-if (isset($_POST['delete_all_events']) && $_POST['delete_all_events'] == 1) {
+if ( isset( $_POST['delete_all_events'] ) && $_POST['delete_all_events'] == 1 ) {
+	if ( ! isset( $_POST['courtres_delete_all_events_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['courtres_delete_all_events_nonce'] ) ), 'courtres_delete_all_events' ) ) {
+		wp_die(
+			esc_html__( 'Security check failed. Please try again.', 'court-reservation' ),
+			esc_html__( 'Error', 'court-reservation' ),
+			array(
+				'response'  => 403,
+				'back_link' => true,
+			)
+		);
+	}
 	$this->delete_all_events();
 }
 
@@ -79,6 +89,7 @@ require 'courtres-notice-upgrade.php';
 	<div class="cr-head-right">
 
 		<form id="delete_events" method="post" action="<?php echo esc_url(admin_url( 'admin.php?page=courtres-events' )); ?>">
+			<?php wp_nonce_field( 'courtres_delete_all_events', 'courtres_delete_all_events_nonce' ); ?>
 			<input type="hidden" name="delete_all_events" value="1" />
 			<p class="submit">
 				<button type="button" class="button button-primary" onclick="deleteEvents();"><?php echo esc_html__( 'Delete all events', 'court-reservation' ); ?></button>

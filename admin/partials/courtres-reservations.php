@@ -15,7 +15,17 @@
 
 <?php
 
-if (isset($_POST['delete_expired_reservations']) && $_POST['delete_expired_reservations'] == 1) {
+if ( isset( $_POST['delete_expired_reservations'] ) && $_POST['delete_expired_reservations'] == 1 ) {
+	if ( ! isset( $_POST['courtres_delete_expired_reservations_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['courtres_delete_expired_reservations_nonce'] ) ), 'courtres_delete_expired_reservations' ) ) {
+		wp_die(
+			esc_html__( 'Security check failed. Please try again.', 'court-reservation' ),
+			esc_html__( 'Error', 'court-reservation' ),
+			array(
+				'response'  => 403,
+				'back_link' => true,
+			)
+		);
+	}
 	$this->delete_expired_reservations();
 }
 
@@ -23,6 +33,16 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	wp_die();
 }
 if ( isset( $_POST['id'] ) && isset( $_POST['delete'] ) ) {
+	if ( ! isset( $_POST['courtres_delete_reservation_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['courtres_delete_reservation_nonce'] ) ), 'courtres_delete_reservation' ) ) {
+		wp_die(
+			esc_html__( 'Security check failed. Please try again.', 'court-reservation' ),
+			esc_html__( 'Error', 'court-reservation' ),
+			array(
+				'response'  => 403,
+				'back_link' => true,
+			)
+		);
+	}
 	$this->deleteReservationByID( sanitize_text_field( $_POST['id'] ) );
 }
 ?>
@@ -63,6 +83,7 @@ if ( $is_view_expired ) {
 	<div class="cr-head-right">
 
 		<form id="delete_expired_reservations" method="post" action="<?php echo esc_url(admin_url( 'admin.php?page=courtres-reservations' )); ?>">
+			<?php wp_nonce_field( 'courtres_delete_expired_reservations', 'courtres_delete_expired_reservations_nonce' ); ?>
 			<input type="hidden" name="delete_expired_reservations" value="1" />
 			<p class="submit">
 				<button type="button" class="button button-primary" onclick="deleteExpiredReservations();"><?php echo esc_html__( 'Delete expired', 'court-reservation' ); ?></button>
@@ -156,6 +177,7 @@ if ( $is_view_expired ) {
 					</td>
 					<td>
 						<form method="POST">
+							<?php wp_nonce_field( 'courtres_delete_reservation', 'courtres_delete_reservation_nonce' ); ?>
 							<input type="hidden" name="id" value="<?php echo esc_attr( $item->id ); ?>"/>
 							<input class="button" type="submit" name="delete" value="<?php echo esc_attr__( 'Delete', 'court-reservation' ); ?>"/>
 						</form>

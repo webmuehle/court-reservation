@@ -22,6 +22,16 @@ global $wpdb;
 $table_name = $this->getTable( 'settings' );
 
 if ( isset( $_POST['submit'] ) ) {
+	if ( ! isset( $_POST['courtres_ui_settings_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['courtres_ui_settings_nonce'] ) ), 'courtres_ui_settings' ) ) {
+		wp_die(
+			esc_html__( 'Security check failed. Please try again.', 'court-reservation' ),
+			esc_html__( 'Error', 'court-reservation' ),
+			array(
+				'response'  => 403,
+				'back_link' => true,
+			)
+		);
+	}
 	$option_ui_link = '0';
 	if ( isset( $_POST['option_ui_link'] ) ) {
 		// Checkbox is selected
@@ -556,6 +566,7 @@ require 'courtres-notice-message.php';
 			</h2>
 
 			<form method="post">
+				<?php wp_nonce_field( 'courtres_ui_settings', 'courtres_ui_settings_nonce' ); ?>
 				<input type="hidden" name="option_ui_tbl_brdr_clr_id" value="<?php echo esc_attr( $option_ui_tbl_brdr_clr->option_id ); ?>" />
 				<input type="hidden" name="option_ui_tbl_bg_clr_1_id" value="<?php echo esc_attr( $option_ui_tbl_bg_clr_1->option_id ); ?>" />
 				<input type="hidden" name="option_ui_tbl_bg_clr_2_id" value="<?php echo esc_attr( $option_ui_tbl_bg_clr_2->option_id ); ?>" />
