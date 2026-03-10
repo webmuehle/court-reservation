@@ -828,8 +828,12 @@ class Courtres_Admin extends Courtres_Base {
 
 	public function getCourtByID( $courtID ) {
 		global $wpdb;
+		$courtID = absint( $courtID );
+		if ( 0 === $courtID ) {
+			return null;
+		}
 		$table_courts = $this->getTable( 'courts' );
-		return $wpdb->get_row( "SELECT * FROM $table_courts WHERE id = $courtID" );
+		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_courts WHERE id = %d", $courtID ) );
 	}
 
 	/**
@@ -941,12 +945,12 @@ class Courtres_Admin extends Courtres_Base {
 
 	public function getReservationByID( $reservationID ) {
 		global $wpdb;
-		return $wpdb->get_row( "SELECT * FROM {$this->getTable('reservations')} WHERE id = $reservationID" );
+		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->getTable('reservations')} WHERE id = %d", absint( $reservationID ) ) );
 	}
 
 	public function getReservationsByGID( $gid ) {
 		global $wpdb;
-		return $wpdb->get_results( "SELECT * FROM {$this->getTable('reservations')} WHERE `gid` = '$gid'" );
+		return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$this->getTable('reservations')} WHERE `gid` = %s", $gid ) );
 	}
 
 	public function getReservationByUser( $userID ) {
@@ -985,7 +989,7 @@ class Courtres_Admin extends Courtres_Base {
 		if ( $res ) {
 			$reservations = $this->getReservationsByGID( $r->gid );
 			if ( ! count( $reservations ) ) {
-				$wpdb->query( "DELETE FROM {$this->getTable('reserv_players')} WHERE `reservation_gid` = '" . $r->gid . "'" );
+				$wpdb->query( $wpdb->prepare( "DELETE FROM {$this->getTable('reserv_players')} WHERE `reservation_gid` = %s", $r->gid ) );
 			}
 		}
 		// < from 1.5.0
@@ -994,12 +998,10 @@ class Courtres_Admin extends Courtres_Base {
 
 	public function deleteReservationByDateGid( $sdt, $gid ) {
 		global $wpdb;
-		$res = $wpdb->query( "DELETE FROM {$this->getTable('reservations')} WHERE DATE(date) = '$sdt' AND gid = '$gid'" );
-		// from 1.5.0 >
+		$res = $wpdb->query( $wpdb->prepare( "DELETE FROM {$this->getTable('reservations')} WHERE DATE(date) = %s AND gid = %s", $sdt, $gid ) );
 		if ( $res ) {
-			$wpdb->query( "DELETE FROM {$this->getTable('reserv_players')} WHERE `reservation_gid` = '$gid'" );
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$this->getTable('reserv_players')} WHERE `reservation_gid` = %s", $gid ) );
 		}
-		// < from 1.5.0
 	}
 
 	public function cleanUpReservations() {
@@ -1015,16 +1017,19 @@ class Courtres_Admin extends Courtres_Base {
 		// $wpdb->get_results('SET @@time_zone = "'.$theTime["offset"].'";');
 
 		return $wpdb->get_results(
-			"SELECT * FROM {$this->getTable('reservations')} WHERE courtid = $courtID AND
+			$wpdb->prepare(
+				"SELECT * FROM {$this->getTable('reservations')} WHERE courtid = %d AND
 			date >= CURDATE()
-		ORDER BY date, time"
+		ORDER BY date, time",
+				absint( $courtID )
+			)
 		);
 	}
 
 	public function getBlocksByID( $courtID ) {
 		global $wpdb;
 		$table_blocks = $this->getTable( 'events' );
-		return $wpdb->get_results( "SELECT * FROM $table_blocks WHERE courtid = $courtID ORDER BY dow" );
+		return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table_blocks WHERE courtid = %d ORDER BY dow", absint( $courtID ) ) );
 	}
 
 	private function getWeekdays() {
@@ -1142,7 +1147,7 @@ class Courtres_Admin extends Courtres_Base {
 	public function getOption( $name ) {
 		global $wpdb;
 		$table_name = $this->getTable( 'settings' );
-		$res        = $wpdb->get_row( "SELECT * FROM $table_name WHERE option_name = '" . $name . "'" );
+		$res        = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE option_name = %s", $name ) );
 		return $res;
 	}
 

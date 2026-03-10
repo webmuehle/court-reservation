@@ -231,7 +231,7 @@ $event_type_color = get_option( 'option_event_type_color' );
 // Defaults
 $event = false;
 if ( isset( $eventID ) && $eventID ) {
-	$event = $wpdb->get_row( "SELECT * FROM $table_name WHERE id = $eventID" );
+	$event = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE id = %d", absint( $eventID ) ) );
 }
 if ( $event ) {
 	$event->event_date = $event->event_date == '0000-00-00' ? '' : mysql2date( 'd-m-Y', $event->event_date );

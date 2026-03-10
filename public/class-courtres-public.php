@@ -92,20 +92,24 @@ class Courtres_Public extends Courtres_Base {
 
 	public function getCourtByID( $courtID ) {
 		global $wpdb;
+		$courtID = absint( $courtID );
+		if ( 0 === $courtID ) {
+			return null;
+		}
 		$table_courts = $this->getTable( 'courts' );
 		$table_settings = $this->getTable( 'settings' );
-		$court = $wpdb->get_row( "SELECT * FROM $table_courts WHERE id = $courtID" );
+		$court = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_courts WHERE id = %d", $courtID ) );
 
-		if (isset($court)) 
-		{ 
+		if (isset($court))
+		{
 			$court_option = "option_payment_" . $courtID;
-			$court_payable = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$court_option' ORDER BY `option_id` DESC LIMIT 1" );
-			if ( $court_payable != 1 ) { $court->payable = $court_payable_id->option_value; }
-			else 
-			{ 
+			$court_payable = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_settings WHERE option_name = %s ORDER BY `option_id` DESC LIMIT 1", $court_option ) );
+			if ( $court_payable && $court_payable->option_value != 1 ) { $court->payable = $court_payable->option_value; }
+			else
+			{
 				$court_option = "option_payment_id_" . $courtID;
-				$court_payable_id = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$court_option' ORDER BY `option_id` DESC LIMIT 1" );
-				if (is_numeric($court_payable_id->option_value) && $court_payable_id->option_value > 0) 
+				$court_payable_id = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_settings WHERE option_name = %s ORDER BY `option_id` DESC LIMIT 1", $court_option ) );
+				if ( $court_payable_id && is_numeric($court_payable_id->option_value) && $court_payable_id->option_value > 0 )
 				{ $court->payable = $court_payable_id->option_value; }
 				else { $court->payable = 0; }
 			}
@@ -164,12 +168,15 @@ class Courtres_Public extends Courtres_Base {
 		$sql_select_more  = sprintf( ', GROUP_CONCAT(%1$s.player_id) AS players, GROUP_CONCAT(%1$s.is_author) AS is_author', $this->getTable( 'reserv_players' ) );
 		$group_by         = ' GROUP BY ' . $this->getTable( 'reservations' ) . '.id';
 				$res      = $wpdb->get_results(
-					"SELECT {$this->getTable('reservations')}.*{$sql_select_more} 
+					$wpdb->prepare(
+						"SELECT {$this->getTable('reservations')}.*{$sql_select_more} 
 			FROM {$this->getTable('reservations')}
 			{$sql_join} 
-			WHERE courtid = $courtID AND date >= CURDATE() 
+			WHERE courtid = %d AND date >= CURDATE() 
 			{$group_by}
-			ORDER BY date, time, minute"
+			ORDER BY date, time, minute",
+						absint( $courtID )
+					)
 				);
 
 		return $res;
@@ -178,7 +185,7 @@ class Courtres_Public extends Courtres_Base {
 	public function getBlocksByID( $courtID ) {
 		global $wpdb;
 		$table_blocks = $this->getTable( 'events' );
-		return $wpdb->get_results( "SELECT * FROM $table_blocks WHERE courtid = $courtID ORDER BY dow" );
+		return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table_blocks WHERE courtid = %d ORDER BY dow", absint( $courtID ) ) );
 	}
 
 	public function getBlocksRepeatFutureByID( $courtID ) {
@@ -189,7 +196,7 @@ class Courtres_Public extends Courtres_Base {
 		// $wpdb->get_results('SET @@time_zone = "'.$theTime["offset"].'";');
 
 		$table_blocks = $this->getTable( 'events' );
-		return $wpdb->get_results( "SELECT * FROM $table_blocks WHERE courtid = $courtID AND (repeatone IS NULL OR repeatone >= CURDATE()) ORDER BY dow, start" );
+		return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table_blocks WHERE courtid = %d AND (repeatone IS NULL OR repeatone >= CURDATE()) ORDER BY dow, start", absint( $courtID ) ) );
 	}
 
 	public function getMaxHours() {
@@ -229,8 +236,8 @@ class Courtres_Public extends Courtres_Base {
 	public function getCourtresClosed($courtID) {
 		global $wpdb;
 		$table_settings = $this->getTable( 'settings' );
-		$court_option = "option_closed_court_" . $courtID->id;
-		$court_closed = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$court_option' ORDER BY `option_id` DESC LIMIT 1" );
+		$court_option = "option_closed_court_" . absint( $courtID->id );
+		$court_closed = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_settings WHERE option_name = %s ORDER BY `option_id` DESC LIMIT 1", $court_option ) );
 		if ( ! $court_closed ) {
 			return 0;
 		}
@@ -413,7 +420,7 @@ class Courtres_Public extends Courtres_Base {
 
 	private function reservationLastTime( $reservation ) {
 		global $wpdb;
-		$founds = $wpdb->get_results( "SELECT * FROM {$this->getTable('reservations')} WHERE gid = '$reservation->gid' ORDER BY time DESC, minute DESC LIMIT 1" );
+		$founds = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$this->getTable('reservations')} WHERE gid = %s ORDER BY time DESC, minute DESC LIMIT 1", $reservation->gid ) );
 		foreach ( $founds as $res ) {
 			return $res;
 		}
@@ -425,9 +432,9 @@ class Courtres_Public extends Courtres_Base {
 		global $wpdb;
 		$theTime  = getCurrentDateTime();
 		$datetime = new DateTime( $theTime['datetime'] );
-		$datetime->modify( '+' . $day . ' day' );
+		$datetime->modify( '+' . absint( $day ) . ' day' );
 		$sdt      = $datetime->format( 'Y-m-d' );
-		$rowcount = $wpdb->get_var( "SELECT COUNT(*) FROM {$this->getTable('reservations')} WHERE courtid = $courtID AND DATE(date) = '$sdt' AND gid = '$gid'" );
+		$rowcount = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$this->getTable('reservations')} WHERE courtid = %d AND DATE(date) = %s AND gid = %s", absint( $courtID ), $sdt, $gid ) );
 		return $rowcount;
 	}
 
@@ -1364,7 +1371,7 @@ class Courtres_Public extends Courtres_Base {
 	public function ajax_cr_navigator() {
 		global $wpdb;
 		status_header( 200 );
-		$courtID = isset( $_REQUEST['id'] ) ? sanitize_text_field( $_REQUEST['id'] ) : 0;
+		$courtID = isset( $_REQUEST['id'] ) ? absint( $_REQUEST['id'] ) : 0;
 		include 'partials/' . $this->plugin_name . '-public-table.php';
 		wp_die();
 	}
@@ -1372,7 +1379,8 @@ class Courtres_Public extends Courtres_Base {
 	public function ajax_cr_navigator_full_view() {
 		global $wpdb;
 		status_header( 200 );
-		$courtID = isset( $_REQUEST['id'] ) ? sanitize_text_field( $_REQUEST['id'] ) : 0;
+		$courtID_raw = isset( $_REQUEST['id'] ) ? sanitize_text_field( $_REQUEST['id'] ) : '';
+		$courtID = preg_match( '/^[\d_]+$/', $courtID_raw ) ? $courtID_raw : '';
 		include 'partials/' . $this->plugin_name . '-public-table-full-view.php';
 		wp_die();
 	}
@@ -1387,7 +1395,7 @@ class Courtres_Public extends Courtres_Base {
 	public function ajax_cr_navigator_calendar() {
 		global $wpdb;
 		status_header( 200 );
-		$courtID = isset( $_REQUEST['id'] ) ? sanitize_text_field( $_REQUEST['id'] ) : 0;
+		$courtID = isset( $_REQUEST['id'] ) ? absint( $_REQUEST['id'] ) : 0;
 		include 'partials/' . $this->plugin_name . '-public-table-calendar.php';
 		wp_die();
 	}
@@ -1883,17 +1891,16 @@ class Courtres_Public extends Courtres_Base {
 
     function is_court_payable($courtID,$table_settings)
     {
-
 	global $wpdb;
-
+	$courtID = absint( $courtID );
 	$court_option = "option_payment_" . $courtID;
-	$court_payable = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$court_option' ORDER BY `option_id` DESC LIMIT 1" );
+	$court_payable = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_settings WHERE option_name = %s ORDER BY `option_id` DESC LIMIT 1", $court_option ) );
 	if ( $court_payable != 1 ) { return 0; }
-	else 
-	{ 
+	else
+	{
 	    $court_option = "option_payment_id_" . $courtID;
-	    $court_payable_id = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$court_option' ORDER BY `option_id` DESC LIMIT 1" );
-	    if (is_numeric($court_payable_id->option_value) && $court_payable_id->option_value > 0) 
+	    $court_payable_id = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_settings WHERE option_name = %s ORDER BY `option_id` DESC LIMIT 1", $court_option ) );
+	    if ( $court_payable_id && is_numeric($court_payable_id->option_value) && $court_payable_id->option_value > 0 )
 		{ return $court_payable_id->option_value; }
 		else { return 0; }
 	}
@@ -1930,13 +1937,17 @@ class Courtres_Public extends Courtres_Base {
 
 			    $court_delete = 1;
 
-			    $court_payment_meta = $wpdb->get_row("select order_item_id from wp_woocommerce_order_itemmeta where meta_value='" 
-			     . $reservation->gid . "' and meta_key='court_gid';");
+			    $court_payment_meta = $wpdb->get_row( $wpdb->prepare(
+				    "SELECT order_item_id FROM {$wpdb->prefix}woocommerce_order_itemmeta WHERE meta_value = %s AND meta_key = 'court_gid'",
+				    $reservation->gid
+			    ) );
 
 			    if (isset($court_payment_meta->order_item_id) && is_numeric($court_payment_meta->order_item_id) && $court_payment_meta->order_item_id > 0) {
 
-				    $court_payment_order_id = $wpdb->get_row("select order_id from wp_woocommerce_order_items where order_item_id='" 
-				     . $court_payment_meta->order_item_id . "';");
+				    $court_payment_order_id = $wpdb->get_row( $wpdb->prepare(
+					    "SELECT order_id FROM {$wpdb->prefix}woocommerce_order_items WHERE order_item_id = %d",
+					    $court_payment_meta->order_item_id
+				    ) );
 
 					if (isset($court_payment_order_id->order_id) && is_numeric($court_payment_order_id->order_id) && $court_payment_order_id->order_id > 0) {
 
@@ -1953,11 +1964,10 @@ class Courtres_Public extends Courtres_Base {
 
 			    }
 
-			    if ($court_delete == 1) 
-			    { 
-			    
-				$court_delete = "DELETE FROM $table WHERE gid = '" . $reservation->gid . "';";
-				$wpdb->query( $court_delete );
+			    if ($court_delete == 1)
+			    {
+
+				$wpdb->query( $wpdb->prepare( "DELETE FROM $table WHERE gid = %s", $reservation->gid ) );
 				if ( class_exists( 'WooCommerce' ) ) {
 					if ( WC()->cart && WC()->cart->get_cart_contents_count() > 0 ) {
 						WC()->cart->empty_cart();
@@ -1972,11 +1982,10 @@ class Courtres_Public extends Courtres_Base {
 	}
 
 	if ( is_user_logged_in()) {
-		$court_this_user_ = "SELECT id,date,time,minute FROM $table WHERE userid = " . get_current_user_id() . ";";
 		if (!isset($wpdb)) {
 			global $wpdb;
 		}
-		$court_this_user = $wpdb->get_results( $court_this_user_ );
+		$court_this_user = $wpdb->get_results( $wpdb->prepare( "SELECT id,date,time,minute FROM $table WHERE userid = %d", get_current_user_id() ) );
 
 		$court_current_utc_time_ = new DateTime('now', new DateTimeZone('UTC'));
 		$court_current_utc_time = $court_current_utc_time_->format('Y-m-d H:i:s'); 
@@ -2025,12 +2034,12 @@ class Courtres_Public extends Courtres_Base {
 	    $table_settings = $this->getTable( 'settings' );
 	    $courtres_option_payment = "option_payment_" . (int) $court_id;
 	    if (!isset($wpdb)) { global $wpdb; }
-	    
-	    $database_payment = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$courtres_option_payment' ORDER BY `option_id` DESC LIMIT 1" );
+
+	    $database_payment = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_settings WHERE option_name = %s ORDER BY `option_id` DESC LIMIT 1", $courtres_option_payment ) );
 	    if ( isset($database_payment->option_value ) && $database_payment->option_value === '1') {
 
 	        $courtres_option_payment_id = "option_payment_id_" . (int) $court_id;
-		$database_payment_id = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$courtres_option_payment_id' ORDER BY `option_id` DESC LIMIT 1" );
+		$database_payment_id = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_settings WHERE option_name = %s ORDER BY `option_id` DESC LIMIT 1", $courtres_option_payment_id ) );
 		if ( isset( $database_payment_id->option_value ) && is_numeric ( $database_payment_id->option_value ) && $database_payment_id->option_value > 0 ) {
 
 		    if ( is_user_logged_in() ) {
@@ -2103,11 +2112,15 @@ function court_payment_status($court_user_id, $court, $reservation) {
 						$court_payment_status = __( 'Booked', 'court-reservation' );
 
 
-						$court_payment_meta = $wpdb->get_row("select order_item_id from wp_woocommerce_order_itemmeta where meta_value='" 
-							. $reservation->gid . "' and meta_key='court_gid';");
+						$court_payment_meta = $wpdb->get_row( $wpdb->prepare(
+							"SELECT order_item_id FROM {$wpdb->prefix}woocommerce_order_itemmeta WHERE meta_value = %s AND meta_key = 'court_gid'",
+							$reservation->gid
+						) );
 						if (isset($court_payment_meta->order_item_id) && is_numeric($court_payment_meta->order_item_id) && $court_payment_meta->order_item_id > 0) {
-							$court_payment_order_id = $wpdb->get_row("select order_id from wp_woocommerce_order_items where order_item_id='" 
-								. $court_payment_meta->order_item_id . "';");
+							$court_payment_order_id = $wpdb->get_row( $wpdb->prepare(
+								"SELECT order_id FROM {$wpdb->prefix}woocommerce_order_items WHERE order_item_id = %d",
+								$court_payment_meta->order_item_id
+							) );
 							if (isset($court_payment_order_id->order_id) && is_numeric($court_payment_order_id->order_id) && $court_payment_order_id->order_id > 0) {
 								$court_payment_order = wc_get_order($court_payment_order_id->order_id);
 								$court_payment_status=$court_payment_order->get_status();

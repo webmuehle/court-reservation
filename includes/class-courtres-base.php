@@ -77,7 +77,7 @@ class Courtres_Base {
 	protected function getOption( $name ) {
 		global $wpdb;
 		$table_name = $this->getTable( 'settings' );
-		$res        = $wpdb->get_row( "SELECT * FROM $table_name WHERE option_name = '" . $name . "'" );
+		$res        = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE option_name = %s", $name ) );
 		return $res;
 	}
 

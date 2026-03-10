@@ -128,7 +128,7 @@ if ( isset( $_POST['submit'] ) ) {
 if (isset($courtID) && is_numeric($courtID))
 {
 	$courtres_option_closed_name = "option_closed_court_" . (int) $courtID;
-	$database_closed_court = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$courtres_option_closed_name' ORDER BY `option_id` DESC LIMIT 1" );
+	$database_closed_court = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_settings WHERE option_name = %s ORDER BY `option_id` DESC LIMIT 1", $courtres_option_closed_name ) );
 
 	if ( $database_closed_court !== null  && $form_closed_court != '' ) {
 		$wpdb->update(
@@ -180,7 +180,7 @@ if (isset($courtID) && is_numeric($courtID))
 
 
 	$courtres_option_payment = "option_payment_" . (int) $courtID;
-	$database_payment = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$courtres_option_payment' ORDER BY `option_id` DESC LIMIT 1" );
+	$database_payment = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_settings WHERE option_name = %s ORDER BY `option_id` DESC LIMIT 1", $courtres_option_payment ) );
 
 	if ( $database_payment !== null  && $form_payment != '' ) {
 		$wpdb->update(
@@ -230,7 +230,7 @@ if (isset($courtID) && is_numeric($courtID))
 	}
 
 	$courtres_option_payment_id = "option_payment_id_" . (int) $courtID;
-	$database_payment_id = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = '$courtres_option_payment_id' ORDER BY `option_id` DESC LIMIT 1" );
+	$database_payment_id = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_settings WHERE option_name = %s ORDER BY `option_id` DESC LIMIT 1", $courtres_option_payment_id ) );
 
 	if ( $database_payment_id !== null  && $form_payment_id != '' ) {
 		$wpdb->update(
@@ -281,7 +281,7 @@ if (isset($courtID) && is_numeric($courtID))
 }
 
 if ( isset( $courtID ) && $courtID > 0 ) {
-	$court = $wpdb->get_row( "SELECT * FROM $table_name WHERE id = $courtID" );
+	$court = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE id = %d", absint( $courtID ) ) );
 }
 
 if ( ! isset( $court ) ) {

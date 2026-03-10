@@ -86,8 +86,15 @@ class Courtres_Entity_Base {
 		$params   = wp_parse_args( $params, $defaults );
 		if ( $params['name'] ) {
 			$dbname    = $wpdb->dbname;
-			$sql       = sprintf( "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `table_name` = '%1\$s' AND `TABLE_SCHEMA` = '%2\$s' AND `COLUMN_NAME` = '%3\$s'", self::get_table_name(), $dbname, $params['name'] );
-			$is_column = $wpdb->get_results( $sql, ARRAY_A );
+			$is_column = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `table_name` = %s AND `TABLE_SCHEMA` = %s AND `COLUMN_NAME` = %s",
+					self::get_table_name(),
+					$dbname,
+					$params['name']
+				),
+				ARRAY_A
+			);
 			return $is_column;
 		} else {
 			return -1;
@@ -102,12 +109,13 @@ class Courtres_Entity_Base {
 			'after' => false,
 		);
 		$params   = wp_parse_args( $params, $defaults );
-		if ( $params['name'] && $params['type'] ) {
+		if ( $params['name'] && $params['type'] && preg_match( '/^[a-zA-Z0-9_]+$/', $params['name'] ) && preg_match( '/^[a-zA-Z0-9_()\s,]+$/', $params['type'] ) ) {
 			$dbname    = $wpdb->dbname;
 			$is_column = self::is_dbtable_column( $params );
 			if ( empty( $is_column ) ) {
-				$sql = sprintf( 'ALTER TABLE `%1$s` ADD `%2$s` %3$s NULL DEFAULT NULL AFTER `%4$s`', self::get_table_name(), $params['name'], $params['type'], $params['after'] );
-				$wpdb->query( $sql );
+				$after_sql = ( $params['after'] && preg_match( '/^[a-zA-Z0-9_]+$/', $params['after'] ) ) ? ' AFTER `' . $params['after'] . '`' : '';
+				$table    = self::get_table_name();
+				$wpdb->query( "ALTER TABLE `$table` ADD `{$params['name']}` {$params['type']} NULL DEFAULT NULL" . $after_sql );
 			}
 		}
 	}
