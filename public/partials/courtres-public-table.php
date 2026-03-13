@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Provide a public-facing view for the plugin for ajax
@@ -82,11 +85,11 @@ if ( $court == null ) {
 			<?php
 			// 2020-06-18 astoian: bug for ngix, time is not formated correcty for AM:FM
 			// $t0 = date_i18n( $timeFormat, strtotime( '2000-01-01 ' . $j . ':00' ) );
-			$t0 = date( $timeFormat, strtotime( $j . ':00' ) );
+			$t0 = gmdate( $timeFormat, strtotime( $j . ':00' ) );
 			if ( $this->ishalfhour() ) {
-				$t1 = date( $timeFormat, strtotime( $j . ':00 + 30 min' ) );
+				$t1 = gmdate( $timeFormat, strtotime( $j . ':00 + 30 min' ) );
 			} else {
-				$t1 = date( $timeFormat, strtotime( $j . ':00 + 1 hour' ) );
+				$t1 = gmdate( $timeFormat, strtotime( $j . ':00 + 1 hour' ) );
 			}
 			echo '<th>' . esc_html( $t0 ) . ' &ndash; ' . esc_html( $t1 ) . '</th>';
 			?>
@@ -124,8 +127,8 @@ if ( $court == null ) {
 			<?php if ( $this->ishalfhour() ) { ?>
 		  <tr>
 				<?php
-				$t0     = date( $timeFormat, strtotime( $j . ':00 + 30 min' ) );
-				$t1     = date( $timeFormat, strtotime( $j . ':00 + 1 hour' ) );
+				$t0     = gmdate( $timeFormat, strtotime( $j . ':00 + 30 min' ) );
+				$t1     = gmdate( $timeFormat, strtotime( $j . ':00 + 1 hour' ) );
 				$fromto = '<th>' . esc_html( $t0 ) . ' &ndash; ' . esc_html( $t1 ) . '</th>';
 							$allowed_html = array(
 								'th'  => array(

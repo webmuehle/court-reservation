@@ -152,6 +152,7 @@ class Courtres_Entity_Challenges extends Courtres_Entity_Base {
 			$wpdb->prefix . 'courtres_events',
 			self::get_charset_collate()
 		);
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- DDL with trusted values
 		$wpdb->query( $sql );
 	}
 
@@ -459,7 +460,8 @@ class Courtres_Entity_Challenges extends Courtres_Entity_Base {
 		$table = self::get_table_name();
 		$res   = $wpdb->query(
 			$wpdb->prepare(
-				'UPDATE `' . self::get_table_name() . "` SET `status` = '%s', `accepted_dt` = '%s' WHERE `id` = %d AND `status` = '%s'",
+				'UPDATE %i SET status = %s, accepted_dt = %s WHERE id = %d AND status = %s',
+				self::get_table_name(),
 				'accepted',
 				date_i18n( 'Y-m-d H:i:s' ),
 				$this->get_id(),
@@ -481,7 +483,8 @@ class Courtres_Entity_Challenges extends Courtres_Entity_Base {
 		$table = self::get_table_name();
 		$res   = $wpdb->query(
 			$wpdb->prepare(
-				'UPDATE `' . self::get_table_name() . "` SET `status` = '%s' WHERE `status` = %s AND `end_ts` < %d",
+				'UPDATE %i SET status = %s WHERE status = %s AND end_ts < %d',
+				self::get_table_name(),
 				'played',
 				'scheduled',
 				current_time( 'timestamp' )

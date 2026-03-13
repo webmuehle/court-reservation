@@ -36,27 +36,19 @@ class Courtres_Uninstaller {
 		$role = get_role( 'administrator' );
 		$role->remove_cap( 'place_reservation', true );
 
-		// remove tables
 		global $wpdb;
-
-		// courts table
-		$table_name = $wpdb->prefix . 'courtres_settings';
-		$sql        = "DROP TABLE IF EXISTS $table_name";
-		$wpdb->query( $sql );
-
-		// reservations table
-		$table_name = $wpdb->prefix . 'courtres_reservations';
-		$sql        = "DROP TABLE IF EXISTS $table_name";
-		$wpdb->query( $sql );
-
-		// events table
-		$table_name = $wpdb->prefix . 'courtres_events';
-		$sql        = "DROP TABLE IF EXISTS $table_name";
-		$wpdb->query( $sql );
-
-		// courts table
-		$table_name = $wpdb->prefix . 'courtres_courts';
-		$sql        = "DROP TABLE IF EXISTS $table_name";
-		$wpdb->query( $sql );
+		$tables = array(
+			$wpdb->prefix . 'courtres_settings',
+			$wpdb->prefix . 'courtres_reservations',
+			$wpdb->prefix . 'courtres_events',
+			$wpdb->prefix . 'courtres_courts',
+		);
+		foreach ( $tables as $table_name ) {
+			if ( version_compare( get_bloginfo( 'version' ), '6.2', '>=' ) ) {
+				$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table_name ) );
+			} else {
+				$wpdb->query( 'DROP TABLE IF EXISTS `' . esc_sql( $table_name ) . '`' );
+			}
+		}
 	}
 }

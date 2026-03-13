@@ -115,6 +115,7 @@ class Courtres_Entity_Base {
 			if ( empty( $is_column ) ) {
 				$after_sql = ( $params['after'] && preg_match( '/^[a-zA-Z0-9_]+$/', $params['after'] ) ) ? ' AFTER `' . $params['after'] . '`' : '';
 				$table    = self::get_table_name();
+				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- DDL with regex-validated params
 				$wpdb->query( "ALTER TABLE `$table` ADD `{$params['name']}` {$params['type']} NULL DEFAULT NULL" . $after_sql );
 			}
 		}
@@ -155,6 +156,7 @@ class Courtres_Entity_Base {
 		$sql_join        = '';
 		$sql_select_more = '';
 
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- ORM: table/join/where from trusted params
 		$items = $wpdb->get_results(
 			$wpdb->prepare(
 				'SELECT ' . self::get_table_name() . '.*'
@@ -169,17 +171,20 @@ class Courtres_Entity_Base {
 			),
 			$params['result_type']
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
 		// fppr($wpdb->last_query, __FILE__.' $wpdb->last_query');
 		// fppr($items, __FILE__.' $items');
 
 		// to count a quantity for paging
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- ORM: table/join/where from trusted params
 		$res       = $wpdb->get_row(
 			'SELECT COUNT(*) AS cnt '
 			. ' FROM ' . self::get_table_name()
 			. $sql_join
 			. $sql_where
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 		self::$cnt = $res ? $res->cnt : 0;
 				return $items ? $items : array();
 	}
@@ -220,11 +225,13 @@ class Courtres_Entity_Base {
 			}
 		}
 
-				$res = $wpdb->get_row(
-					'SELECT COUNT(*) AS cnt '
-					. ' FROM ' . self::get_table_name()
-					. $sql_where
-				);
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- ORM: table/where from trusted params
+		$res = $wpdb->get_row(
+			'SELECT COUNT(*) AS cnt '
+			. ' FROM ' . self::get_table_name()
+			. $sql_where
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 		// fppr($wpdb->last_query, __FILE__.' $wpdb->last_query');
 		// fppr($res, __FILE__.' $res');
 
@@ -336,6 +343,7 @@ class Courtres_Entity_Base {
 			}
 			if ( $sql_wheres ) {
 				$sql = sprintf( 'DELETE FROM `%s` WHERE (%s)', self::get_table_name(), implode( ' ' . $logic . ' ', $sql_wheres ) );
+				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- ORM: table/conditions from trusted params
 				$res = $wpdb->query( $sql );
 			}
 			if ( $res ) {

@@ -1,3 +1,4 @@
+<?php if ( ! defined( 'ABSPATH' ) ) { exit; } ?>
 		<div style="width: 100%; <?php if (!isset($_POST['sljedeci'])) { echo " display: none;"; } ?>" id="drugi_kal_<?php echo esc_attr( $courtID ); ?>">
 			<div style="backwidth: 100%; max-width: 197px; background: #f9fafb; margin-bottom: 10px;"> 
 <?php
@@ -14,8 +15,8 @@
 				elseif ( $language_dani_tjedna[0] == "no" || $language_dani_tjedna[0] == "NO" ) { $dani_tjedna=array("","M","T","O","T","F","L","S"); }
 
 				$mjeseci=array("01"=>"January", "02"=>"February", "03"=>"March", "04"=>"April", "05"=>"May", "06"=>"June", "07"=>"July", "08"=>"August", "09"=>"September", "10"=>"October", "11"=>"November", "12"=>"December");
-				$odabrani_dan=date('Y-m-d');
-				$danas=date('Y-m-d');
+				$odabrani_dan=gmdate('Y-m-d');
+				$danas=gmdate('Y-m-d');
 				if (isset($_POST['datum']))
 				{
 					$odabrani_dan = $_POST['datum'];
@@ -32,7 +33,7 @@
 					$odabrani_dan1=strtotime($danas);
 					if ($koliko<0) { $odabrani_dan2 = strtotime("$koliko day", $odabrani_dan1); }
 					else { $odabrani_dan2 = strtotime("+$koliko day", $odabrani_dan1); }
-					$odabrani_dan = date('Y-m-d', $odabrani_dan2);
+					$odabrani_dan = gmdate('Y-m-d', $odabrani_dan2);
 					// $odabrani_dan = $_POST['datum'];
 					// $odabrani_dan_ = strtotime($odabrani_dan);
 					// $danas_ = strtotime($danas);
@@ -45,9 +46,9 @@
 				$danas_bez1=explode("-",$odabrani_dan);
 				$danas_bez=$danas_bez1[0] . "-" . $danas_bez1[1] . "-";
 				$danas_prvi=$danas_bez . "01";
-				$danas_zadnji=$danas_bez . date('t', strtotime($danas));
-				$danas_zadnji1=date('t', strtotime($odabrani_dan));
-				$prosli_zadnji1=date('t', strtotime("last month", strtotime($odabrani_dan)));
+				$danas_zadnji=$danas_bez . gmdate('t', strtotime($danas));
+				$danas_zadnji1=gmdate('t', strtotime($odabrani_dan));
+				$prosli_zadnji1=gmdate('t', strtotime("last month", strtotime($odabrani_dan)));
 				$danas_dan=$danas_bez1[2];
 				$danas_mjesec=$danas_bez1[1];
 				$danas_godina=$danas_bez1[0];
@@ -73,7 +74,7 @@
 
 				</form> <?php
 
-				$prvi2=date("N",strtotime($danas_prvi));
+				$prvi2=gmdate("N",strtotime($danas_prvi));
 	
 				for ($x=1;$x<=7;$x++)
 				{ ?>

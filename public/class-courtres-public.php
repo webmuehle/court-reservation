@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * The public-facing functionality of the plugin.
@@ -1608,7 +1611,7 @@ class Courtres_Public extends Courtres_Base {
 			'</select>'; */
 
 
-			$args['court_id_']=rand(1,999999);
+			$args['court_id_']=wp_rand(1,999999);
 
 		for ( $x__=1; $x__<=$args['max_players']; $x__++ )
 		{ 

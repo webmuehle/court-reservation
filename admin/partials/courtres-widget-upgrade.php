@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Provide notice for pro-upgrade in admin view

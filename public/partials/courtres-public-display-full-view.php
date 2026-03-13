@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Provide a public-facing view for the plugin
@@ -380,11 +383,11 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 						// 2020-06-18 astoian: bug for ngix, time is not formated correcty for AM:FM
 						// date_i18n( $timeFormat, strtotime( '2000-01-01 ' . $j . ':00' ) );
 						if ($j >= 24) { $j_ = $j - 24; } else { $j_ = $j; }
-						$t0 = date( $timeFormat, strtotime( $j_ . ':00' ) );
+						$t0 = gmdate( $timeFormat, strtotime( $j_ . ':00' ) );
 					if ( $this->ishalfhour() ) {
-						$t1 = date( $timeFormat, strtotime( $j_ . ':00 + 30 min' ) );
+						$t1 = gmdate( $timeFormat, strtotime( $j_ . ':00 + 30 min' ) );
 					} else {
-						$t1 = date( $timeFormat, strtotime( $j_ . ':00 + 1 hour' ) );
+						$t1 = gmdate( $timeFormat, strtotime( $j_ . ':00 + 1 hour' ) );
 					}
 						echo "<th class='mob_width'>" . esc_html( ( $t0 ) ) . ' &ndash; ' . esc_html( ( $t1 ) ) . '</th>';
 					?>
@@ -440,8 +443,8 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 				<tr>
 						<?php
 							if ($j >= 24) { $j_ = $j - 24; } else { $j_ = $j; }
-							$t0     = date( $timeFormat, strtotime( $j_ . ':00 + 30 min' ) );
-							$t1     = date( $timeFormat, strtotime( $j_ . ':00 + 1 hour' ) );
+							$t0     = gmdate( $timeFormat, strtotime( $j_ . ':00 + 30 min' ) );
+							$t1     = gmdate( $timeFormat, strtotime( $j_ . ':00 + 1 hour' ) );
 							echo "<th class='mob_width'>" . esc_html( ( $t0 ) ) . ' &ndash; ' . esc_html( ( $t1 ) ) . '</th>';
 						?>
 						<?php

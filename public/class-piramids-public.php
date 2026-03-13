@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * The piramid public-facing functionality of the plugin.

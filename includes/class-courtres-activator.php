@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Fired during plugin activation
@@ -337,7 +340,7 @@ class Courtres_Activator {
 				for ( $i = 0; $i < sizeof( $events ); $i++ ) {
 					$event = $events[ $i ];
 					if ( $event->repeatone === null ) {
-						$last_sundy = date( 'Y-m-d', strtotime( 'last sunday' ) );
+						$last_sundy = gmdate( 'Y-m-d', strtotime( 'last sunday' ) );
 						// $plus_days = (int) ($event->dow) - 1;
 						$start_date = strtotime( $last_sundy . '+ ' . $event->dow . ' days' );
 						$res        = $wpdb->update(
@@ -463,7 +466,7 @@ class Courtres_Activator {
 		if ( $option_courtres_version->option_value == '1.5.1' ) {
 
 			$check_name = 'm0b18_courtres_events_chk_4';
-			$res        = $wpdb->query( sprintf( "SELECT * FROM information_schema.table_constraints WHERE `TABLE_NAME`='%s' AND `CONSTRAINT_TYPE`='CHECK' AND `CONSTRAINT_NAME`='%s'", $table_name_courtres_events, $check_name ) );
+			$res        = $wpdb->query( $wpdb->prepare( "SELECT * FROM information_schema.table_constraints WHERE TABLE_NAME = %s AND CONSTRAINT_TYPE = 'CHECK' AND CONSTRAINT_NAME = %s", $table_name_courtres_events, $check_name ) );
 			if ( $res ) {
 				$wpdb->query( "ALTER TABLE $table_name_courtres_events DROP CHECK $check_name" );
 				error_log( 'v1.5.1 > CHECK (start<end) in table ' . print_r( $table_name_courtres_events, true ) . ' dropped' );

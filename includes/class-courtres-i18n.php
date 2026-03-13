@@ -33,13 +33,6 @@ class Courtres_i18n {
 	 * @since    1.0.3
 	 */
 	public function load_plugin_textdomain() {
-
-		load_plugin_textdomain(
-			'court-reservation',
-			false,
-			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
-		);
-
 	}
 
 

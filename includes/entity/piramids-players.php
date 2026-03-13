@@ -65,6 +65,7 @@ class Courtres_Entity_Piramids_Players extends Courtres_Entity_Base {
 			Courtres_Entity_Piramid::get_table_name(),
 			self::get_charset_collate()
 		);
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- DDL with trusted table names
 		$wpdb->query( $sql );
 	}
 
@@ -73,6 +74,7 @@ class Courtres_Entity_Piramids_Players extends Courtres_Entity_Base {
 	 * @return array of players or empty array
 	 */
 	static function get_by_piramid_id( int $piramid_id ) {
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- get_list: piramid_id is int, conditions are safe
 		$items = self::get_list(
 			array(
 				'where' => array(
@@ -119,7 +121,8 @@ class Courtres_Entity_Piramids_Players extends Courtres_Entity_Base {
 			foreach ( $new_players as $key => $player ) {
 				$res = $wpdb->query(
 					$wpdb->prepare(
-						'UPDATE `' . self::get_table_name() . '` SET `sort` = %d WHERE `id` = %d AND `piramid_id` = %d',
+						'UPDATE %i SET `sort` = %d WHERE `id` = %d AND `piramid_id` = %d',
+						self::get_table_name(),
 						$player['sort'],
 						$player['id'],
 						$piramid_id

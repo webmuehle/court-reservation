@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Provide a admin area view for the plugin
@@ -157,7 +160,7 @@ require 'courtres-notice-upgrade.php';
 							$period .= ' - ' . date_i18n( 'H:i', $item->end_ts );
 						}
 						?>
-						<tr class="<?php echo ( ( $item->weekly_repeat != 1 ) && $item->event_date < date( 'Y-m-d' ) ) ? 'event-expired' : ''; ?>">
+						<tr class="<?php echo ( ( $item->weekly_repeat != 1 ) && $item->event_date < gmdate( 'Y-m-d' ) ) ? 'event-expired' : ''; ?>">
 							<td>
 								<?php echo esc_html( $item->name ); ?>
 							</td>
@@ -165,7 +168,7 @@ require 'courtres-notice-upgrade.php';
 							<?php
 							if ( $tab == '1' ) {
 								?>
-									<td><?php echo esc_html($days[ date( 'w', strtotime( $item->event_date ) ) ]); ?></td>
+									<td><?php echo esc_html($days[ gmdate( 'w', strtotime( $item->event_date ) ) ]); ?></td>
 									<?php
 							} else {
 								?>

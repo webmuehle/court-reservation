@@ -122,6 +122,7 @@ class Courtres_Entity_Piramid extends Courtres_Entity_Base {
 			$wpdb->prefix . static::$table_name,
 			self::get_charset_collate()
 		);
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- DDL with trusted values from $wpdb->prefix
 		$wpdb->query( $sql );
 	}
 
@@ -199,14 +200,15 @@ class Courtres_Entity_Piramid extends Courtres_Entity_Base {
 	 */
 	static function get_post_with_shortcode( int $piramid_id ) {
 		global $wpdb;
-		$sql    = sprintf(
-			"SELECT ID, post_title, post_name, guid FROM %1\$s 
-			WHERE `post_content` REGEXP '\\\[courtpyramid.*id=[\', \"]?%2\$d[\', \"]?.*\\\]' AND `post_type` != 'revision'
-			ORDER BY `ID` DESC LIMIT 1",
-			$wpdb->posts,
-			$piramid_id
+		$result = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT ID, post_title, post_name, guid FROM %i 
+				WHERE `post_content` REGEXP '\\\[courtpyramid.*id=[\', \"]?%d[\', \"]?.*\\\]' AND `post_type` != 'revision'
+				ORDER BY `ID` DESC LIMIT 1",
+				$wpdb->posts,
+				$piramid_id
+			)
 		);
-		$result = $wpdb->get_row( $sql );
 		return $result;
 	}
 }

@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Provide a admin area view for the plugin
@@ -237,7 +240,7 @@ if ( $event ) {
 	$event->event_date = $event->event_date == '0000-00-00' ? '' : mysql2date( 'd-m-Y', $event->event_date );
 	$event->start_m    = $event->start_ts ? date_i18n( 'i', $event->start_ts ) : '';
 	$event->end_m      = $event->end_ts ? date_i18n( 'i', $event->end_ts ) : '';
-	if ($event->weekly_repeat!=1) { $event->dow = $event->dow ? $event->dow : date( 'w', strtotime( $event->event_date ) ); }
+	if ($event->weekly_repeat!=1) { $event->dow = $event->dow ? $event->dow : gmdate( 'w', strtotime( $event->event_date ) ); }
 	if ( $event->type == 'challenge' ) {
 		$message_errors[] = __( 'You can not edit challenges here' );
 	}
@@ -397,19 +400,19 @@ if ( $event ) {
 						<select name="weekly_start_<?php echo $courtres_weekly_2; ?>" id="weekly_start_<?php echo $courtres_weekly_2; ?>">
 								<?php 
 
-									if (date('l') == $courtres_weekly_3) { $courtres_weekly_5 = "today"; }
+									if (gmdate('l') == $courtres_weekly_3) { $courtres_weekly_5 = "today"; }
 									else { $courtres_weekly_5 = "Next " . $courtres_weekly_3; }
 									$courtres_weekly_6 = strtotime($courtres_weekly_5, time()); 
 									if (isset($event->event_first_date) && $event->event_first_date != "") 
 									{ $event_first_date = $event->event_first_date; } else { $event_first_date = "1970-01-01"; }
 								?>
 
-									<option value="<?php echo date('Y-m-d', $courtres_weekly_6); ?>" <?php selected( date('Y-m-d', $courtres_weekly_6), $event_first_date ); ?>><?php echo date('d. m. Y. ', $courtres_weekly_6); ?></option>
+									<option value="<?php echo gmdate('Y-m-d', $courtres_weekly_6); ?>" <?php selected( gmdate('Y-m-d', $courtres_weekly_6), $event_first_date ); ?>><?php echo gmdate('d. m. Y. ', $courtres_weekly_6); ?></option>
 
 								<?php for ($weeks=1;$weeks<=51;$weeks++)
 								{
 									$courtres_weekly_6 = strtotime('+1 Week', $courtres_weekly_6); ?>
-									<option value="<?php echo date('Y-m-d', $courtres_weekly_6); ?>" <?php selected( date('Y-m-d', $courtres_weekly_6), $event_first_date ); ?> ><?php echo date('d. m. Y. ', $courtres_weekly_6); ?></option>
+									<option value="<?php echo gmdate('Y-m-d', $courtres_weekly_6); ?>" <?php selected( gmdate('Y-m-d', $courtres_weekly_6), $event_first_date ); ?> ><?php echo gmdate('d. m. Y. ', $courtres_weekly_6); ?></option>
 
 								<?php } ?>
 						</select>
@@ -426,12 +429,12 @@ if ( $event ) {
 									{ $event_last_date = $event->event_last_date; } else { $event_last_date = "1970-01-01"; }
 								?>
 
-									<option value="<?php echo date('Y-m-d', $courtres_weekly_7); ?>" <?php selected( date('Y-m-d', $courtres_weekly_7), $event_last_date ); ?>><?php echo date('d. m. Y. ', $courtres_weekly_7); ?></option>
+									<option value="<?php echo gmdate('Y-m-d', $courtres_weekly_7); ?>" <?php selected( gmdate('Y-m-d', $courtres_weekly_7), $event_last_date ); ?>><?php echo gmdate('d. m. Y. ', $courtres_weekly_7); ?></option>
 
 								<?php for ($weeks=1;$weeks<=51;$weeks++)
 								{
 									$courtres_weekly_7 = strtotime('+1 Week', $courtres_weekly_7); ?>
-									<option value="<?php echo date('Y-m-d', $courtres_weekly_7); ?>" <?php selected( date('Y-m-d', $courtres_weekly_7), $event_last_date ); ?>><?php echo date('d. m. Y. ', $courtres_weekly_7); ?></option>
+									<option value="<?php echo gmdate('Y-m-d', $courtres_weekly_7); ?>" <?php selected( gmdate('Y-m-d', $courtres_weekly_7), $event_last_date ); ?>><?php echo gmdate('d. m. Y. ', $courtres_weekly_7); ?></option>
 
 								<?php } ?>
 						</select>

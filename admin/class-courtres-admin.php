@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * The admin-specific functionality of the plugin.
@@ -271,7 +274,7 @@ class Courtres_Admin extends Courtres_Base {
 			$timeStep->add( new DateInterval( 'PT30M' ) );
 		}
 
-		$dateStr  = date( 'Y-m-d', strtotime( '+' . (int) $_REQUEST['day'] . ' day', $nowTZTS ) );
+		$dateStr  = gmdate( 'Y-m-d', strtotime( '+' . (int) $_REQUEST['day'] . ' day', $nowTZTS ) );
 		$timeStep = clone $timeStart;
 		for ( $minStep = 30; $minStep <= $minuteplus; $minStep += 30 ) {
 			// check for blocks
@@ -281,7 +284,7 @@ class Courtres_Admin extends Courtres_Base {
 			$dayWeek = (int) $datetime->format( 'N' );
 			foreach ( $eventsBlocks as $eventBlock ) {
 				if ( $eventBlock->weekly_repeat == 1 ) {
-					$dayWeekEvent = (int) date( 'N', strtotime( $eventBlock->event_date ) );
+					$dayWeekEvent = (int) gmdate( 'N', strtotime( $eventBlock->event_date ) );
 					if ( $dayWeekEvent != $dayWeek ) {
 						continue;
 					}
@@ -855,66 +858,59 @@ class Courtres_Admin extends Courtres_Base {
 		$order_by           = $sql_where = $sql_wpuser_join = $sql_wpuser_select = '';
 		$sql_and_conditions = array();
 
-		/*  Order by  */
+		$way_safe = in_array( strtoupper( $way ), array( 'ASC', 'DESC' ), true ) ? strtoupper( $way ) : 'DESC';
 		switch ( $order ) {
 			case 'court':
-				$order_by = $this->getTable( 'courts' ) . '.name ';
+				$order_by = $this->getTable( 'courts' ) . '.name ' . $way_safe;
 				break;
 			case 'player':
-				$order_by = $wpdb->users . '.display_name ';
+				$order_by = $wpdb->users . '.display_name ' . $way_safe;
 				break;
 			case 'date':
-				$order_by = "reservations.date $way, reservations.time $way, reservations.minute";
+				$order_by = "reservations.date $way_safe, reservations.time $way_safe, reservations.minute $way_safe";
 				break;
 			case 'type':
-				$order_by = 'reservations.type ';
+				$order_by = 'reservations.type ' . $way_safe;
 				break;
 			default:
-				$order_by = "reservations.date $way, reservations.time $way, reservations.minute";
+				$order_by = "reservations.date $way_safe, reservations.time $way_safe, reservations.minute $way_safe";
 		}
 
-		/*
-		  Filter  */
-		// if start_date is selected
+		$where_parts = array();
+		$prepare_args = array();
 		if ( $start_date ) {
-			$start_date           = date_i18n( 'Y-m-d H:i:s', strtotime( $start_date ), false );
-			$sql_and_conditions[] = "`reservations`.date >= '$start_date'";
+			$where_parts[]   = 'reservations.date >= %s';
+			$prepare_args[]  = date_i18n( 'Y-m-d H:i:s', strtotime( $start_date ), false );
 		}
-
-		// if start_date is selected
 		if ( $final_date ) {
-			$final_date           = date_i18n( 'Y-m-d H:i:s', strtotime( $final_date ), false );
-			$sql_and_conditions[] = "`reservations`.date <= '$final_date'";
+			$where_parts[]   = 'reservations.date <= %s';
+			$prepare_args[]  = date_i18n( 'Y-m-d H:i:s', strtotime( $final_date ), false );
 		}
-
-		// if reservation gid is selected
 		if ( $gid ) {
-			$sql_and_conditions[] = "`reservations`.gid = '$gid'";
+			$where_parts[]   = 'reservations.gid = %s';
+			$prepare_args[]  = $gid;
 		}
+		$sql_where = $where_parts ? 'WHERE ' . implode( ' AND ', $where_parts ) : '';
 
-		$sql_where = $sql_and_conditions ? 'WHERE ' . implode( ' AND ', $sql_and_conditions ) : '';
+		$table_reservations  = $this->getTable( 'reservations' );
+		$table_courts        = $this->getTable( 'courts' );
+		$table_reserv_players = $this->getTable( 'reserv_players' );
+		$base_sql            = "SELECT reservations.*, {$table_courts}.name AS courtname, GROUP_CONCAT({$table_reserv_players}.player_id) AS players, GROUP_CONCAT({$table_reserv_players}.is_author) AS is_author, {$wpdb->users}.display_name AS user_display_name
+			FROM {$table_reservations} as reservations
+			LEFT JOIN {$table_courts} ON {$table_courts}.id = reservations.courtid
+			LEFT JOIN {$table_reserv_players} ON {$table_reserv_players}.reservation_gid = reservations.gid
+			LEFT JOIN {$wpdb->users} ON {$wpdb->users}.ID = reservations.userid
+			{$sql_where}
+			GROUP BY reservations.id
+			ORDER BY {$order_by}";
 
-		/*  Joins */
-		$sql_courts_join         = sprintf( ' LEFT JOIN %1$s ON %1$s.id = %2$s.courtid', $this->getTable( 'courts' ), 'reservations' );
-		$sql_courts_select       = sprintf( ', %1$s.name AS courtname', $this->getTable( 'courts' ) );
-				$sql_rp_join     = sprintf( ' LEFT JOIN %1$s ON %1$s.reservation_gid = %2$s.gid', $this->getTable( 'reserv_players' ), 'reservations' );
-		$sql_rp_select           = sprintf( ', GROUP_CONCAT(%1$s.player_id) AS players, GROUP_CONCAT(%1$s.is_author) AS is_author', $this->getTable( 'reserv_players' ) );
-				$sql_wpuser_join = sprintf( ' LEFT JOIN %1$s ON %1$s.ID = %2$s.userid', $wpdb->users, 'reservations' );
-		$sql_wpuser_select       = sprintf( ', %1$s.display_name AS user_display_name', $wpdb->users );
-
-		$group_by = ' GROUP BY `reservations`.id';
-
-		/*  Get reservations query  */
-		$res = $wpdb->get_results(
-			"SELECT reservations.*{$sql_courts_select}{$sql_rp_select}{$sql_wpuser_select}
-			FROM {$this->getTable('reservations')} as reservations
-			{$sql_courts_join}
-			{$sql_rp_join}
-			{$sql_wpuser_join}
-			{$sql_where} 
-			{$group_by} 
-			ORDER BY " . $order_by . ' ' . $way
-		);
+		if ( $prepare_args ) {
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $base_sql built from trusted sources, placeholders in prepare_args
+			$res = $wpdb->get_results( $wpdb->prepare( $base_sql, $prepare_args ) );
+		} else {
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- no user input when prepare_args empty
+			$res = $wpdb->get_results( $base_sql );
+		}
 		// fppr($wpdb->last_query, __FILE__.' $wpdb->last_query');
 		// fppr($res, __FILE__.' $res');
 
@@ -1278,7 +1274,7 @@ class Courtres_Admin extends Courtres_Base {
 
 		if ( $params['is_event_weekly_repeat'] == 1 ) {
 			$curEventDateWeek     = $params['event_date_week'];
-			$last_sundy           = date( 'Y-m-d', strtotime( 'last sunday' ) );
+			$last_sundy           = gmdate( 'Y-m-d', strtotime( 'last sunday' ) );
 			$event_timestamp      = strtotime( $last_sundy . '+ ' . $curEventDateWeek . ' days' );
 			$params['event_date'] = date_i18n( 'Y-m-d', $event_timestamp );
 		}
@@ -1406,8 +1402,13 @@ class Courtres_Admin extends Courtres_Base {
 
 			case 'events':
 				global $wpdb;
-				$sql_where = sprintf( ' WHERE events.end_ts < %d AND weekly_repeat = 0', (int) current_time( 'timestamp' ) );
-				$results   = $wpdb->get_results( sprintf( 'SELECT events.* FROM %s as events%s ORDER BY `end_ts` DESC', $this->getTable( 'events' ), $sql_where ) );
+				$results = $wpdb->get_results(
+					$wpdb->prepare(
+						'SELECT events.* FROM %i as events WHERE events.end_ts < %d AND weekly_repeat = 0 ORDER BY end_ts DESC',
+						$this->getTable( 'events' ),
+						(int) current_time( 'timestamp' )
+					)
+				);
 				break;
 
 			case 'challenges':

@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * The file that defines the core plugin class
@@ -237,14 +240,14 @@ class Courtres_Base {
 
 		foreach ( $players as $key => $playerId ) {
 			if ( $playerId ) {
-				// to avoid duplicates
-				$sql   = sprintf(
-					"SELECT COUNT(*) as cnt FROM %s WHERE `reservation_gid`='%s' AND `player_id`=%d",
-					$this->getTable( 'reserv_players' ),
-					$reservId,
-					intval( $playerId )
+				$count = $wpdb->get_var(
+					$wpdb->prepare(
+						'SELECT COUNT(*) as cnt FROM %i WHERE reservation_gid = %s AND player_id = %d',
+						$this->getTable( 'reserv_players' ),
+						$reservId,
+						intval( $playerId )
+					)
 				);
-				$count = $wpdb->get_var( $sql );
 				if ( ! $count ) {
 					$res = $wpdb->insert(
 						$this->getTable( 'reserv_players' ),
@@ -289,36 +292,50 @@ class Courtres_Base {
 		);
 		// fppr($reservations, __FILE__.' $reservations');
 
-		$rows_to_insert = array();
+		$rows_to_insert      = array();
+		$rows_to_insert_flat = array();
 		foreach ( $reservations as $reserv ) {
-			// check if reservation not already exists in courtres_reserv_players table
-			$sql   = sprintf(
-				"SELECT COUNT(*) as cnt FROM %s WHERE `reservation_gid`='%s'",
-				$table_reserv_players,
-				$reserv->gid
+			$count = $wpdb->get_var(
+				$wpdb->prepare(
+					'SELECT COUNT(*) as cnt FROM %i WHERE reservation_gid = %s',
+					$table_reserv_players,
+					$reserv->gid
+				)
 			);
-			$count = $wpdb->get_var( $sql );
 			if ( ! $count ) {
-				$rows_to_insert[] = sprintf( "('%s', %d, %d)", $reserv->gid, $reserv->userid, 1 );
+				$rows_to_insert[]      = array( $reserv->gid, $reserv->userid, 1 );
+				$rows_to_insert_flat[] = $reserv->gid;
+				$rows_to_insert_flat[] = $reserv->userid;
+				$rows_to_insert_flat[] = 1;
 				if ( $reserv->partnerid ) {
-					$rows_to_insert[] = sprintf( "('%s', %d, %d)", $reserv->gid, $reserv->partnerid, 0 );
+					$rows_to_insert[]      = array( $reserv->gid, $reserv->partnerid, 0 );
+					$rows_to_insert_flat[] = $reserv->gid;
+					$rows_to_insert_flat[] = $reserv->partnerid;
+					$rows_to_insert_flat[] = 0;
 				}
 				if ( $reserv->partnerid2 ) {
-					$rows_to_insert[] = sprintf( "('%s', %d, %d)", $reserv->gid, $reserv->partnerid2, 0 );
+					$rows_to_insert[]      = array( $reserv->gid, $reserv->partnerid2, 0 );
+					$rows_to_insert_flat[] = $reserv->gid;
+					$rows_to_insert_flat[] = $reserv->partnerid2;
+					$rows_to_insert_flat[] = 0;
 				}
 				if ( $reserv->partnerid3 ) {
-					$rows_to_insert[] = sprintf( "('%s', %d, %d)", $reserv->gid, $reserv->partnerid3, 0 );
+					$rows_to_insert[]      = array( $reserv->gid, $reserv->partnerid3, 0 );
+					$rows_to_insert_flat[] = $reserv->gid;
+					$rows_to_insert_flat[] = $reserv->partnerid3;
+					$rows_to_insert_flat[] = 0;
 				}
 			}
 		}
-		if ( $rows_to_insert ) {
-			$sql = sprintf(
-				'INSERT INTO %s(`reservation_gid`, `player_id`, `is_author`) 
-				VALUES %s',
-				$table_reserv_players,
-				implode( ',', $rows_to_insert )
+		if ( $rows_to_insert_flat ) {
+			$placeholders = implode( ',', array_fill( 0, count( $rows_to_insert ), '(%s, %d, %d)' ) );
+			$res          = $wpdb->query(
+				$wpdb->prepare(
+					'INSERT INTO %i (reservation_gid, player_id, is_author) VALUES ' . $placeholders, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $placeholders is placeholder pattern
+					$table_reserv_players,
+					...$rows_to_insert_flat
+				)
 			);
-			$res = $wpdb->query( $sql );
 		}
 	}
 
@@ -369,13 +386,25 @@ class Courtres_Base {
 		$event_timestamp   = $params['event_date'] ? strtotime( $params['event_date'] ) : false;
 		$event_start_ts    = $event_timestamp + $params['start']['h'] * 3600 + $params['start']['m'] * 60;
 
-		$sql_where  = $params['court_id'] ? sprintf( ' WHERE events.courtid = %d', $params['court_id'] ) : '';
-		$sql_where .= $params['event_id'] ? sprintf( ' AND events.id != %d', $params['event_id'] ) : '';
-		$events     = $wpdb->get_results( sprintf( 'SELECT events.* FROM %s as events%s', $event_table, $sql_where ) );
+		$events_sql  = 'SELECT events.* FROM %i as events';
+		$events_args  = array( $event_table );
+		if ( $params['court_id'] ) {
+			$events_sql   .= ' WHERE events.courtid = %d';
+			$events_args[] = $params['court_id'];
+			if ( $params['event_id'] ) {
+				$events_sql   .= ' AND events.id != %d';
+				$events_args[] = $params['event_id'];
+			}
+		} elseif ( $params['event_id'] ) {
+			$events_sql   .= ' WHERE events.id != %d';
+			$events_args[] = $params['event_id'];
+		}
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $events_sql is passed to prepare()
+		$events = $wpdb->get_results( $wpdb->prepare( $events_sql, ...$events_args ) );
 
 		if ( $params['is_event_weekly_repeat'] == 1 ) {
 			$curEventDateWeek = $params['event_date_week'];
-			$last_sundy       = date( 'Y-m-d', strtotime( 'last sunday' ) );
+			$last_sundy       = gmdate( 'Y-m-d', strtotime( 'last sunday' ) );
 			$event_timestamp  = strtotime( $last_sundy . '+ ' . $curEventDateWeek . ' days' );
 			$curEventDate     = new DateTime( date_i18n( 'Y-m-d', $event_timestamp ) );
 		} else {
@@ -439,27 +468,34 @@ class Courtres_Base {
 		// $wpdb->get_results('SET @@time_zone = "'.$theTime["offset"].'";');
 
 		if ( $params['is_event_weekly_repeat'] == 1 ) {
-			// weekly repeat event
-			$sql_and_where = ' AND `date` >= CURDATE()';
+			$reservations = $wpdb->get_results(
+				$wpdb->prepare(
+					'SELECT * FROM %i WHERE courtid = %d AND date >= CURDATE() ORDER BY date, time',
+					$this->getTable( 'reservations' ),
+					$params['court_id']
+				)
+			);
 		} else {
-			// individual event
 			if ( $params['event_date'] ) {
-				$sql_and_where = " AND `date` = '" . date_i18n( 'Y-m-d', $event_timestamp ) . " 00:00:00'";
+				$event_date_str = date_i18n( 'Y-m-d', $event_timestamp ) . ' 00:00:00';
+				$reservations   = $wpdb->get_results(
+					$wpdb->prepare(
+						'SELECT * FROM %i WHERE courtid = %d AND date = %s ORDER BY date, time',
+						$this->getTable( 'reservations' ),
+						$params['court_id'],
+						$event_date_str
+					)
+				);
 			} else {
-				$sql_and_where = ' AND `date` >= CURDATE()';
+				$reservations = $wpdb->get_results(
+					$wpdb->prepare(
+						'SELECT * FROM %i WHERE courtid = %d AND date >= CURDATE() ORDER BY date, time',
+						$this->getTable( 'reservations' ),
+						$params['court_id']
+					)
+				);
 			}
 		}
-
-		// get reservations in the posted event date only
-		$sql          = sprintf(
-			'SELECT * FROM %s 
-			WHERE `courtid` = %d%s 
-			ORDER BY date, time',
-			$this->getTable( 'reservations' ),
-			$params['court_id'],
-			$sql_and_where
-		);
-		$reservations = $wpdb->get_results( $sql );
 
 		if ( $reservations ) {
 			// needs to find start and end of the reservation

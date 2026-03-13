@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Define the notifications functionality.
  *

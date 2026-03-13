@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Provide a admin area view for the plugin
@@ -263,10 +266,13 @@ switch ( $wp_list_table->current_action() ) {
 		}
 
 		$users_have_content = false;
-		if ( $wpdb->get_var( "SELECT ID FROM {$wpdb->posts} WHERE post_author IN( " . implode( ',', $userids ) . ' ) LIMIT 1' ) ) {
-			$users_have_content = true;
-		} elseif ( $wpdb->get_var( "SELECT link_id FROM {$wpdb->links} WHERE link_owner IN( " . implode( ',', $userids ) . ' ) LIMIT 1' ) ) {
-			$users_have_content = true;
+		if ( ! empty( $userids ) ) {
+			$placeholders = implode( ',', array_fill( 0, count( $userids ), '%d' ) );
+			if ( $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM %i WHERE post_author IN ($placeholders) LIMIT 1", $wpdb->posts, ...$userids ) ) ) {
+				$users_have_content = true;
+			} elseif ( $wpdb->get_var( $wpdb->prepare( "SELECT link_id FROM %i WHERE link_owner IN ($placeholders) LIMIT 1", $wpdb->links, ...$userids ) ) ) {
+				$users_have_content = true;
+			}
 		}
 
 		if ( $users_have_content ) {
