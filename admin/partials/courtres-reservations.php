@@ -112,9 +112,9 @@ if ( $is_view_expired ) {
 			<label for="datepicker-final-date">Gid</label>
 			<input id="gid" name="gid" class="" type="text" placeholder="Enter gid" value="<?php echo ( isset( $get_gid ) && $get_gid != '' ) ? esc_attr( $get_gid ) : ''; ?>" autocomplete="off">
 
-			<input type="submit" id="datepicker-doaction" class="button action" value="<?php esc_html_e( 'Filter', 'courtres' ); ?>">
-			<a href="<?php echo esc_url(admin_url( 'admin.php?page=courtres-reservations&view-expired=1' )); ?>" class="button button-secondary action<?php echo ( $is_view_expired ? ' active' : '' ); ?>"><?php esc_html_e( 'View Expired', 'courtres' ); ?></a>
-			<a href="<?php echo esc_url(admin_url( 'admin.php?page=courtres-reservations' )); ?>" class="button button-secondary action"><span class="dashicons dashicons-no-alt" style="vertical-align: -5px;"></span><?php esc_html_e( 'Clear Filter', 'courtres' ); ?></a>
+			<input type="submit" id="datepicker-doaction" class="button action" value="<?php esc_html_e( 'Filter', 'court-reservation' ); ?>">
+			<a href="<?php echo esc_url(admin_url( 'admin.php?page=courtres-reservations&view-expired=1' )); ?>" class="button button-secondary action<?php echo ( $is_view_expired ? ' active' : '' ); ?>"><?php esc_html_e( 'View Expired', 'court-reservation' ); ?></a>
+			<a href="<?php echo esc_url(admin_url( 'admin.php?page=courtres-reservations' )); ?>" class="button button-secondary action"><span class="dashicons dashicons-no-alt" style="vertical-align: -5px;"></span><?php esc_html_e( 'Clear Filter', 'court-reservation' ); ?></a>
 		</form>
 		<p> </p>
 	</div>

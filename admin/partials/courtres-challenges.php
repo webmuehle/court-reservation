@@ -101,8 +101,8 @@ if ( isset( $_POST['id'] ) && isset( $_POST['delete'] ) ) {
 <div class="wrap">
 	<h1 class="wp-heading-inline"><?php echo esc_html__( 'Challenges', 'court-reservation' ); ?></h1>
 	<div class="cr-head-right">
-		<a href="<?php echo esc_url(admin_url( 'admin.php?page=courtres-challenges&view-expired=1' )); ?>" class="button button-secondary action<?php echo ( $is_view_expired ? ' active' : '' ); ?>"><?php esc_html_e( 'View Expired', 'courtres' ); ?></a>
-		<a href="<?php echo esc_url(admin_url( 'admin.php?page=courtres-challenges' )); ?>" class="button button-secondary action"><span class="dashicons dashicons-no-alt" style="vertical-align: -5px;"></span><?php esc_html_e( 'Clear Filter', 'courtres' ); ?></a>
+		<a href="<?php echo esc_url(admin_url( 'admin.php?page=courtres-challenges&view-expired=1' )); ?>" class="button button-secondary action<?php echo ( $is_view_expired ? ' active' : '' ); ?>"><?php esc_html_e( 'View Expired', 'court-reservation' ); ?></a>
+		<a href="<?php echo esc_url(admin_url( 'admin.php?page=courtres-challenges' )); ?>" class="button button-secondary action"><span class="dashicons dashicons-no-alt" style="vertical-align: -5px;"></span><?php esc_html_e( 'Clear Filter', 'court-reservation' ); ?></a>
 		<form method="post" action="<?php echo esc_url(admin_url( 'admin-ajax.php' )); ?>">
 		   <?php wp_nonce_field( 'export_expired', 'export_expired_nonce' ); ?>
 			<input type="hidden" name="target" value="challenges" />

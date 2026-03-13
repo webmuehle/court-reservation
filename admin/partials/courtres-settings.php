@@ -536,7 +536,7 @@ if ( ! isset( $option_reservation_types ) ) {
 $reservationTypes   = unserialize( $option_reservation_types->option_value );
 $mlReservationTypes = array();
 foreach ( $reservationTypes as $type ) {
-	$mlReservationTypes[] = esc_html__( $type, 'court-reservation' );
+	$mlReservationTypes[] = esc_html( translate( $type, 'court-reservation' ) );
 }
 
 // Available reservation types
@@ -560,7 +560,7 @@ if ( ! isset( $option_is_email_template_updated ) ) {
 	$option_is_email_template_updated->option_name  = 'option_is_email_template_updated';
 	$option_is_email_template_updated->option_value = true;
 	$message_type                                   = 'warning';
-	$message                                        = __( 'Court Reservation Plugin: You need to update your template for E-Mail notifications!', 'courtres' );
+	$message                                        = __( 'Court Reservation Plugin: You need to update your template for E-Mail notifications!', 'court-reservation' );
 }
 
 // option_email_template
@@ -832,7 +832,7 @@ require 'courtres-notice-message.php';
 							<ul class="cr-reserv-type-list">
 								<?php foreach ( $reservationTypes as $type ) : ?>
 									<li>
-										<label for="<?php echo esc_attr( $type ); ?>"><span><?php echo esc_html_e( $type, 'court-reservation' ); ?></span></label>
+										<label for="<?php echo esc_attr( $type ); ?>"><span><?php echo esc_html( translate( $type, 'court-reservation' ) ); ?></span></label>
 										<label class="switch">
 											<input type="checkbox" id="<?php echo esc_attr( $type ); ?>" name="option_available_reservation_types[<?php echo esc_attr( $type ); ?>]" <?php if (is_array($availableReservationTypes)) { checked( in_array( $type, $availableReservationTypes ) ); } ?> value="<?php echo esc_attr( $type ); ?>">
 											<span class="slider round"></span>

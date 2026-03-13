@@ -226,7 +226,7 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 	public function public_shortcode_courtchallenges( $atts ) {
 		$atts = shortcode_atts(
 			array(
-				'title'      => __( 'Challenges', 'courtres' ),
+				'title'      => __( 'Challenges', 'court-reservation' ),
 				'piramid_id' => false,
 				'statuses'   => false,
 			),
@@ -261,7 +261,7 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 			'success' => false,
 		);
 		if ( empty( $_POST ) || ! wp_verify_nonce( $_POST['create_challenge_nonce'], 'create_challenge' ) ) {
-			$response['errors'][] = __( 'Error checking security code', 'courtres' );
+			$response['errors'][] = __( 'Error checking security code', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
@@ -272,7 +272,7 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 		$challenged_id    = isset( $_POST['challenged_id'] ) ? intval( $_POST['challenged_id'] ) : false;
 		$piramid_url      = isset( $_POST['piramid_url'] ) ? sanitize_url( $_POST['piramid_url'] ) : home_url();
 		if ( ! $piramid_id || ! $challenger_id || ! $challenged_id ) {
-			$response['errors'][] = __( 'Not all required data received', 'courtres' );
+			$response['errors'][] = __( 'Not all required data received', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
@@ -292,14 +292,14 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 
 		// Player you challenge is already challenged by another player
 		if ( $res == -1 ) {
-			$response['errors'][] = __( 'Player you challenge is already challenged by another player', 'courtres' );
+			$response['errors'][] = __( 'Player you challenge is already challenged by another player', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
 
 		// Player has challenges as challenger
 		if ( $res == -2 ) {
-			$response['errors'][] = __( 'Challenging more than one person is not allowed', 'courtres' );
+			$response['errors'][] = __( 'Challenging more than one person is not allowed', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
@@ -315,7 +315,7 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 			$lock_expired_ts   = strtotime( $closed_challenges['closed_dt'] ) + $piramid['locktime_ts'];
 			$lock_expired_text = date_i18n( $date_format, $lock_expired_ts ) . ', ' . date_i18n( $time_format, $lock_expired_ts );
 
-			$response['errors'][] = __( 'You cannot challenge', 'courtres' ) . ' ' . $closed_challenges['challenged']['wp_user']->display_name . __( ' yet. The cool-down phase will be expired at', 'courtres' ) . ' ' . $lock_expired_text;
+			$response['errors'][] = __( 'You cannot challenge', 'court-reservation' ) . ' ' . $closed_challenges['challenged']['wp_user']->display_name . __( ' yet. The cool-down phase will be expired at', 'court-reservation' ) . ' ' . $lock_expired_text;
 			echo json_encode( $response );
 			wp_die();
 		}
@@ -344,14 +344,14 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 
 		// if ( empty( $_POST ) || ! wp_verify_nonce( $_POST['accept_nonce'], 'accept_nonce' ) ) {
 		if ( empty( $_POST ) ) {
-			$response['errors'][] = __( 'Error checking security code', 'courtres' );
+			$response['errors'][] = __( 'Error checking security code', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
 
 		$challenge_id = isset( $_POST['challenge_id'] ) ? intval( $_POST['challenge_id'] ) : false;
 		if ( ! $challenge_id ) {
-			$response['errors'][] = __( 'Challenge id is not received', 'courtres' );
+			$response['errors'][] = __( 'Challenge id is not received', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
@@ -359,7 +359,7 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 		$challenges_class = Courtres_Entity_Challenges::get_instance( $challenge_id );
 		$res              = $challenges_class->set_accepted();
 		if ( ! $res ) {
-			$response['errors'][] = __( 'Error accepting the challenge', 'courtres' );
+			$response['errors'][] = __( 'Error accepting the challenge', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
@@ -423,7 +423,7 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 		$res      = false;
 
 		if ( empty( $_POST ) || ! wp_verify_nonce( $_POST['schedule_challenge_nonce'], 'schedule_challenge' ) ) {
-			$response['errors'][] = __( 'Error checking security code', 'courtres' );
+			$response['errors'][] = __( 'Error checking security code', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
@@ -437,12 +437,12 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 			$start_ts = strtotime( $datetime );
 		}
 		if ( ! $challenge_id ) {
-			$response['errors'][] = __( 'Challenge id is not received', 'courtres' );
+			$response['errors'][] = __( 'Challenge id is not received', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
 		if ( ! $start_ts ) {
-			$response['errors'][] = __( 'Start of game date and time is not received', 'courtres' );
+			$response['errors'][] = __( 'Start of game date and time is not received', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
@@ -458,12 +458,12 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 		$courtres_public = new Courtres_Public( $this->plugin_name, $this->version );
 		$court           = $courtres_public->getCourtByID( $court_id );
 		if ( $start_ar['h'] < $court->open ) {
-			$response['errors'][] = __( 'The start of the game cannot be ealier than the opening hours of the court', 'courtres' );
+			$response['errors'][] = __( 'The start of the game cannot be ealier than the opening hours of the court', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
 		if ( $end_h_dec > $court->close ) {
-			$response['errors'][] = __( 'The end of the game cannot be later than the closing times of the court', 'courtres' );
+			$response['errors'][] = __( 'The end of the game cannot be later than the closing times of the court', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
@@ -484,7 +484,7 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 		$courtres_admin = new Courtres_Admin( $this->plugin_name, $this->version );
 		$result         = $courtres_admin->create_event(
 			array(
-				'name'       => __( 'Challenge', 'courtres' ) . ': ' . $challenger_name . ' vs. ' . $challenged_name, // "Challenge " . $challenge_id,
+				'name'       => __( 'Challenge', 'court-reservation' ) . ': ' . $challenger_name . ' vs. ' . $challenged_name, // "Challenge " . $challenge_id,
 				'court_id'   => $court_id,
 				'event_date' => sanitize_text_field( $_POST['cr_game']['date'] ),
 				'start'      => array(
@@ -502,7 +502,7 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 
 		if ( $result['errors'] ) {
 			if ( key_exists( 'overlaps', $result['errors'] ) ) {
-				$result['errors'][] = __( 'The court is already reserved at that time. Please find another time', 'courtres' );
+				$result['errors'][] = __( 'The court is already reserved at that time. Please find another time', 'court-reservation' );
 				unset( $result['errors']['overlaps'] );
 			}
 			$response['errors'] = array_merge( $response['errors'], $result['errors'] );
@@ -556,14 +556,14 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 
 		// if ( empty( $_POST ) || ! wp_verify_nonce( $_POST['delete_nonce'], 'delete_nonce' ) ) {
 		if ( empty( $_POST ) ) {
-			$response['errors'][] = __( 'Error checking security code', 'courtres' );
+			$response['errors'][] = __( 'Error checking security code', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
 
 		$challenge_id = isset( $_POST['challenge_id'] ) ? intval( $_POST['challenge_id'] ) : false;
 		if ( ! $challenge_id ) {
-			$response['errors'][] = __( 'Challenge id is not received', 'courtres' );
+			$response['errors'][] = __( 'Challenge id is not received', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
@@ -573,7 +573,7 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 
 		$res = $challenges_class->delete_by_id();
 		if ( ! $res ) {
-			$response['errors'][] = __( 'Error deleting the challenge', 'courtres' );
+			$response['errors'][] = __( 'Error deleting the challenge', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
@@ -583,7 +583,7 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 			global $wpdb;
 			$res = $wpdb->delete( $this->getTable( 'events' ), array( 'id' => $challenges_class->get_event_id() ) );
 			if ( ! $res ) {
-				$response['errors'][] = __( 'No one challenge event deleted', 'courtres' );
+				$response['errors'][] = __( 'No one challenge event deleted', 'court-reservation' );
 				echo json_encode( $response );
 				wp_die();
 			}
@@ -610,19 +610,19 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 		$res      = false;
 
 		if ( empty( $_POST ) || ! wp_verify_nonce( $_POST['enter_results_nonce'], 'enter_results' ) ) {
-			$response['errors'][] = __( 'Error checking security code', 'courtres' );
+			$response['errors'][] = __( 'Error checking security code', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
 		$challenge_id = isset( $_POST['challenge_id'] ) ? intval( $_POST['challenge_id'] ) : false;
 		if ( ! $challenge_id ) {
-			$response['errors'][] = __( 'Challenge id is not received', 'courtres' );
+			$response['errors'][] = __( 'Challenge id is not received', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
 		$winner_id = isset( $_POST['cr_results']['winner'] ) ? intval( $_POST['cr_results']['winner'] ) : false;
 		if ( ! $winner_id ) {
-			$response['errors'][] = __( 'Winner is undefined', 'courtres' );
+			$response['errors'][] = __( 'Winner is undefined', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}
@@ -646,7 +646,7 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 		*/
 
 		if ( ! $results_str ) {
-			$response['errors'][] = __( 'Games result is undefined', 'courtres' );
+			$response['errors'][] = __( 'Games result is undefined', 'court-reservation' );
 			echo json_encode( $response );
 			wp_die();
 		}

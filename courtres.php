@@ -30,80 +30,17 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-// Auto deactivation of free when premium is active
+// Auto deactivation of free when premium is active (premium defines cr_fs first)
 if ( function_exists( 'cr_fs' ) ) {
 	cr_fs()->set_basename( true, __FILE__ );
 	return;
 }
 
-// Integration of Freemius SDK
+// WordPress.org build: Freemius stub (no custom updater). Premium build uses full Freemius SDK.
 if ( ! function_exists( 'cr_fs' ) ) {
-	// Create a helper function for easy SDK access.
+	require_once dirname( __FILE__ ) . '/includes/class-courtres-freemius-stub.php';
 	function cr_fs() {
-		global $cr_fs;
-
-		if ( ! isset( $cr_fs ) ) {
-			// Include Freemius SDK.
-			require_once dirname( __FILE__ ) . '/freemius/start.php';
-
-			$cr_fs = fs_dynamic_init(
-				array(
-					'id'                  => '3086',
-					'slug'                => 'court-reservation',
-					'type'                => 'plugin',
-					'public_key'          => 'pk_b5c504d97853f6130b63fd7344155',
-					'is_premium'          => true,
-					'premium_suffix'      => 'Premium',
-					// If your plugin is a serviceware, set this option to false.
-					'has_premium_version' => true,
-					'has_addons'          => false,
-					'has_paid_plans'      => true,
-					'show_monthly_switch' => true,
-					'menu'                => array(
-						'first-path' => 'plugins.php',
-						'contact'    => false,
-						'support'    => false,
-					),
-					// Set the SDK to work in a sandbox mode (for development & testing).
-					// IMPORTANT: MAKE SURE TO REMOVE SECRET KEY BEFORE DEPLOYMENT.
-					'secret_key'          => 'sk_GyAY<fJ+WHceE6Qzp{N+RYJk4BH%8',
-				)
-			);
-		}
-
-		return $cr_fs;
-	}
-
-	// Init Freemius.
-	cr_fs();
-	// Signal that SDK was initiated.
-	do_action( 'cr_fs_loaded' );
-}
-
-// Uninstalling
-if ( function_exists( 'cr_fs' ) ) {
-	cr_fs()->add_action( 'after_uninstall', 'cr_fs_uninstall_cleanup' );
-	function cr_fs_uninstall_cleanup() {
-		remove_role( 'player' );
-		remove_role( 'guest_player' );
-
-		$role = get_role( 'administrator' );
-		$role->remove_cap( 'place_reservation', true );
-
-		global $wpdb;
-		$tables = array(
-			$wpdb->prefix . 'courtres_settings',
-			$wpdb->prefix . 'courtres_reservations',
-			$wpdb->prefix . 'courtres_events',
-			$wpdb->prefix . 'courtres_courts',
-		);
-		foreach ( $tables as $table_name ) {
-			if ( version_compare( get_bloginfo( 'version' ), '6.2', '>=' ) ) {
-				$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table_name ) );
-			} else {
-				$wpdb->query( 'DROP TABLE IF EXISTS `' . esc_sql( $table_name ) . '`' );
-			}
-		}
+		return Courtres_Freemius_Stub::instance();
 	}
 }
 

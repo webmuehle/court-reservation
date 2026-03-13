@@ -466,7 +466,7 @@ if ( ! isset( $option_is_email_template_updated ) ) {
 	$option_is_email_template_updated->option_name  = 'option_is_email_template_updated';
 	$option_is_email_template_updated->option_value = true;
 	$message_type                                   = 'warning';
-	$message                                        = __( 'Court Reservation Plugin: You need to update your template for E-Mail notifications!', 'courtres' );
+	$message                                        = __( 'Court Reservation Plugin: You need to update your template for E-Mail notifications!', 'court-reservation' );
 }
 
 // option_email_template

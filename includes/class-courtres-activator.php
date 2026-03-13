@@ -496,10 +496,10 @@ class Courtres_Activator {
 						// show notice globally exclude Court Reservation Plugin Setting tab
 						// because in the Court Reservation Plugin Setting tab is used own notice that can disappear after saving
 						global $pagenow;
-						if ( ! ( $pagenow == 'admin.php' && isset( $_GET['page'] ) && $_GET['page'] == 'courtres' && isset( $_GET['tab'] ) && $_GET['tab'] == '1' ) ) { ?>
+						if ( ! ( $pagenow == 'admin.php' && isset( $_GET['page'] ) && $_GET['page'] == 'court-reservation' && isset( $_GET['tab'] ) && $_GET['tab'] == '1' ) ) { ?>
 							<div id="message" class="notice notice-warning is-dismissible">
 								<p>
-								<?php echo esc_html__( 'Court Reservation Plugin: You need to update ', 'courtres' ); ?>
+								<?php echo esc_html__( 'Court Reservation Plugin: You need to update ', 'court-reservation' ); ?>
 			<a href="<?php echo esc_url(admin_url( 'admin.php?page=courtres&tab=1' )); ?>">
 									<?php echo esc_html__( 'your template for E-Mail notifications', 'court-reservation' ); ?>
 			</a>.
