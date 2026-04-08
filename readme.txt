@@ -4,7 +4,7 @@ Donate link: https://www.webmuehle.at/
 Tags: Court Reservation, Padel, Tennis, Padel, Pickleball
 Requires at least: 3.0.1
 Tested up to: 6.7.2
-Stable tag: 1.10.10
+Stable tag: 1.10.12
 Requires PHP: 5.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -76,6 +76,15 @@ Upload the plugin via ZIP or install and activate it via the WordPress plugin in
 
 == Changelog ==
 
+= 1.10.12 =
+* Excat Duraction added
+* Popup UI improved
+
+= 1.10.11 =
+* Security Issues Fixed
+
+= 1.10.10 =
+* Security Issues Fixed
 
 = 1.10.9 =
 * Security Issues Fixed

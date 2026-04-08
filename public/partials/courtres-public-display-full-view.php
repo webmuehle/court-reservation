@@ -232,8 +232,12 @@ if (!property_exists("court", "id")) { $court->id=""; }
 				<td>
 					<select id="courtres_type_select" name="type" class="reservation-type-select" autocomplete="off" required>
 						<option value=""><?php echo esc_html__( 'Select from list', 'court-reservation' ); ?></option>
+						<?php
+						$exact_duration_types = get_option( 'exact_duration_types' );
+						$exact_duration_types = is_array( $exact_duration_types ) ? $exact_duration_types : array();
+						?>
 						<?php foreach ( $availableReservationTypes as $type ) : ?>
-							<option value="<?php echo esc_html__( $type, 'court-reservation' ); ?>" data-maxplayers="<?php echo esc_attr( $maxPlayers[ $type ] ); ?>" data-minplayers="<?php echo esc_attr( $minPlayers[ $type ] ); ?>" data-duration="<?php echo esc_attr( $matchDurations[ $type ] ); ?>"><?php echo esc_html__( $type, 'court-reservation' ); ?></option>
+							<option value="<?php echo esc_attr( translate( $type, 'court-reservation' ) ); ?>" data-maxplayers="<?php echo esc_attr( $maxPlayers[ $type ] ); ?>" data-minplayers="<?php echo esc_attr( $minPlayers[ $type ] ); ?>" data-duration="<?php echo esc_attr( $matchDurations[ $type ] ); ?>" data-exactduration="<?php echo esc_attr( isset( $exact_duration_types[ $type ] ) ? 1 : 0 ); ?>"><?php echo esc_html( translate( $type, 'court-reservation' ) ); ?></option>
 						<?php endforeach; ?>
 					</select>
 				</td>

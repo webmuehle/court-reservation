@@ -16,7 +16,7 @@
  * Plugin Name:       Court Reservation
  * Plugin URI:        https://www.courtreservation.io
  * Description:       Reservation system for tennis, squash and badminton
- * Version:           1.10.10
+ * Version:           1.10.12
  * Author:            Webmühle e.U.
  * Author URI:        https://www.webmuehle.at
  * License:           GPL-2.0+
@@ -36,11 +36,43 @@ if ( function_exists( 'cr_fs' ) ) {
 	return;
 }
 
-// WordPress.org build: Freemius stub (no custom updater). Premium build uses full Freemius SDK.
+// Freemius SDK integration (falls back to a stub for WordPress.org builds).
 if ( ! function_exists( 'cr_fs' ) ) {
-	require_once dirname( __FILE__ ) . '/includes/class-courtres-freemius-stub.php';
-	function cr_fs() {
-		return Courtres_Freemius_Stub::instance();
+	$cr_freemius_sdk_path = dirname( __FILE__ ) . '/freemius/start.php';
+	if ( file_exists( $cr_freemius_sdk_path ) ) {
+		require_once $cr_freemius_sdk_path;
+
+		function cr_fs() {
+			global $cr_fs;
+
+			if ( ! isset( $cr_fs ) ) {
+				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
+				$cr_fs = fs_dynamic_init(
+					array(
+						'id'              => '3086',
+						'slug'            => 'court-reservation',
+						'type'            => 'plugin',
+						'public_key'      => 'pk_b5c504d97853f6130b63fd7344155',
+						'is_premium'      => false,
+						'has_addons'      => false,
+						'has_paid_plans'  => true,
+						'menu'            => array(
+							'slug' => 'courtres',
+						),
+					)
+				);
+			}
+
+			return $cr_fs;
+		}
+
+		cr_fs();
+		do_action( 'cr_fs_loaded' );
+	} else {
+		require_once dirname( __FILE__ ) . '/includes/class-courtres-freemius-stub.php';
+		function cr_fs() {
+			return Courtres_Freemius_Stub::instance();
+		}
 	}
 }
 
@@ -49,7 +81,7 @@ if ( ! function_exists( 'cr_fs' ) ) {
  * Start at version 1.0.4 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'Court_Reservation', '1.10.10' );
+define( 'Court_Reservation', '1.10.12' );
 
 require_once plugin_dir_path( __FILE__ ) . 'functions.php';
 
@@ -75,27 +107,33 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/entity/challenges.php';
  * The code that runs during plugin activation.
  * This action is documented in includes/class-courtres-activator.php
  */
-function activate_courtres() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-courtres-activator.php';
-	Courtres_Activator::activate();
+if ( ! function_exists( 'activate_courtres' ) ) {
+	function activate_courtres() {
+		require_once plugin_dir_path( __FILE__ ) . 'includes/class-courtres-activator.php';
+		Courtres_Activator::activate();
+	}
 }
 
 /**
  * The code that runs during plugin deactivation.
  * This action is documented in includes/class-courtres-deactivator.php
  */
-function deactivate_courtres() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-courtres-deactivator.php';
-	Courtres_Deactivator::deactivate();
+if ( ! function_exists( 'deactivate_courtres' ) ) {
+	function deactivate_courtres() {
+		require_once plugin_dir_path( __FILE__ ) . 'includes/class-courtres-deactivator.php';
+		Courtres_Deactivator::deactivate();
+	}
 }
 
 /**
  * The code that runs during plugin unistall.
  * This action is documented in includes/class-courtres-unstaller.php
  */
-function uninstall_courtres() {
-	 require_once plugin_dir_path( __FILE__ ) . 'includes/class-courtres-uninstaller.php';
-	Courtres_Uninstaller::uninstall();
+if ( ! function_exists( 'uninstall_courtres' ) ) {
+	function uninstall_courtres() {
+		require_once plugin_dir_path( __FILE__ ) . 'includes/class-courtres-uninstaller.php';
+		Courtres_Uninstaller::uninstall();
+	}
 }
 
 register_activation_hook( __FILE__, 'activate_courtres' );

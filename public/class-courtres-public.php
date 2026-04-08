@@ -1715,6 +1715,7 @@ class Courtres_Public extends Courtres_Base {
 			return $html;
 		}
 		$is_halfhour = isset( $args['is_halfhour'] ) ? intval( $args['is_halfhour'] ) : false;
+		$exact_duration = ! empty( $args['exact_duration'] );
 
 				$date_format = get_option( 'date_format' );
 		$time_format         = get_option( 'time_format' );
@@ -1744,16 +1745,27 @@ class Courtres_Public extends Courtres_Base {
 			}
 		} else {
 			$max_hours_ts = $max_hours_per_reserv * 3600;
-			$limit_ts     = $start_ts + $duration_ts;
-			$i            = 1;
-			$end_ts       = $start_ts;
-			while ( $end_ts < $limit_ts && $end_ts < $court_close_ts ) {
-				$end_ts        += $time_step_ts;
+			$limit_ts = $start_ts + $duration_ts;
+
+			// Exact duration mode: only offer the configured duration if it fits.
+			if ( $exact_duration && $limit_ts <= ( $start_ts + $max_hours_ts ) && $limit_ts <= $court_close_ts ) {
+				$minutes_value = (int) floor( $duration_ts / 60 );
 				$time_options[] = array(
-					'value' => $time_step_m * $i,
-					'name'  => date_i18n( $time_format, $start_ts ) . ' - ' . date_i18n( $time_format, $end_ts ),
+					'value' => $minutes_value,
+					'name'  => date_i18n( $time_format, $start_ts ) . ' - ' . date_i18n( $time_format, $limit_ts ),
 				);
-				$i++;
+			} else {
+				// Fallback: incremental durations up to the configured duration (or closing time).
+				$i      = 1;
+				$end_ts = $start_ts;
+				while ( $end_ts < $limit_ts && $end_ts < $court_close_ts ) {
+					$end_ts        += $time_step_ts;
+					$time_options[] = array(
+						'value' => $time_step_m * $i,
+						'name'  => date_i18n( $time_format, $start_ts ) . ' - ' . date_i18n( $time_format, $end_ts ),
+					);
+					$i++;
+				}
 			}
 			// $end_ts         = $start_ts + $duration_ts;
 			// $time_options[] = array(

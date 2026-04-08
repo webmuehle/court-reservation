@@ -425,6 +425,24 @@ if ( isset( $_POST['submit'] ) ) {
 		}
 	}
 
+	// Exact duration per reservation type: when enabled, only offer the configured duration (no smaller values).
+	$exact_duration_types = array();
+	if ( isset( $_POST['option_exact_duration_types'] ) && is_array( $_POST['option_exact_duration_types'] ) ) {
+		foreach ( $_POST['option_exact_duration_types'] as $type_key => $val ) {
+			$type_key = sanitize_text_field( $type_key );
+			if ( '' === $type_key ) {
+				continue;
+			}
+			// Checkbox only posts when checked; value doesn't matter beyond truthiness.
+			$exact_duration_types[ $type_key ] = 1;
+		}
+	}
+	if ( get_option( 'exact_duration_types' ) !== false ) {
+		update_option( 'exact_duration_types', $exact_duration_types );
+	} else {
+		add_option( 'exact_duration_types', $exact_duration_types );
+	}
+
 	// save or update option_match_durations
 	if ( isset( $_POST['match_durations'] ) ) {
 		$match_durations_ts = array();
@@ -650,6 +668,9 @@ if ( isset( $match_durations_ts ) ) {
 		);
 	}
 }
+
+$exact_duration_types = get_option( 'exact_duration_types' );
+$exact_duration_types = is_array( $exact_duration_types ) ? $exact_duration_types : array();
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
@@ -837,6 +858,14 @@ require 'courtres-notice-message.php';
 											<input type="checkbox" id="<?php echo esc_attr( $type ); ?>" name="option_available_reservation_types[<?php echo esc_attr( $type ); ?>]" <?php if (is_array($availableReservationTypes)) { checked( in_array( $type, $availableReservationTypes ) ); } ?> value="<?php echo esc_attr( $type ); ?>">
 											<span class="slider round"></span>
 										</label>
+										<br>
+										<!-- Exact Duration -->
+										<label for="option_exact_duration_types_<?php echo esc_attr( $type ); ?>"><span><?php echo esc_html__( 'Exact duration', 'court-reservation' ); ?></span></label>
+										<label class="switch">
+											<input type="checkbox" id="option_exact_duration_types_<?php echo esc_attr( $type ); ?>" name="option_exact_duration_types[<?php echo esc_attr( $type ); ?>]" value="1" <?php checked( isset( $exact_duration_types[ $type ] ) && (int) $exact_duration_types[ $type ] === 1 ); ?>>
+											<span class="slider round"></span>
+										</label>
+										<small><?php echo esc_html__( 'Only offer the configured duration for this type.', 'court-reservation' ); ?></small>
 										<a href="javascript:void(0);" class="cr-delete-reserv-type-link cr-no-underline"><span class="dashicons dashicons-no-alt"></span></a>&emsp;  
 										<br>
 										

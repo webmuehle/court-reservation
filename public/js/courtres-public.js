@@ -341,12 +341,14 @@
 								var max_players     = $( selected_option ).data( "maxplayers" );
 								var min_players     = $( selected_option ).data( "minplayers" );
 								var duration_ts     = $( selected_option ).data( "duration" );
+								var exact_duration  = parseInt( $( selected_option ).data( "exactduration" ), 10 ) || 0;
 								var form_el         = $( this ).closest( '.resform' );
 								var gmrh_args       = {
 									court_id: courtid,
 									is_halfhour: halfhour,
 									start_ts: start_ts,
 									duration_ts: duration_ts,
+									exact_duration: exact_duration,
 									player_counter: 0,
 									max_players: max_players,
 									min_players: min_players
@@ -387,7 +389,7 @@
     							var praznaOpcija = new Option("-", "-----");
     							courtres_empty.add(praznaOpcija, courtres_empty.firstChild);
 							courtres_empty.value = "-----";
-							get_more_rows_html( {court_id: courtid, is_halfhour: halfhour, start_ts: start_ts, duration_ts: maxhours_general, player_counter: 0, max_players: 3, min_players: 0} );
+							get_more_rows_html( {court_id: courtid, is_halfhour: halfhour, start_ts: start_ts, duration_ts: maxhours_general, exact_duration: 0, player_counter: 0, max_players: 3, min_players: 0} );
 						}
 					}
 				);
@@ -485,11 +487,15 @@
 					}
 				}
 
+				const cr_dialog_width = Math.min( 520, Math.max( 320, ( window.innerWidth || 520 ) - 32 ) );
+				const cr_dialog_max_height = Math.max( 420, ( window.innerHeight || 700 ) - 64 );
+
 				$cr_dlg_reserve.dialog(
 					{
 						modal: true,
-						minHeight: '300px',
-						width: '350px',
+						minHeight: 320,
+						width: cr_dialog_width,
+						maxHeight: cr_dialog_max_height,
 						closeOnEscape: true,
 						autoOpen: false,
 						dialogClass: 'cr-dialog-reserve',
@@ -504,6 +510,7 @@
 						},
 						open: function () {
 							$( this ).closest( ".ui-dialog" )
+							.addClass( "cr-dialog-modern" )
 							.find( ".ui-dialog-titlebar-close" )
 							.html( '<span class="ui-button-icon ui-icon ui-icon-closethick"></span><span class="ui-button-icon-space"> </span>' );
 						}
