@@ -509,14 +509,10 @@
 							$( this ).find( ".reservation-type-select" ).off( 'change' );
 						},
 						open: function () {
-							var $dialogShell = $( this ).closest( ".ui-dialog" );
-							$dialogShell
-								.addClass( "cr-dialog-modern" )
-								.find( ".ui-dialog-titlebar-close" )
-								.html( '<span class="ui-button-icon ui-icon ui-icon-closethick"></span><span class="ui-button-icon-space"> </span>' );
-							$dialogShell.find( ".ui-dialog-buttonset button" ).removeClass( "cr-btn-primary cr-btn-secondary" );
-							$dialogShell.find( ".ui-dialog-buttonset button:first-child" ).addClass( "cr-btn-secondary" );
-							$dialogShell.find( ".ui-dialog-buttonset button:last-child" ).addClass( "cr-btn-primary" );
+							$( this ).closest( ".ui-dialog" )
+							.addClass( "cr-dialog-modern" )
+							.find( ".ui-dialog-titlebar-close" )
+							.html( '<span class="ui-button-icon ui-icon ui-icon-closethick"></span><span class="ui-button-icon-space"> </span>' );
 						}
 						// buttons:
 					}
@@ -562,13 +558,9 @@
 								$( this ).fadeOut( 600 );
 							},
 							open: function () {
-								var $dialogShell = $( this ).closest( ".ui-dialog" );
-								$dialogShell
-									.addClass( "cr-dialog-modern" )
-									.find( ".ui-dialog-titlebar-close" )
-									.html( '<span class="ui-button-icon ui-icon ui-icon-closethick"></span><span class="ui-button-icon-space"> </span>' );
-								$dialogShell.find( ".ui-dialog-buttonset button" ).removeClass( "cr-btn-primary cr-btn-secondary" );
-								$dialogShell.find( ".ui-dialog-buttonset button:first-child" ).addClass( "cr-btn-primary" );
+								$( this ).closest( ".ui-dialog" )
+								.find( ".ui-dialog-titlebar-close" )
+								.html( '<span class="ui-button-icon ui-icon ui-icon-closethick"></span><span class="ui-button-icon-space"> </span>' );
 							},
 							buttons: {
 								'Login': {
