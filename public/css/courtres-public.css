@@ -155,76 +155,102 @@ table.reservations .cr-tooltip:hover .cr-tooltiptext {
 	position: relative;
 }
 
-/* Modern dialog shell (jQuery UI wrapper) */
+/* Modern dialog shell (Material-inspired) */
 .ui-dialog.cr-dialog-modern {
 	border: 0 !important;
-	border-radius: 14px !important;
-	box-shadow: 0 18px 50px rgba(0,0,0,0.18) !important;
+	border-radius: 28px !important;
+	box-shadow: 0 18px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
 	overflow: hidden;
 	background: #fff !important;
+	font-family: "Roboto", "Google Sans", "Segoe UI", Arial, sans-serif;
 }
 .ui-dialog.cr-dialog-modern .ui-dialog-titlebar {
 	border: 0 !important;
 	background: #fff !important;
-	padding: 14px 16px !important;
-	border-bottom: 1px solid rgba(0,0,0,0.06) !important;
+	padding: 20px 24px 10px !important;
+	border-bottom: 0 !important;
 }
 .ui-dialog.cr-dialog-modern .ui-dialog-title {
-	font-weight: 600;
-	font-size: 14px;
-	line-height: 1.3;
+	font-weight: 500;
+	font-size: 22px;
+	line-height: 1.25;
+	color: #202124;
+	padding-right: 40px;
 }
 .ui-dialog.cr-dialog-modern .ui-dialog-titlebar-close {
+	width: 36px;
+	height: 36px;
+	right: 16px;
+	top: 14px;
 	border: 0 !important;
 	background: transparent !important;
-	border-radius: 10px !important;
+	border-radius: 50% !important;
+	transition: background-color 0.2s ease;
+}
+.ui-dialog.cr-dialog-modern .ui-dialog-titlebar-close:hover,
+.ui-dialog.cr-dialog-modern .ui-dialog-titlebar-close:focus {
+	background: #f1f3f4 !important;
+	outline: 0;
 }
 .ui-dialog.cr-dialog-modern .ui-dialog-content {
-	padding: 12px 16px 16px !important;
+	padding: 0 24px 18px !important;
 }
 .ui-dialog.cr-dialog-modern .ui-dialog-buttonpane {
 	border: 0 !important;
 	background: #fff !important;
-	padding: 10px 16px 16px !important;
-	border-top: 1px solid rgba(0,0,0,0.06) !important;
+	padding: 8px 20px 20px !important;
+	border-top: 1px solid #eceff1 !important;
 }
 .ui-dialog.cr-dialog-modern .ui-dialog-buttonset {
 	display: flex;
-	gap: 10px;
+	gap: 12px;
 	justify-content: flex-end;
 	float: none;
 }
 .ui-dialog.cr-dialog-modern .ui-dialog-buttonpane button {
 	margin: 0 !important;
 }
-	.cr-dialog-reserve .cr-ui-button {
-		margin: 0 !important;
-		display: inline-block !important;
-		margin-bottom: 0 !important;
-		margin-left: 5px !important;
-		font-weight: normal !important;
-		text-align: center !important;
-		vertical-align: middle !important;
-		touch-action: manipulation !important;
-		cursor: pointer !important;
-		background-image: none !important;
-		/* border: 1px solid #ffffff; */
-		border-width: 0 !important;
-		white-space: nowrap !important;
-		padding: 6px 12px !important;
-		/* font-size: 14px !important; */
-		/* line-height: 1.428571 !important; */
-		border-radius: 4px !important;
-		user-select: none !important;
-		color: #ffffff !important;
-		/* text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25); */
-		background-color: #b8b3b3 !important;
-		/* border-color: #b8b3b3; */
-		text-decoration: none !important;
-		box-shadow: none !important;
-		/* font-family: initial !important; */
-		text-transform: initial !important;
-	}
+
+.cr-dialog-reserve .cr-ui-button {
+	margin: 0 !important;
+	min-width: 104px !important;
+	height: 40px !important;
+	padding: 0 18px !important;
+	font-size: 14px !important;
+	font-weight: 500 !important;
+	border-radius: 999px !important;
+	border: 1px solid transparent !important;
+	box-shadow: none !important;
+	text-transform: none !important;
+	letter-spacing: 0.15px !important;
+}
+
+.cr-dialog-reserve .cr-ui-button.ui-state-hover,
+.cr-dialog-reserve .cr-ui-button.ui-state-focus {
+	border: 1px solid transparent !important;
+	outline: 0;
+}
+
+.cr-dialog-reserve .cr-ui-button.cr-btn-secondary {
+	background: #fff !important;
+	color: #1a73e8 !important;
+	border-color: #d2e3fc !important;
+}
+
+.cr-dialog-reserve .cr-ui-button.cr-btn-secondary.ui-state-hover,
+.cr-dialog-reserve .cr-ui-button.cr-btn-secondary:hover {
+	background: #f6f9fe !important;
+}
+
+.cr-dialog-reserve .cr-ui-button.cr-btn-primary {
+	background: #1a73e8 !important;
+	color: #fff !important;
+}
+
+.cr-dialog-reserve .cr-ui-button.cr-btn-primary.ui-state-hover,
+.cr-dialog-reserve .cr-ui-button.cr-btn-primary:hover {
+	background: #1765cc !important;
+}
 
 	.cr-dialog-reserve .ui-dialog-titlebar {
 		border-top-left-radius: 6px !important;
@@ -235,17 +261,22 @@ table.reservations .cr-tooltip:hover .cr-tooltiptext {
 		border-bottom-right-radius: 6px !important;
 	}
 	.cr-dialog-reserve .table.table-striped {
-		margin-bottom: 2px;
+		margin: 0;
+		border-collapse: separate;
+		border-spacing: 0 12px;
 	}
 	.cr-dialog-reserve .table.table-striped td {
 		vertical-align: middle;
+		background: #fff;
+		border-top: 0;
+		border-bottom: 0;
 	}
 	.cr-dialog-reserve .table.table-striped td:nth-child(2) {
 		border-right-width: 0;
-		padding-right: 1em;
+		padding-right: 0;
 	}
 	.cr-dialog-reserve .table.table-striped td:nth-child(1) {
-		padding-left: 1em;
+		padding-left: 0;
 	}
 	.cr-dialog-reserve .ui-dialog-buttonpane {
 		border-top-width: 0 !important;
@@ -280,33 +311,88 @@ form.resform select {
 	width: 100%;
 	max-width: 100%;
 	border-radius: 10px;
-	border: 1px solid rgba(0,0,0,0.12);
-	padding: 8px 10px;
+	border: 1px solid #dadce0;
+	padding: 10px 12px;
+	min-height: 42px;
 	box-shadow: none;
+	background: #fff;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+form.resform input[type="text"]:focus,
+form.resform input[list]:focus,
+form.resform input[type="password"]:focus,
+form.resform input[type="number"]:focus,
+form.resform select:focus {
+	border-color: #1a73e8;
+	box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.14);
+	outline: none;
 }
 form.resform .form-fields-table td:first-child {
-	color: rgba(0,0,0,0.65);
-	font-weight: 600;
+	color: #5f6368;
+	font-weight: 500;
 	font-size: 12px;
 	white-space: nowrap;
+	padding-right: 14px;
 }
 form.resform .form-fields-table td {
-	padding-top: 10px;
-	padding-bottom: 10px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+form.resform .date {
+	display: inline-flex;
+	align-items: center;
+	min-height: 42px;
+	padding: 0 12px;
+	border-radius: 10px;
+	border: 1px solid #eceff1;
+	background: #f8f9fa;
+	color: #202124;
+	font-weight: 500;
 }
 	form.resform #cr-show-login {
 		cursor: pointer;
-		width: 100%;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		margin-top: 8px;
+		padding: 0 16px;
+		min-height: 38px;
+		border-radius: 999px;
+		width: auto;
+		color: #1a73e8;
+		border: 1px solid #d2e3fc;
+		background: #fff;
+		text-decoration: none !important;
 	}
-	form.resform .date {
-		width: 100%;
+	form.resform #cr-show-login:hover {
+		background: #f6f9fe;
+	}
+
+.cr-login-form label {
+	display: block;
+	font-size: 12px;
+	color: #5f6368;
+	margin-bottom: 6px;
+	font-weight: 500;
+}
+
+.cr-login-form .lost {
+	display: inline-block;
+	margin-top: 10px;
+	color: #1a73e8;
+	font-size: 13px;
+	text-decoration: none;
+}
+
+.cr-login-form .lost:hover {
+	text-decoration: underline;
 	}
 
 
 .ui-widget-overlay {
-	opacity: .50 !important;
-	filter: Alpha(Opacity=50) !important;
-	background: rgb(50, 50, 50) !important;
+	opacity: .42 !important;
+	filter: Alpha(Opacity=42) !important;
+	background: #202124 !important;
 }
 
 .cr-login-form input {
@@ -404,6 +490,21 @@ form.resform .form-fields-table td {
 	}
 	.ui-dialog.cr-dialog-modern .ui-dialog-buttonset button {
 		flex: 1 1 auto;
+	}
+	.ui-dialog.cr-dialog-modern {
+		border-radius: 20px !important;
+	}
+	.ui-dialog.cr-dialog-modern .ui-dialog-titlebar {
+		padding: 16px 16px 8px !important;
+	}
+	.ui-dialog.cr-dialog-modern .ui-dialog-content {
+		padding: 0 16px 14px !important;
+	}
+	.ui-dialog.cr-dialog-modern .ui-dialog-buttonpane {
+		padding: 8px 16px 16px !important;
+	}
+	.ui-dialog.cr-dialog-modern .ui-dialog-title {
+		font-size: 19px;
 	}
 }
 
