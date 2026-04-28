@@ -50,6 +50,9 @@ class Courtres_Public extends Courtres_Base {
 	public $isReservatedPerPersonInFuture;
 	public $isSeveralReservePerson;
 	public $assets_version;
+	private $is_half_hour_cache = null;
+	private $blocked_by_date_cache = array();
+	private $blocked_by_date_multi_cache = array();
 
 	/**
 	 * Initialize the class and set its properties.
@@ -257,6 +260,10 @@ class Courtres_Public extends Courtres_Base {
 		if ( null === $is_half_hour ) {
 			$is_half_hour = $this->ishalfhour();
 		}
+		$cache_key = $date . '|' . (string) $hour . '|' . ( $is_half_hour ? '1' : '0' );
+		if ( array_key_exists( $cache_key, $this->blocked_by_date_cache ) ) {
+			return $this->blocked_by_date_cache[ $cache_key ];
+		}
 
 		foreach ( $this->blocks as $block ) {
 			$event_start_m    = property_exists( $block, 'start_ts' ) && $block->start_ts ? date_i18n( 'i', $block->start_ts ) : 0;
@@ -301,23 +308,32 @@ class Courtres_Public extends Courtres_Base {
 							$courtres_event_day_cur <= $courtres_event_last_day
 						     ) || ( isset($block->courtres_forever) && $block->courtres_forever == 0) 
 						) 
-						{ return $block; }
+						{
+							$this->blocked_by_date_cache[ $cache_key ] = $block;
+							return $block;
+						}
 					}
 				}
 			} else {
 				if ( $block->event_date == $date ) {
 					if ( $this->doesOverlap( $hour, $event_start_time, $event_end_time ) ) {
+						$this->blocked_by_date_cache[ $cache_key ] = $block;
 						return $block;
 					}
 				}
 			}
 		}
+		$this->blocked_by_date_cache[ $cache_key ] = null;
 		return null;
 	}
 
 	private function isBlockedByDate_multi( $date, $hour, $court_id, $is_half_hour = null ) {
 		if ( null === $is_half_hour ) {
 			$is_half_hour = $this->ishalfhour();
+		}
+		$cache_key = $date . '|' . (string) $hour . '|' . (int) $court_id . '|' . ( $is_half_hour ? '1' : '0' );
+		if ( array_key_exists( $cache_key, $this->blocked_by_date_multi_cache ) ) {
+			return $this->blocked_by_date_multi_cache[ $cache_key ];
 		}
 
 		foreach ( $this->blocks as $block ) {
@@ -363,18 +379,23 @@ class Courtres_Public extends Courtres_Base {
 							$courtres_event_day_cur <= $courtres_event_last_day
 						     ) || ( isset($block->courtres_forever) && $block->courtres_forever == 0) 
 						) 
-						{ return $block; }
+						{
+							$this->blocked_by_date_multi_cache[ $cache_key ] = $block;
+							return $block;
+						}
 						}
 					}
 				} else {
 					if ( $block->event_date == $date ) {
 						if ( $this->doesOverlap( $hour, $event_start_time, $event_end_time ) ) {
+							$this->blocked_by_date_multi_cache[ $cache_key ] = $block;
 							return $block;
 						}
 					}
 				}
 			}
 		}
+		$this->blocked_by_date_multi_cache[ $cache_key ] = null;
 		return null;
 	}
 
@@ -1161,13 +1182,20 @@ class Courtres_Public extends Courtres_Base {
 	}
 
 	public function ishalfhour() {
+		if ( null !== $this->is_half_hour_cache ) {
+			return $this->is_half_hour_cache;
+		}
+
 		global $wpdb;
 		$table_name       = $this->getTable( 'settings' );
 		$option_half_hour = $wpdb->get_row( "SELECT * FROM $table_name WHERE option_name = 'half_hour_reservation'" );
 		if ( ! isset( $option_half_hour ) ) {
+			$this->is_half_hour_cache = false;
 			return false;
 		}
-		return $option_half_hour->option_value === '1' ? true : false;
+
+		$this->is_half_hour_cache = ( $option_half_hour->option_value === '1' );
+		return $this->is_half_hour_cache;
 	}
 
 	public function isuilink() {

@@ -78,27 +78,38 @@ class Courtres_Base {
 	 * @return bool
 	 */
 	protected function isWeeklyEventActiveOnDate( $event, DateTime $date ) {
-		// Forever events always active, range-limited events only within first/last date.
+		$check_ts = strtotime( $date->format( 'Y-m-d' ) );
+
+		$first_ts = false;
+		if ( property_exists( $event, 'event_first_date' ) && $event->event_first_date ) {
+			$first_ts = strtotime( $event->event_first_date );
+		}
+
+		$last_ts = false;
+		if ( property_exists( $event, 'event_last_date' ) && $event->event_last_date ) {
+			$last_ts = strtotime( $event->event_last_date );
+		}
+
+		$has_explicit_range = (bool) $first_ts || (bool) $last_ts;
+
+		// If a range is configured, enforce it strictly.
+		if ( $has_explicit_range ) {
+			if ( $first_ts && $check_ts < $first_ts ) {
+				return false;
+			}
+			if ( $last_ts && $check_ts > $last_ts ) {
+				return false;
+			}
+			return true;
+		}
+
+		// Backward-compatible fallback: events marked as forever are always active.
 		if ( ! property_exists( $event, 'courtres_forever' ) || (int) $event->courtres_forever === 0 ) {
 			return true;
 		}
 
-		$check_ts = strtotime( $date->format( 'Y-m-d' ) );
-		if ( property_exists( $event, 'event_first_date' ) && $event->event_first_date ) {
-			$first_ts = strtotime( $event->event_first_date );
-			if ( $first_ts && $check_ts < $first_ts ) {
-				return false;
-			}
-		}
-
-		if ( property_exists( $event, 'event_last_date' ) && $event->event_last_date ) {
-			$last_ts = strtotime( $event->event_last_date );
-			if ( $last_ts && $check_ts > $last_ts ) {
-				return false;
-			}
-		}
-
-		return true;
+		// Range-limited mode without valid dates should not block.
+		return false;
 	}
 
 
