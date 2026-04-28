@@ -284,6 +284,9 @@ class Courtres_Admin extends Courtres_Base {
 			$dayWeek = (int) $datetime->format( 'N' );
 			foreach ( $eventsBlocks as $eventBlock ) {
 				if ( $eventBlock->weekly_repeat == 1 ) {
+					if ( ! $this->isWeeklyEventActiveOnDate( $eventBlock, $datetime ) ) {
+						continue;
+					}
 					$dayWeekEvent = (int) gmdate( 'N', strtotime( $eventBlock->event_date ) );
 					if ( $dayWeekEvent != $dayWeek ) {
 						continue;

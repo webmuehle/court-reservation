@@ -70,6 +70,37 @@ class Courtres_Base {
 		 return $this->version;
 	}
 
+	/**
+	 * Check if a weekly event is active on given date.
+	 *
+	 * @param object   $event Event row object.
+	 * @param DateTime $date  Date to validate against weekly range.
+	 * @return bool
+	 */
+	protected function isWeeklyEventActiveOnDate( $event, DateTime $date ) {
+		// Forever events always active, range-limited events only within first/last date.
+		if ( ! property_exists( $event, 'courtres_forever' ) || (int) $event->courtres_forever === 0 ) {
+			return true;
+		}
+
+		$check_ts = strtotime( $date->format( 'Y-m-d' ) );
+		if ( property_exists( $event, 'event_first_date' ) && $event->event_first_date ) {
+			$first_ts = strtotime( $event->event_first_date );
+			if ( $first_ts && $check_ts < $first_ts ) {
+				return false;
+			}
+		}
+
+		if ( property_exists( $event, 'event_last_date' ) && $event->event_last_date ) {
+			$last_ts = strtotime( $event->event_last_date );
+			if ( $last_ts && $check_ts > $last_ts ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 
 	/**
 	 * Get option data by name from db
@@ -419,6 +450,9 @@ class Courtres_Base {
 				$is_day = false; // should be here initilized
 				// check days
 				if ( $event->weekly_repeat ) {
+					if ( ! $this->isWeeklyEventActiveOnDate( $event, $curEventDate ) ) {
+						continue;
+					}
 					$eventDate  = new DateTime( $event->event_date );
 					$eeInterval = $curEventDate->diff( $eventDate );
 					$eventTab   = 1;
