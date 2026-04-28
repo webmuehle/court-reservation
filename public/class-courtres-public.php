@@ -253,7 +253,11 @@ class Courtres_Public extends Courtres_Base {
 	}
 
 
-	private function isBlockedByDate( $date, $hour ) {
+	private function isBlockedByDate( $date, $hour, $is_half_hour = null ) {
+		if ( null === $is_half_hour ) {
+			$is_half_hour = $this->ishalfhour();
+		}
+
 		foreach ( $this->blocks as $block ) {
 			$event_start_m    = property_exists( $block, 'start_ts' ) && $block->start_ts ? date_i18n( 'i', $block->start_ts ) : 0;
 			$event_start_time = (int) $block->start + (int) $event_start_m / 60;
@@ -261,7 +265,7 @@ class Courtres_Public extends Courtres_Base {
 			$event_end_m    = property_exists( $block, 'end_ts' ) && $block->end_ts ? date_i18n( 'i', $block->end_ts ) : 0;
 			$event_end_time = (int) $block->end + (int) $event_end_m / 60;
 
-			if ( ! $this->ishalfhour() ) {
+			if ( ! $is_half_hour ) {
 				$event_start_time = floor( $event_start_time );
 				$event_end_time   = ceil( $event_end_time );
 			}
@@ -311,7 +315,10 @@ class Courtres_Public extends Courtres_Base {
 		return null;
 	}
 
-	private function isBlockedByDate_multi( $date, $hour, $court_id ) {
+	private function isBlockedByDate_multi( $date, $hour, $court_id, $is_half_hour = null ) {
+		if ( null === $is_half_hour ) {
+			$is_half_hour = $this->ishalfhour();
+		}
 
 		foreach ( $this->blocks as $block ) {
 			// proba($block);
@@ -322,7 +329,7 @@ class Courtres_Public extends Courtres_Base {
 				$event_end_m    = property_exists( $block, 'end_ts' ) && $block->end_ts ? date_i18n( 'i', $block->end_ts ) : 0;
 				$event_end_time = (int) $block->end + (int) $event_end_m / 60;
 
-				if ( ! $this->ishalfhour() ) {
+				if ( ! $is_half_hour ) {
 					$event_start_time = floor( $event_start_time );
 					$event_end_time   = ceil( $event_end_time );
 				}
@@ -459,8 +466,9 @@ class Courtres_Public extends Courtres_Base {
 		$nowTZ   = new DateTime( $theTime['datetime'] );
 		$nowTZTS = $nowTZ->format( 'U' );
 
-		$isPast   = false;
-		$hourD    = $hour + round( $mstart / 60, 2 );
+		$is_half_hour = $this->ishalfhour();
+		$isPast       = false;
+		$hourD        = $hour + round( $mstart / 60, 2 );
 		$nowHourD = $now['hour'] + round( $now['minute'] / 60, 2 );
 		if ( $day == 0 && $hourD <= $nowHourD ) {
 			$isPast = true;
@@ -480,7 +488,7 @@ class Courtres_Public extends Courtres_Base {
 		// Events >
 
 
-		$block = $this->isBlockedByDate( $date, $hourD );
+		$block = $this->isBlockedByDate( $date, $hourD, $is_half_hour );
 		if ( $block != null ) {
 
 			$event_start_m    = property_exists( $block, 'start_ts' ) && $block->start_ts ? date_i18n( 'i', $block->start_ts ) : 0;
@@ -489,7 +497,7 @@ class Courtres_Public extends Courtres_Base {
 			$event_end_m    = property_exists( $block, 'end_ts' ) && $block->end_ts ? date_i18n( 'i', $block->end_ts ) : 0;
 			$event_end_time = (int) $block->end + (int) $event_end_m / 60;
 
-			if ( ! $this->ishalfhour() ) {
+			if ( ! $is_half_hour ) {
 				$event_start_time = floor( $event_start_time );
 				$event_end_time   = ceil( $event_end_time );
 			}
@@ -501,7 +509,7 @@ class Courtres_Public extends Courtres_Base {
 
 			$rowspan = 1;
 
-			if ( $this->ishalfhour() ) {
+			if ( $is_half_hour ) {
 				$rowspan = ( min( $event_end_time, $court->close ) - max( $event_start_time, $court->open ) ) * 2;
 			} else {
 				$rowspan = ceil( ( min( $event_end_time, $court->close ) - max( $event_start_time, $court->open ) ) );
@@ -551,7 +559,7 @@ class Courtres_Public extends Courtres_Base {
 
 		// cells for author of reservation and partners >>
 		$mincheckres = $mstart;
-		if ( ! $this->ishalfhour() ) {
+		if ( ! $is_half_hour ) {
 			$mincheckres = -1;}
 		$reservation = $this->isReservated( $day, $hour, $mincheckres );
 
@@ -570,7 +578,7 @@ class Courtres_Public extends Courtres_Base {
 			if ( ! is_null( $reservation->gid ) && $reservation->gid !== '' ) {
 				$timeResMinus = $now['DateTime'];
 				$timeResMinus->setTime( $hour, $mstart, 0 );
-				if ( $this->ishalfhour() ) {
+				if ( $is_half_hour ) {
 					$timeResMinus->sub( new DateInterval( 'PT30M' ) );
 					$reservation_prev_gid = $this->isReservated( $day, $timeResMinus->format( 'H' ), $timeResMinus->format( 'i' ) );
 				} else {
@@ -586,7 +594,7 @@ class Courtres_Public extends Courtres_Base {
 				if ( ! is_null( $reservation->id ) && $reservation->id !== '' ) {
 					$rowpan = $this->isReservatedOnce( $court->id, $day, $reservation->gid );
 
-					if ( $rowpan > 1 && ! $this->ishalfhour() ) {
+					if ( $rowpan > 1 && ! $is_half_hour ) {
 						$rowpan = (int) ( $rowpan / 2 ) + ( ( $rowpan % 2 ) > 0 ? 1 : 0 );
 						if ( $reservation->minute > 0 ) {
 							$rowpan++;
@@ -700,7 +708,7 @@ class Courtres_Public extends Courtres_Base {
 		// as: allow users to reserve a court till the end of the HOUR/HALF-HOUR
 		if ( $isPast ) {
 			$hourD = $hour + round( $mstart / 60, 2 );
-			if ( $this->ishalfhour() ) {
+			if ( $is_half_hour ) {
 				if ( ( $now['minute'] - 30 ) <= 0 ) {
 					$nowHourDPlus = ( $now['hour'] - 1 ) + round( $now['minute'] / 60, 2 );
 				} else {
@@ -758,8 +766,9 @@ class Courtres_Public extends Courtres_Base {
 		$nowTZ   = new DateTime( $theTime['datetime'] );
 		$nowTZTS = $nowTZ->format( 'U' );
 
-		$isPast   = false;
-		$hourD    = $hour + round( $mstart / 60, 2 );
+		$is_half_hour = $this->ishalfhour();
+		$isPast       = false;
+		$hourD        = $hour + round( $mstart / 60, 2 );
 		$nowHourD = $now['hour'] + round( $now['minute'] / 60, 2 );
 		if ( $day == 0 && $hourD <= $nowHourD ) {
 			$isPast = true;
@@ -777,7 +786,7 @@ class Courtres_Public extends Courtres_Base {
 
 
 		// Events >
-		$block = $this->isBlockedByDate_multi( $date, $hourD, $court->id );
+		$block = $this->isBlockedByDate_multi( $date, $hourD, $court->id, $is_half_hour );
 		if ( $block != null && $block->courtid == $court->id ) {
 			$event_start_m    = property_exists( $block, 'start_ts' ) && $block->start_ts ? date_i18n( 'i', $block->start_ts ) : 0;
 			$event_start_time = (int) $block->start + (int) $event_start_m / 60;
@@ -785,7 +794,7 @@ class Courtres_Public extends Courtres_Base {
 			$event_end_m    = property_exists( $block, 'end_ts' ) && $block->end_ts ? date_i18n( 'i', $block->end_ts ) : 0;
 			$event_end_time = (int) $block->end + (int) $event_end_m / 60;
 
-			if ( ! $this->ishalfhour() ) {
+			if ( ! $is_half_hour ) {
 				$event_start_time = floor( $event_start_time );
 				$event_end_time   = ceil( $event_end_time );
 			}
@@ -797,7 +806,7 @@ class Courtres_Public extends Courtres_Base {
 
 			$rowspan = 1;
 
-			if ( $this->ishalfhour() ) {
+			if ( $is_half_hour ) {
 				$rowspan = ( min( $event_end_time, $court->close ) - max( $event_start_time, $court->open ) ) * 2;
 			} else {
 				$rowspan = ceil( ( min( $event_end_time, $court->close ) - max( $event_start_time, $court->open ) ) );
@@ -845,7 +854,7 @@ class Courtres_Public extends Courtres_Base {
 
 		// cells for author of reservation and partners >>
 		$mincheckres = $mstart;
-		if ( ! $this->ishalfhour() ) {
+		if ( ! $is_half_hour ) {
 			$mincheckres = -1;}
 		$reservation = $this->isReservated_byID( $day, $hour, $mincheckres, $court );
 		if ( $reservation != null ) {
@@ -855,7 +864,7 @@ class Courtres_Public extends Courtres_Base {
 			if ( ! is_null( $reservation->gid ) && $reservation->gid !== '' ) {
 				$timeResMinus = $now['DateTime'];
 				$timeResMinus->setTime( $hour, $mstart, 0 );
-				if ( $this->ishalfhour() ) {
+				if ( $is_half_hour ) {
 					$timeResMinus->sub( new DateInterval( 'PT30M' ) );
 					$reservation_prev_gid = $this->isReservated_byID( $day, $timeResMinus->format( 'H' ), $timeResMinus->format( 'i' ), $court );
 				} else {
@@ -871,7 +880,7 @@ class Courtres_Public extends Courtres_Base {
 				if ( ! is_null( $reservation->id ) && $reservation->id !== '' ) {
 					$rowpan = $this->isReservatedOnce( $court->id, $day, $reservation->gid );
 
-					if ( $rowpan > 1 && ! $this->ishalfhour() ) {
+					if ( $rowpan > 1 && ! $is_half_hour ) {
 						$rowpan = (int) ( $rowpan / 2 ) + ( ( $rowpan % 2 ) > 0 ? 1 : 0 );
 						if ( $reservation->minute > 0 ) {
 							$rowpan++;
@@ -982,7 +991,7 @@ class Courtres_Public extends Courtres_Base {
 		// as: allow users to reserve a court till the end of the HOUR/HALF-HOUR
 		if ( $isPast ) {
 			$hourD = $hour + round( $mstart / 60, 2 );
-			if ( $this->ishalfhour() ) {
+			if ( $is_half_hour ) {
 				if ( ( $now['minute'] - 30 ) <= 0 ) {
 					$nowHourDPlus = ( $now['hour'] - 1 ) + round( $now['minute'] / 60, 2 );
 				} else {
