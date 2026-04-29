@@ -715,10 +715,8 @@ class Courtres_Public extends Courtres_Base {
 
 			}
 
-			if ( ! $isPast ) {
-				if ( (int) $reservation->userid == wp_get_current_user()->ID ) {
-					$output .= '<br/><a class="' . $link_class_red . ' delete" data-id="' . $reservation->id . '">' . $this->option_ui_btn_title_2() . '</a>';
-				}
+			if ( (int) $reservation->userid == wp_get_current_user()->ID ) {
+				$output .= '<br/><a class="' . $link_class_red . ' delete" data-id="' . $reservation->id . '">' . $this->option_ui_btn_title_2() . '</a>';
 			}
 
 			$output .= '</td>';
@@ -998,10 +996,8 @@ class Courtres_Public extends Courtres_Base {
 			}
 
 
-			if ( ! $isPast ) {
-				if ( (int) $reservation->userid == wp_get_current_user()->ID ) {
-					$output .= '<br/><a class="' . $link_class_red . ' delete" data-id="' . $reservation->id . '">' . $this->option_ui_btn_title_2() . '</a>';
-				}
+			if ( (int) $reservation->userid == wp_get_current_user()->ID ) {
+				$output .= '<br/><a class="' . $link_class_red . ' delete" data-id="' . $reservation->id . '">' . $this->option_ui_btn_title_2() . '</a>';
 			}
 
 			$output .= '</td>';
