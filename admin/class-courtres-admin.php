@@ -968,10 +968,21 @@ class Courtres_Admin extends Courtres_Base {
 		$res     = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * FROM {$this->getTable('reservations')}
-			WHERE userid = %d AND ( date > %s OR (date = %s AND time >= %d AND minute >= %d) )",
+			WHERE userid = %d
+				AND (
+					date > %s
+					OR (
+						date = %s
+						AND (
+							time > %d
+							OR (time = %d AND minute >= %d)
+						)
+					)
+				)",
 				$userID,
 				$theTime['date'],
 				$theTime['date'],
+				$theTime['hour'],
 				$theTime['hour'],
 				$theTime['minute']
 			)

@@ -163,12 +163,25 @@ class Courtres_Base {
 				FROM {$this->getTable('reservations')}
 				{$sql_join}
 				WHERE {$this->getTable('reserv_players')}.`player_id` = %d
-					AND ( {$this->getTable('reservations')}.`date` > %s OR ( {$this->getTable('reservations')}.`date` = %s AND {$this->getTable('reservations')}.`time` >= %d AND {$this->getTable('reservations')}.`minute` >= %d ) )",
+					AND (
+						{$this->getTable('reservations')}.`date` > %s
+						OR (
+							{$this->getTable('reservations')}.`date` = %s
+							AND (
+								{$this->getTable('reservations')}.`time` > %d
+								OR (
+									{$this->getTable('reservations')}.`time` = %d
+									AND {$this->getTable('reservations')}.`minute` >= %d
+								)
+							)
+						)
+					)",
 				$userID,
 				$theTime['date'],
 				$theTime['date'],
 				$theTime['hour'],
-				0
+				$theTime['hour'],
+				$theTime['minute']
 			)
 		);
 		// fppr($wpdb->last_query, __FILE__.' last_query');
@@ -201,12 +214,22 @@ class Courtres_Base {
 				"SELECT {$this->getTable('reservations')}.*{$sql_select_more}
 			FROM {$this->getTable('reservations')}
 			{$sql_join}
-			WHERE ( date > %s OR (date = %s AND time >= %d AND minute >= %d) )
+			WHERE (
+				date > %s
+				OR (
+					date = %s
+					AND (
+						time > %d
+						OR (time = %d AND minute >= %d)
+					)
+				)
+			)
 			{$group_by}",
 				$theTime['date'],
 				$theTime['date'],
 				$theTime['hour'],
-				0
+				$theTime['hour'],
+				$theTime['minute']
 			)
 		);
 		// < From 1.5.0
