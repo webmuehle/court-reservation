@@ -303,6 +303,13 @@ form.resform select {
 	min-width: 0;
 }
 
+/* Keep the reservation type select compact (avoid full-width stretch) */
+.cr-dialog-reserve select.reservation-type-select {
+	width: auto;
+	min-width: 220px;
+	max-width: 100%;
+}
+
 /* Backward compatibility: if any table-based rows remain */
 form.resform .form-fields-table td:first-child {
 	color: rgba(0,0,0,0.65);
