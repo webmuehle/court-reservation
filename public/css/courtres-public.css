@@ -284,6 +284,26 @@ form.resform select {
 	padding: 8px 10px;
 	box-shadow: none;
 }
+
+/* Reservation dialog: 1-column form layout (label above control) */
+.cr-dialog-reserve .cr-form-fields {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+.cr-dialog-reserve .cr-field .cr-label {
+	color: rgba(0,0,0,0.65);
+	font-weight: 600;
+	font-size: 12px;
+	line-height: 1.2;
+	margin-bottom: 6px;
+	white-space: nowrap;
+}
+.cr-dialog-reserve .cr-field .cr-control {
+	min-width: 0;
+}
+
+/* Backward compatibility: if any table-based rows remain */
 form.resform .form-fields-table td:first-child {
 	color: rgba(0,0,0,0.65);
 	font-weight: 600;
@@ -291,8 +311,8 @@ form.resform .form-fields-table td:first-child {
 	white-space: nowrap;
 }
 form.resform .form-fields-table td {
-	padding-top: 10px;
-	padding-bottom: 10px;
+	padding-top: 6px;
+	padding-bottom: 6px;
 }
 	form.resform #cr-show-login {
 		cursor: pointer;

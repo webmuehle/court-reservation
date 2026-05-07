@@ -179,48 +179,47 @@ if (!property_exists("court", "id")) { $court->id=""; }
 		<input type="hidden" name="minstart" />
 		<input type="hidden" name="minplayer" />
 		<!-- <input type="hidden" name="minend" /> -->
-		<table class="table table-striped form-fields-table">
-			<tr>
-				<td><?php echo esc_html__( 'Date', 'court-reservation' ); ?></td>
-				<td>
+		<div class="cr-form-fields">
+			<div class="cr-field">
+				<div class="cr-label"><?php echo esc_html__( 'Date', 'court-reservation' ); ?></div>
+				<div class="cr-control">
 					<div class="date"><span id="date">&ndash;</span></div>
 					<!-- <span id="time">&ndash;</span> -->
-				</td>
-			</tr>
-			<tr>
-				<td><?php echo esc_html__( 'Player', 'court-reservation' ); ?></td>
-				<td>
+				</div>
+			</div>
+
+			<div class="cr-field">
+				<div class="cr-label"><?php echo esc_html__( 'Player', 'court-reservation' ); ?></div>
+				<div class="cr-control">
 					<?php if ( $mayEdit ) { ?>
 						<?php echo esc_html( $username ); ?>
-					<?php } else { 
+					<?php } else {
 
-					    $anonymization_mode = $this->getAnonymizationMode();
+						$anonymization_mode = $this->getAnonymizationMode();
 
-					    if ( $anonymization_mode != 1 ) { ?>
-
-						<input list="playerid" placeholder="<?php echo __('Type or click to select', 'court-reservation'); ?>">
-						<datalist name="playerid" id="playerid">
-							<option value="0" selected>-</option>
-							<?php
-							for ( $day = 0;$day < sizeof( $players );
-							$day++ ) {
-								$player = $players[ $day ];
-								?>
-								<option value="<?php echo esc_attr( $player->user_login ); ?>"><?php echo esc_html( $player->display_name ); ?></option>
-							<?php } ?>
-						</datalist>
-
-					    <?php } ?>
+						if ( $anonymization_mode != 1 ) { ?>
+							<input list="playerid" placeholder="<?php echo __('Type or click to select', 'court-reservation'); ?>">
+							<datalist name="playerid" id="playerid">
+								<option value="0" selected>-</option>
+								<?php
+								for ( $day = 0; $day < sizeof( $players ); $day++ ) {
+									$player = $players[ $day ];
+									?>
+									<option value="<?php echo esc_attr( $player->user_login ); ?>"><?php echo esc_html( $player->display_name ); ?></option>
+								<?php } ?>
+							</datalist>
+						<?php } ?>
 
 						<div>
 							<a class="login_button" id="cr-show-login"><?php echo esc_html__( 'Login', 'court-reservation' ); ?></a>
 						</div>
 					<?php } ?>
-				</td>
-			</tr>
-			<tr id="courtres_type">
-				<td><?php echo esc_html__( 'Type', 'court-reservation' ); ?>*</td>
-				<td>
+				</div>
+			</div>
+
+			<div class="cr-field" id="courtres_type">
+				<div class="cr-label"><?php echo esc_html__( 'Type', 'court-reservation' ); ?>*</div>
+				<div class="cr-control">
 					<select id="courtres_type_select" name="type" class="reservation-type-select" autocomplete="off" required>
 						<option value=""><?php echo esc_html__( 'Select from list', 'court-reservation' ); ?></option>
 						<?php
@@ -231,9 +230,9 @@ if (!property_exists("court", "id")) { $court->id=""; }
 							<option value="<?php echo esc_attr( translate( $type, 'court-reservation' ) ); ?>" data-maxplayers="<?php echo esc_attr( $maxPlayers[ $type ] ); ?>" data-minplayers="<?php echo esc_attr( $minPlayers[ $type ] ); ?>" data-duration="<?php echo esc_attr( $matchDurations[ $type ] ); ?>" data-exactduration="<?php echo esc_attr( isset( $exact_duration_types[ $type ] ) ? 1 : 0 ); ?>"><?php echo esc_html( translate( $type, 'court-reservation' ) ); ?></option>
 						<?php endforeach; ?>
 					</select>
-				</td>
-			</tr>
-		</table>
+				</div>
+			</div>
+		</div>
 	</form>
 	<div class="cr-preloader-overlay in-relative-block" id="plo-add-reserv"><div class="cr-preloader"></div></div>
 </div>

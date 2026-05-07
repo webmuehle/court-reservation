@@ -709,7 +709,7 @@
 	function get_more_rows_html(args){
 
 		// var preloader = $('.cr-preloader-overlay#plo_customer_tags');
-		var container_el = $( ".cr-dialog-reserve" ).find( ".form-fields-table" );
+		var container_el = $( ".cr-dialog-reserve" ).find( ".cr-form-fields" );
 		var preloader    = $( '.cr-preloader-overlay#plo-add-reserv' );
 		$( preloader ).fadeIn();
 

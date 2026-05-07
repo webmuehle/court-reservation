@@ -1684,19 +1684,16 @@ class Courtres_Public extends Courtres_Base {
 			<input type="hidden" id="player-number" name="player-number" value="' .  $args['max_players'] . '">
 		';
 		$html        = '
-		<tr class="type-depending-row partner-row">
-			<td>' .
+		<div class="type-depending-row cr-field partner-row">
+			<div class="cr-label">' .
 				__( 'Teammate', 'court-reservation' ) . ( $isPartnerRequired ? '*' : '' ) . '<br /><span id="part_min">' .
 				( $isPartnerRequired ? __( 'min.', 'court-reservation' ) . ': 1' : '' ) . '</span><br />' .
 				__( 'max.', 'court-reservation' ) . ': ' . '<span class="max-players-quantity"></span>' . '<br />' .
-				// __('min.', 'court-reservation') . ': ' . '<span class="min-players-quantity"></span>' . '<br />' .
-				// '<i class="cr-help">' . __( 'Hold Ctrl / Cmd for the selection of multipe players', 'court-reservation' ) . '</i>' .
-			'</td>
-			<td>' .
+			'</div>
+			<div class="cr-control">' .
 				$html_select .
-				// '<p class="partners-info">Selected: <span class="partners-list"></span></p>' .
-			'</td>
-		</tr>
+			'</div>
+		</div>
 		';
 		return $html;
 	}
@@ -1728,12 +1725,10 @@ class Courtres_Public extends Courtres_Base {
 	// get Time select row
 	function get_time_row( $args ) {
 		$row_template = '
-		<tr class="type-depending-row time-row">
-			<td>' .
-				__( 'Time', 'court-reservation' ) . '*<br />' .
-			'</td>
-			<td>%s</td>
-		</tr>
+		<div class="type-depending-row cr-field time-row">
+			<div class="cr-label">' . __( 'Time', 'court-reservation' ) . '*</div>
+			<div class="cr-control">%s</div>
+		</div>
 		';
 
 		$court_id = isset( $args['court_id'] ) ? intval( $args['court_id'] ) : false;
@@ -1850,19 +1845,19 @@ class Courtres_Public extends Courtres_Base {
 				$court_product = new WC_Product($is_court_payable);
 
 			$html .= '
-				<tr class="type-depending-row time-row">
-					<td>' . __( 'Price', 'court-reservation' ) . ":";
+				<div class="type-depending-row cr-field price-row">
+					<div class="cr-label">' . __( 'Price', 'court-reservation' ) . ":";
 
 				$html .= '
-					</td>
-					<td>' . $court_product->get_price_html() . ' ';
+					</div>
+					<div class="cr-control">' . $court_product->get_price_html() . ' ';
 
 				if ( isset($_POST['is_halfhour']) && $_POST['is_halfhour'] == 1 ) { $html .= __( ' per half-hour', 'court-reservation' ); }
 				else { $html .= __( 'per hour', 'court-reservation' ); }
 	
 				$html .= '
-					</td>
-				</tr>
+					</div>
+				</div>
 				';
 
 			}
@@ -1874,7 +1869,7 @@ class Courtres_Public extends Courtres_Base {
 		}
 
 		$allowed_html = array(
-			'tr'  => array(
+			'div'  => array(
 				'class'      => array()
 			),
 			'td' => array(
