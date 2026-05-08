@@ -401,15 +401,19 @@
 							$( this ).dialog( 'close' );
 
 						},
-						class: 'cr-ui-button'
+						class: 'cr-ui-button cr-ui-button--secondary'
 					},
 					'save': {
 						text: (window.courtres_params && courtres_params.cr_btn_save) ? courtres_params.cr_btn_save : 'Save', // fallback safety
 						click: function () {
+							var $btnSave = $( this ).dialog( 'widget' ).find( '#cr-ui-save' );
+							var originalSaveText = $btnSave.data( 'cr-original-text' ) || $btnSave.text();
+
 							var preloader = $( '.cr-preloader-overlay#plo-add-reserv' );
 							$( preloader ).fadeIn();
-							var spinner = '<img src="' + window.courtres_params.cr_url + '/images/spinner.gif" />'
-							$( '#cr-ui-save' ).append( spinner );
+							$btnSave.data( 'cr-original-text', originalSaveText );
+							$btnSave.prop( 'disabled', true ).addClass( 'is-loading' );
+							$btnSave.html( '<span class="cr-btn__spinner" aria-hidden="true"></span><span class="cr-btn__text">' + originalSaveText + '</span>' );
 
 							var validation = validate( $cr_frm_reserve );
 							if (validation.is_valid) {
@@ -421,7 +425,7 @@
 										success: function (msg) {
 											const parsedMsg = JSON.parse(msg);
 											$( preloader ).fadeOut();
-											$( '#cr-ui-save' ).removeAttr( "disabled" );
+											$btnSave.prop( 'disabled', false ).removeClass( 'is-loading' ).text( originalSaveText );
 											// console.log(msg);
 											let court_hourplus_form = $cr_frm_reserve[0];
 											var cr_frm_hourplus = $(court_hourplus_form).find('#hourplus').val();
@@ -451,7 +455,7 @@
 														$( "#plo-error-dialog" ).css( {"z-index": $( this ).closest( ".cr-dialog-alert" ).css( "z-index" ) - 1} );
 													},
 													close: function () {
-														$( '#cr-ui-save' ).find( 'img' ).remove();
+														$btnSave.prop( 'disabled', false ).removeClass( 'is-loading' ).text( originalSaveText );
 														$( this ).fadeOut( 600 );
 														$( preloader ).fadeOut();
 														$( ".cr-preloader-overlay#plo-error-dialog" ).remove();
@@ -472,7 +476,7 @@
 											$( "#plo-error-dialog" ).css( {"z-index": $( this ).closest( ".cr-dialog-alert" ).css( "z-index" ) - 1} );
 										},
 										close: function () {
-											$( '#cr-ui-save' ).find( 'img' ).remove();
+											$btnSave.prop( 'disabled', false ).removeClass( 'is-loading' ).text( originalSaveText );
 											$( this ).fadeOut( 600 );
 											$( preloader ).fadeOut();
 											$( ".cr-preloader-overlay#plo-error-dialog" ).remove();
@@ -482,7 +486,7 @@
 							}
 						},
 						id: 'cr-ui-save',
-						class: 'cr-ui-button',
+						class: 'cr-ui-button cr-ui-button--primary',
 						type: 'submit'
 					}
 				}
@@ -566,6 +570,13 @@
 								'Login': {
 									text: 'Login',
 									click: function () {
+										var $btnLogin = $( this ).dialog( 'widget' ).find( '#cr-ui-login' );
+										var originalLoginText = $btnLogin.data( 'cr-original-text' ) || $btnLogin.text() || 'Login';
+
+										$btnLogin.data( 'cr-original-text', originalLoginText );
+										$btnLogin.prop( 'disabled', true ).addClass( 'is-loading' );
+										$btnLogin.html( '<span class="cr-btn__spinner" aria-hidden="true"></span><span class="cr-btn__text">Signing in\u2026</span>' );
+
 										$.ajax(
 											{
 												type: "POST",
@@ -575,6 +586,7 @@
 													// console.log(msg);
 													var j = jQuery.parseJSON( msg );
 													if ( ! j.loggedin) {
+														$btnLogin.prop( 'disabled', false ).removeClass( 'is-loading' ).text( originalLoginText );
 														$cr_dlg_login.find( '#login-error-text' ).text( j.message );
 														$cr_dlg_login.find( '#login-error' ).show();
 													} else {
@@ -591,12 +603,14 @@
 													// console.log(msg)
 												},
 												error: function (err) {
+													$btnLogin.prop( 'disabled', false ).removeClass( 'is-loading' ).text( originalLoginText );
 													console.error( err.responseText );
 												}
 											}
 										);
 									},
-									class: 'cr-ui-button'
+									id: 'cr-ui-login',
+									class: 'cr-ui-button cr-ui-button--primary'
 								}
 							}
 						}
