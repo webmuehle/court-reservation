@@ -208,6 +208,12 @@ table.reservations .cr-tooltip:hover .cr-tooltiptext {
 .ui-dialog.cr-dialog-modern .ui-dialog-titlebar-close .ui-button-icon {
 	margin: 0 !important;
 }
+.ui-dialog.cr-dialog-modern .ui-dialog-titlebar-close.ui-button-icon-only .ui-icon {
+	position: static !important;
+	top: auto !important;
+	left: auto !important;
+	margin: 0 !important;
+}
 .ui-dialog.cr-dialog-modern .ui-dialog-titlebar-close .ui-button-icon-space {
 	display: none !important;
 }
