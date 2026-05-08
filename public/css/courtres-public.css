@@ -168,6 +168,9 @@ table.reservations .cr-tooltip:hover .cr-tooltiptext {
 	background: #fff !important;
 	padding: 16px 16px !important;
 	border-bottom: 1px solid rgba(0,0,0,0.06) !important;
+	display: flex;
+	align-items: center;
+	gap: 12px;
 }
 .ui-dialog.cr-dialog-modern .ui-dialog-title {
 	font-weight: 600;
@@ -175,6 +178,10 @@ table.reservations .cr-tooltip:hover .cr-tooltiptext {
 	line-height: 1.2;
 	letter-spacing: -0.01em;
 	color: rgba(17, 24, 39, 0.96);
+	float: none;
+	width: auto;
+	margin: 0;
+	flex: 1 1 auto;
 }
 .ui-dialog.cr-dialog-modern .ui-dialog-titlebar-close {
 	border: 0 !important;
@@ -185,7 +192,10 @@ table.reservations .cr-tooltip:hover .cr-tooltiptext {
 	display: inline-flex !important;
 	align-items: center !important;
 	justify-content: center !important;
-	right: 10px !important;
+	position: relative !important;
+	top: auto !important;
+	right: auto !important;
+	margin: 0 !important;
 	transition: all 0.15s ease;
 	box-shadow: none !important;
 	padding: 0 !important;
