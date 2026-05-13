@@ -856,7 +856,7 @@ class Courtres_Public extends Courtres_Base {
 			if ( $anonymization_mode == 1 ) {
 				$output .= __( 'Booked', 'court-reservation' );
 			} else {
-				$output .= esc_html( $block->name );
+				$output .= '<strong>' . esc_html( $block->name ) . '</strong>';
 			}
 			if ( ! empty( $block->attach_enabled ) ) {
 				$output .= $this->build_event_attach_html( $block, $date, $court, $anonymization_mode );
@@ -1154,7 +1154,7 @@ class Courtres_Public extends Courtres_Base {
 			if ( $anonymization_mode == 1 ) {
 				$output .= __( 'Booked', 'court-reservation' );
 			} else {
-				$output .= esc_html( $block->name );
+				$output .= '<strong>' . esc_html( $block->name ) . '</strong>';
 			}
 			if ( ! empty( $block->attach_enabled ) ) {
 				$output .= $this->build_event_attach_html( $block, $date, $court, $anonymization_mode );
