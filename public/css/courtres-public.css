@@ -13,12 +13,12 @@
 	}
 }
 
-/* Event optional join (Dazuhängen) */
+/* Event optional join (Dazuhängen) — same cell/button scale as reserve/delete */
 .courtres-event-attach {
-	margin-top: 0.4em;
-	font-size: 0.9em;
-	line-height: 1.35;
-	text-align: left;
+	margin-top: 0.35em;
+	font-size: inherit;
+	line-height: inherit;
+	text-align: center;
 }
 .courtres-event-attach-names {
 	display: block;

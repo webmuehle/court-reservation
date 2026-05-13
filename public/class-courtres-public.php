@@ -1618,7 +1618,7 @@ class Courtres_Public extends Courtres_Base {
 			return '';
 		}
 		return '<style>
-		  table.reservations td a.reservation:not(.button), table.reservations td a.delete:not(.button), .cr-dialog-reserve .login_button {
+		  table.reservations td a.reservation:not(.button), table.reservations td a.delete:not(.button), table.reservations td a.courtres-event-attach-join:not(.button), table.reservations td a.courtres-event-attach-leave:not(.button), .cr-dialog-reserve .login_button {
 			color: ' . $opt->option_value . ';
 		  }
 		</style>';
