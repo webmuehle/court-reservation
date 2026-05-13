@@ -4,7 +4,7 @@ Donate link: https://www.webmuehle.at/
 Tags: Court Reservation, Padel, Tennis, Padel, Pickleball
 Requires at least: 3.0.1
 Tested up to: 6.7.2
-Stable tag: 1.10.14
+Stable tag: 1.11.0
 Requires PHP: 5.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -75,8 +75,16 @@ Upload the plugin via ZIP or install and activate it via the WordPress plugin in
 [youtube https://www.youtube.com/watch?v=twkmSQSuGME]
 
 == Changelog ==
+= 1.11.0 =
+* Optional "Dazuhängen" (join) for events: per-event setting in the admin, optional maximum participants
+* Event occurrences stay blocked as before; members can sign up in the reservation table (link, participant list, join/leave) with logged-in user checks and unique rows per user/date
+* New database support for per-occurrence participants (incl. weekly recurring events); database upgrade runs on update
+* AJAX join/leave with nonces and capability checks
+
 = 1.10.14 =
 * Performance optimization in getTD (reduced repeated ishalfhour checks)
+* UI optimizations
+* Exact time slots for reservation types
 
 = 1.10.13 =
 * Security Issues Fixed

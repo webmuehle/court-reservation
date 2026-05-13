@@ -40,6 +40,7 @@ class Courtres_Uninstaller {
 		$tables = array(
 			$wpdb->prefix . 'courtres_settings',
 			$wpdb->prefix . 'courtres_reservations',
+			$wpdb->prefix . 'courtres_event_attachments',
 			$wpdb->prefix . 'courtres_events',
 			$wpdb->prefix . 'courtres_courts',
 		);

@@ -55,6 +55,13 @@ class Courtres_Public extends Courtres_Base {
 	private $blocked_by_date_multi_cache = array();
 
 	/**
+	 * Cached participant lists per request (event id + occurrence date).
+	 *
+	 * @var array<string, array<int, array<string, mixed>>>
+	 */
+	private $attach_participant_cache = array();
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.3
@@ -65,7 +72,7 @@ class Courtres_Public extends Courtres_Base {
 
 		$this->plugin_name    = $plugin_name;
 		$this->version        = $version;
-		$this->assets_version = $version . '.04';
+		$this->assets_version = $version . '.06';
 	}
 
 	/**
@@ -470,6 +477,289 @@ class Courtres_Public extends Courtres_Base {
 	}
 
 	/**
+	 * Unix timestamp for end of an event on a calendar day.
+	 *
+	 * @param object $event           Event row.
+	 * @param string $occurrence_date Y-m-d.
+	 * @return int|false
+	 */
+	private function get_event_occurrence_end_unix( $event, $occurrence_date ) {
+		if ( empty( $event->end_ts ) ) {
+			return false;
+		}
+		$time = date_i18n( 'H:i:s', (int) $event->end_ts );
+		$ts   = strtotime( $occurrence_date . ' ' . $time );
+		return $ts ? (int) $ts : false;
+	}
+
+	/**
+	 * Whether the occurrence has fully ended (join/leave no longer allowed).
+	 *
+	 * @param object $event           Event row.
+	 * @param string $occurrence_date Y-m-d.
+	 * @return bool
+	 */
+	private function is_event_attach_in_past( $event, $occurrence_date ) {
+		$end = $this->get_event_occurrence_end_unix( $event, $occurrence_date );
+		if ( ! $end ) {
+			return true;
+		}
+		return $end < current_time( 'timestamp' );
+	}
+
+	/**
+	 * Participant rows for UI / AJAX (cached per request).
+	 *
+	 * @param int    $event_id        Event id.
+	 * @param string $occurrence_date Y-m-d.
+	 * @return array<int, array{user_id:int, name:string}>
+	 */
+	private function get_attach_participant_items( $event_id, $occurrence_date ) {
+		$key = absint( $event_id ) . '|' . $occurrence_date;
+		if ( isset( $this->attach_participant_cache[ $key ] ) ) {
+			return $this->attach_participant_cache[ $key ];
+		}
+		$rows = Courtres_Event_Attachment::get_rows( $event_id, $occurrence_date );
+		$out  = array();
+		foreach ( $rows as $row ) {
+			$uid = (int) $row['user_id'];
+			$u   = get_userdata( $uid );
+			$out[] = array(
+				'user_id' => $uid,
+				'name'    => $u ? $u->display_name : '',
+			);
+		}
+		$this->attach_participant_cache[ $key ] = $out;
+		return $out;
+	}
+
+	/**
+	 * Validate attach AJAX and return event row or WP_Error.
+	 *
+	 * @param int    $event_id        Event id.
+	 * @param string $occurrence_date Y-m-d.
+	 * @param int    $court_id        Court id from client.
+	 * @param bool   $require_future  If false, past occurrences still validate (leave).
+	 * @return object|WP_Error
+	 */
+	private function validate_event_attach_request( $event_id, $occurrence_date, $court_id, $require_future = true ) {
+		if ( ! is_user_logged_in() || ! current_user_can( 'place_reservation' ) ) {
+			return new WP_Error( 'forbidden', __( 'You are not allowed to join.', 'court-reservation' ) );
+		}
+		if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $occurrence_date ) ) {
+			return new WP_Error( 'bad_date', __( 'Invalid date.', 'court-reservation' ) );
+		}
+		global $wpdb;
+		$table = $this->getTable( 'events' );
+		$event = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE id = %d", absint( $event_id ) ) );
+		if ( ! $event ) {
+			return new WP_Error( 'not_found', __( 'Event not found.', 'court-reservation' ) );
+		}
+		if ( (int) $event->courtid !== absint( $court_id ) ) {
+			return new WP_Error( 'court', __( 'Invalid court.', 'court-reservation' ) );
+		}
+		if ( empty( $event->attach_enabled ) ) {
+			return new WP_Error( 'disabled', __( 'Joining is not enabled for this event.', 'court-reservation' ) );
+		}
+		if ( ! $this->event_occurs_on_date( $event, $occurrence_date ) ) {
+			return new WP_Error( 'date', __( 'This date does not match the event.', 'court-reservation' ) );
+		}
+		if ( $require_future && $this->is_event_attach_in_past( $event, $occurrence_date ) ) {
+			return new WP_Error( 'past', __( 'This occurrence is in the past.', 'court-reservation' ) );
+		}
+		return $event;
+	}
+
+	/**
+	 * HTML fragment for optional event attachment UI (Dazuhängen).
+	 *
+	 * @param object $block               Event row from blocks query.
+	 * @param string $occurrence_date     Y-m-d for this table column.
+	 * @param object $court               Court row.
+	 * @param int    $anonymization_mode  From getAnonymizationMode().
+	 * @return string
+	 */
+	private function build_event_attach_html( $block, $occurrence_date, $court, $anonymization_mode ) {
+		if ( empty( $occurrence_date ) || empty( $block->attach_enabled ) ) {
+			return '';
+		}
+
+		$link_join = '';
+		$link_leave = '';
+		if ( ! $this->isuilink() ) {
+			$link_join  = ' button button_green button_size_1 ';
+			$link_leave = ' button button_red button_size_1 ';
+		}
+
+		$event_id = (int) $block->id;
+		$court_id = isset( $court->id ) ? (int) $court->id : 0;
+		$items    = $this->get_attach_participant_items( $event_id, $occurrence_date );
+		$count    = count( $items );
+		$max      = isset( $block->attach_max ) ? absint( $block->attach_max ) : 0;
+		$is_full  = $max > 0 && $count >= $max;
+
+		$uid          = get_current_user_id();
+		$joined       = $uid && Courtres_Event_Attachment::is_user_attached( $event_id, $occurrence_date, $uid );
+		$past         = $this->is_event_attach_in_past( $block, $occurrence_date );
+		$logged_in    = is_user_logged_in();
+		$can_reserve  = $logged_in && current_user_can( 'place_reservation' );
+
+		$names_part = '';
+		if ( $anonymization_mode === 1 ) {
+			$names_part = '<span class="courtres-event-attach-names">' . esc_html( sprintf( _n( '%d participant', '%d participants', $count, 'court-reservation' ), $count ) ) . '</span>';
+		} elseif ( $items ) {
+			$names_part = '<span class="courtres-event-attach-names">' . esc_html( implode( ', ', wp_list_pluck( $items, 'name' ) ) ) . '</span>';
+		}
+
+		$actions = '';
+		if ( $past ) {
+			$actions .= '<span class="courtres-event-attach-msg">' . esc_html__( 'Ended', 'court-reservation' ) . '</span>';
+		} elseif ( ! $logged_in ) {
+			$actions .= '<span class="courtres-event-attach-msg">' . esc_html__( 'Log in to join.', 'court-reservation' ) . '</span>';
+		} elseif ( ! $can_reserve ) {
+			$actions .= '<span class="courtres-event-attach-msg">' . esc_html__( 'You cannot join.', 'court-reservation' ) . '</span>';
+		} elseif ( $joined ) {
+			$actions .= '<a href="#" class="' . esc_attr( trim( $link_leave ) ) . ' courtres-event-attach-leave">' . esc_html__( 'aushängen', 'court-reservation' ) . '</a>';
+		} elseif ( $is_full ) {
+			$actions .= '<span class="courtres-event-attach-msg">' . esc_html__( 'Full.', 'court-reservation' ) . '</span>';
+		} else {
+			$actions .= '<a href="#" class="' . esc_attr( trim( $link_join ) ) . ' courtres-event-attach-join">' . esc_html__( 'dazuhängen', 'court-reservation' ) . '</a>';
+		}
+
+		$inner = $names_part;
+		if ( '' !== $names_part && '' !== $actions ) {
+			$inner .= '<br/>';
+		}
+		$inner .= $actions;
+
+		return '<div class="courtres-event-attach" data-event-id="' . esc_attr( (string) $event_id )
+			. '" data-occurrence="' . esc_attr( $occurrence_date )
+			. '" data-court-id="' . esc_attr( (string) $court_id )
+			. '" data-max="' . esc_attr( (string) $max )
+			. '" data-count="' . esc_attr( (string) $count )
+			. '">' . $inner . '</div>';
+	}
+
+	/**
+	 * AJAX: join event occurrence.
+	 */
+	public function ajax_event_attach_join() {
+		check_ajax_referer( 'courtres_event_attach', 'nonce' );
+
+		$event_id        = isset( $_POST['event_id'] ) ? absint( wp_unslash( $_POST['event_id'] ) ) : 0;
+		$occurrence_date = isset( $_POST['occurrence_date'] ) ? sanitize_text_field( wp_unslash( $_POST['occurrence_date'] ) ) : '';
+		$court_id        = isset( $_POST['court_id'] ) ? absint( wp_unslash( $_POST['court_id'] ) ) : 0;
+
+		$validated = $this->validate_event_attach_request( $event_id, $occurrence_date, $court_id );
+		if ( is_wp_error( $validated ) ) {
+			wp_send_json_error(
+				array( 'message' => $validated->get_error_message() ),
+				400
+			);
+		}
+		$event = $validated;
+
+		$user_id = get_current_user_id();
+		if ( Courtres_Event_Attachment::is_user_attached( $event_id, $occurrence_date, $user_id ) ) {
+			wp_send_json_success( $this->ajax_event_attach_payload( $event, $occurrence_date ) );
+		}
+
+		$max   = isset( $event->attach_max ) ? absint( $event->attach_max ) : 0;
+		$count = Courtres_Event_Attachment::count_for_occurrence( $event_id, $occurrence_date );
+		if ( $max > 0 && $count >= $max ) {
+			wp_send_json_error(
+				array( 'message' => __( 'This occurrence is full.', 'court-reservation' ) ),
+				409
+			);
+		}
+
+		$inserted = Courtres_Event_Attachment::insert_row( $event_id, $occurrence_date, $user_id );
+		if ( false === $inserted ) {
+			if ( Courtres_Event_Attachment::is_user_attached( $event_id, $occurrence_date, $user_id ) ) {
+				wp_send_json_success( $this->ajax_event_attach_payload( $event, $occurrence_date ) );
+			}
+			wp_send_json_error(
+				array( 'message' => __( 'Could not save. Please try again.', 'court-reservation' ) ),
+				500
+			);
+		}
+
+		wp_send_json_success( $this->ajax_event_attach_payload( $event, $occurrence_date ) );
+	}
+
+	/**
+	 * AJAX: leave event occurrence.
+	 */
+	public function ajax_event_attach_leave() {
+		check_ajax_referer( 'courtres_event_attach', 'nonce' );
+
+		$event_id        = isset( $_POST['event_id'] ) ? absint( wp_unslash( $_POST['event_id'] ) ) : 0;
+		$occurrence_date = isset( $_POST['occurrence_date'] ) ? sanitize_text_field( wp_unslash( $_POST['occurrence_date'] ) ) : '';
+		$court_id        = isset( $_POST['court_id'] ) ? absint( wp_unslash( $_POST['court_id'] ) ) : 0;
+
+		$validated = $this->validate_event_attach_request( $event_id, $occurrence_date, $court_id, false );
+		if ( is_wp_error( $validated ) ) {
+			wp_send_json_error(
+				array( 'message' => $validated->get_error_message() ),
+				400
+			);
+		}
+		$event = $validated;
+
+		$user_id = get_current_user_id();
+		Courtres_Event_Attachment::delete_row( $event_id, $occurrence_date, $user_id );
+
+		wp_send_json_success( $this->ajax_event_attach_payload( $event, $occurrence_date ) );
+	}
+
+	/**
+	 * Build JSON payload after attach/detach.
+	 *
+	 * @param object $event           Event row.
+	 * @param string $occurrence_date Y-m-d.
+	 * @return array<string, mixed>
+	 */
+	private function ajax_event_attach_payload( $event, $occurrence_date ) {
+		unset( $this->attach_participant_cache[ absint( $event->id ) . '|' . $occurrence_date ] );
+
+		$event_id = (int) $event->id;
+		$mode     = (int) $this->getAnonymizationMode();
+		$items    = $this->get_attach_participant_items( $event_id, $occurrence_date );
+		$count    = count( $items );
+		$max      = isset( $event->attach_max ) ? absint( $event->attach_max ) : 0;
+		$uid      = get_current_user_id();
+		$joined   = $uid && Courtres_Event_Attachment::is_user_attached( $event_id, $occurrence_date, $uid );
+
+		$participants = array();
+		if ( 1 === $mode ) {
+			$participants[] = array(
+				'user_id' => 0,
+				'name'    => sprintf( _n( '%d participant', '%d participants', $count, 'court-reservation' ), $count ),
+			);
+		} else {
+			foreach ( $items as $it ) {
+				$participants[] = array(
+					'user_id' => $it['user_id'],
+					'name'    => $it['name'],
+				);
+			}
+		}
+
+		return array(
+			'participants'      => $participants,
+			'count'             => $count,
+			'max'               => $max,
+			'is_full'           => $max > 0 && $count >= $max,
+			'is_joined'         => (bool) $joined,
+			'anonymization'     => $mode,
+			'participant_label' => sprintf(
+				_n( '%d participant', '%d participants', $count, 'court-reservation' ),
+				$count
+			),
+		);
+	}
+
+	/**
 	 * For displaying table cell
 	 *
 	 * @param  [type]  $court  - court ID
@@ -563,8 +853,15 @@ class Courtres_Public extends Courtres_Base {
 
 			$anonymization_mode = $this->getAnonymizationMode();
 
-			if ( $anonymization_mode == 1 ) { $output .= __( 'Booked', 'court-reservation' ); }
-			else { $output .= esc_html( $block->name ) . '</td>'; }
+			if ( $anonymization_mode == 1 ) {
+				$output .= __( 'Booked', 'court-reservation' );
+			} else {
+				$output .= esc_html( $block->name );
+			}
+			if ( ! empty( $block->attach_enabled ) ) {
+				$output .= $this->build_event_attach_html( $block, $date, $court, $anonymization_mode );
+			}
+			$output .= '</td>';
 
 			return $output;
 		}
@@ -845,7 +1142,6 @@ class Courtres_Public extends Courtres_Base {
 
 			$helper       = false; // set to false before pushing to production to remove dev data!
 			$helper_title = $helper ? ' title="' . $helper . '"' : '';
-			$output       = "<td class=\"blocked $klasa\" rowspan=\"" . $rowspan . '" data-now="' . $now['hour'] . ':' . $now['minute'] . '"' . $helper_title . '>' . esc_html( $block->name ) . '</td>';
 
 			$block_colours = get_option('option_event_type_color');
 			$block_type=$block->name; 
@@ -853,11 +1149,17 @@ class Courtres_Public extends Courtres_Base {
 			else { $block_colours[$block_type]=$block_colours[$block_type] . " !important"; }
 
 			$output       = "<td class=\"blocked $klasa\" style='background-color: " . $block_colours[$block_type] . "' rowspan=\"" . $rowspan . '" data-now="' . $now['hour'] . ':' . $now['minute'] . '"' . $helper_title . '>';
-			// $output       = '<td class="blocked" style="background-color: ' . $block_colours[$block_type] . '" rowspan="' . $rowspan . '" data-now="' . $now['hour'] . ':' . $now['minute'] . '"' . $helper_title . '>' . esc_html( $block->name ) . '</td>';
 
 			$anonymization_mode = $this->getAnonymizationMode();
-			if ( $anonymization_mode == 1 ) { $output .= __( 'Booked', 'court-reservation' ); }
-			else { $output .= esc_html( $block->name ) . '</td>'; }
+			if ( $anonymization_mode == 1 ) {
+				$output .= __( 'Booked', 'court-reservation' );
+			} else {
+				$output .= esc_html( $block->name );
+			}
+			if ( ! empty( $block->attach_enabled ) ) {
+				$output .= $this->build_event_attach_html( $block, $date, $court, $anonymization_mode );
+			}
+			$output .= '</td>';
 
 			return $output;
 		}
@@ -1087,17 +1389,32 @@ class Courtres_Public extends Courtres_Base {
 
 		}
 
+		$attach_local = array(
+			'attach_nonce'       => wp_create_nonce( 'courtres_event_attach' ),
+			'attach_join_class'  => trim( ( ! $this->isuilink() ? ' button button_green button_size_1 ' : '' ) . ' courtres-event-attach-join' ),
+			'attach_leave_class' => trim( ( ! $this->isuilink() ? ' button button_red button_size_1 ' : '' ) . ' courtres-event-attach-leave' ),
+			'attach_txt_join'    => __( 'dazuhängen', 'court-reservation' ),
+			'attach_txt_leave'   => __( 'aushängen', 'court-reservation' ),
+			'attach_txt_full'    => __( 'Full.', 'court-reservation' ),
+			'attach_txt_login'   => __( 'Log in to join.', 'court-reservation' ),
+			'attach_txt_cannot'  => __( 'You cannot join.', 'court-reservation' ),
+			'attach_txt_ended'   => __( 'Ended', 'court-reservation' ),
+		);
+
 		wp_localize_script(
 			$this->plugin_name,
 			$this->plugin_name . '_params',
-			array(
-				'cr_ids'                  => $cr_ids,
-				'cr_url'                  => plugins_url( '', __FILE__ ),
-				'cr_btn_save'             => __( $ctr_btn_save_[$court_id], 'court-reservation' ),
-				'cr_btn_save_1'           => array( $court_id => __( $ctr_btn_save_[$court_id], 'court-reservation' )),
-				'cr_btn_cancel'           => __( 'Cancel', 'court-reservation' ),
-				'cr_option_ui_dateformat' => $this->getDateFormat(),
-				'ajax_url'                => admin_url( 'admin-ajax.php' ),
+			array_merge(
+				array(
+					'cr_ids'                  => $cr_ids,
+					'cr_url'                  => plugins_url( '', __FILE__ ),
+					'cr_btn_save'             => __( $ctr_btn_save_[$court_id], 'court-reservation' ),
+					'cr_btn_save_1'           => array( $court_id => __( $ctr_btn_save_[$court_id], 'court-reservation' ) ),
+					'cr_btn_cancel'           => __( 'Cancel', 'court-reservation' ),
+					'cr_option_ui_dateformat' => $this->getDateFormat(),
+					'ajax_url'                => admin_url( 'admin-ajax.php' ),
+				),
+				$attach_local
 			)
 		);
 
@@ -1140,17 +1457,32 @@ class Courtres_Public extends Courtres_Base {
 			    }
 		}
 
+		$attach_local = array(
+			'attach_nonce'       => wp_create_nonce( 'courtres_event_attach' ),
+			'attach_join_class'  => trim( ( ! $this->isuilink() ? ' button button_green button_size_1 ' : '' ) . ' courtres-event-attach-join' ),
+			'attach_leave_class' => trim( ( ! $this->isuilink() ? ' button button_red button_size_1 ' : '' ) . ' courtres-event-attach-leave' ),
+			'attach_txt_join'    => __( 'dazuhängen', 'court-reservation' ),
+			'attach_txt_leave'   => __( 'aushängen', 'court-reservation' ),
+			'attach_txt_full'    => __( 'Full.', 'court-reservation' ),
+			'attach_txt_login'   => __( 'Log in to join.', 'court-reservation' ),
+			'attach_txt_cannot'  => __( 'You cannot join.', 'court-reservation' ),
+			'attach_txt_ended'   => __( 'Ended', 'court-reservation' ),
+		);
+
 		wp_localize_script(
 			$this->plugin_name,
 			$this->plugin_name . '_params',
-			array(
-				'cr_ids'                  => $cr_ids,
-				'cr_url'                  => plugins_url( '', __FILE__ ),
-				'cr_btn_save'             => __( $ctr_btn_save_, 'court-reservation' ),
-				'cr_btn_save_1'             => $courts_save_buttons,
-				'cr_btn_cancel'           => __( 'Cancel', 'court-reservation' ),
-				'cr_option_ui_dateformat' => $this->getDateFormat(),
-				'ajax_url'                => admin_url( 'admin-ajax.php' ),
+			array_merge(
+				array(
+					'cr_ids'                  => $cr_ids,
+					'cr_url'                  => plugins_url( '', __FILE__ ),
+					'cr_btn_save'             => __( $ctr_btn_save_, 'court-reservation' ),
+					'cr_btn_save_1'           => $courts_save_buttons,
+					'cr_btn_cancel'           => __( 'Cancel', 'court-reservation' ),
+					'cr_option_ui_dateformat' => $this->getDateFormat(),
+					'ajax_url'                => admin_url( 'admin-ajax.php' ),
+				),
+				$attach_local
 			)
 		);
 

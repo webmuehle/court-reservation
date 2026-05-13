@@ -264,8 +264,9 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 									$klasa = 'mob_minus'; }
 
 								$allowed_html = array(
-									'a'  => array(
+									'a'    => array(
 										'class'           => array(),
+										'href'            => array(),
 										'court-id'        => array(),
 										'data-day'        => array(),
 										'data-id'         => array(),
@@ -277,7 +278,7 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 										'data-min-start'  => array(),
 										'data-min-player' => array(),
 									),
-									'td' => array(
+									'td'   => array(
 										'class'     => array(),
 										'style'     => array(),
 										'court-id'  => array(),
@@ -286,7 +287,23 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 										'rowspan'   => array(),
 										'data-cell' => array(),
 									),
-									'br' => array(),
+									'div'  => array(
+										'class'           => array(),
+										'data-event-id'   => array(),
+										'data-occurrence' => array(),
+										'data-court-id'   => array(),
+										'data-max'        => array(),
+										'data-count'      => array(),
+									),
+									'ul'   => array(
+										'class' => array(),
+									),
+									'li'   => array(),
+									'span' => array(
+										'class' => array(),
+									),
+									'br'   => array(),
+									'strong' => array(),
 								);
 								echo wp_kses( $this->getTD_multi( $court_ispis_2, $day, $j, $klasa, 0, 30, date_i18n( 'Y-m-d', strtotime( '+' . $day . ' day', $nowTZTS ) ) ), $allowed_html );
 								// echo $this->getTD_multi( $court_ispis_2, $day, $j, 0, 30, date_i18n("Y-m-d", strtotime('+'.$day.' day', $nowTZTS)), $klasa );
@@ -319,8 +336,9 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 									} else {
 										$klasa = 'mob_minus'; }
 									$allowed_html = array(
-										'a'  => array(
+										'a'    => array(
 											'class'      => array(),
+											'href'       => array(),
 											'court-id'   => array(),
 											'data-day'   => array(),
 											'data-id'    => array(),
@@ -332,7 +350,7 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 											'data-min-start' => array(),
 											'data-min-player' => array(),
 										),
-										'td' => array(
+										'td'   => array(
 											'class'     => array(),
 											'style'     => array(),
 											'court-id'  => array(),
@@ -341,7 +359,23 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 											'rowspan'   => array(),
 											'data-cell' => array(),
 										),
-										'br' => array(),
+										'div'  => array(
+											'class'           => array(),
+											'data-event-id'   => array(),
+											'data-occurrence' => array(),
+											'data-court-id'   => array(),
+											'data-max'        => array(),
+											'data-count'      => array(),
+										),
+										'ul'   => array(
+											'class' => array(),
+										),
+										'li'   => array(),
+										'span' => array(
+											'class' => array(),
+										),
+										'br'   => array(),
+										'strong' => array(),
 									);
 									echo wp_kses( $this->getTD_multi( $court_ispis_2, $day, $j, $klasa, 30, 0, date_i18n( 'Y-m-d', strtotime( '+' . $day . ' day', $nowTZTS ) ) ), $allowed_html );
 									// echo $this->getTD_multi( $court_ispis_2, $day, $j, 30, 0, date_i18n("Y-m-d", strtotime('+'.$day.' day', $nowTZTS)), $klasa );

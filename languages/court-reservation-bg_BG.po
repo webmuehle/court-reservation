@@ -3,6 +3,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: POEditor.com\n"
 "Project-Id-Version: Court Reservation\n"
 "Language: bg\n"
@@ -1532,3 +1533,84 @@ msgstr ""
 msgid "Forever"
 msgstr ""
 
+#: 
+msgid "Close Court"
+msgstr "Затвори корт"
+
+#: 
+msgid "Closed"
+msgstr "Затворено"
+
+#: admin/partials/courtres-event.php
+msgid "Allow joining (dazuhängen)"
+msgstr "Разрешаване на присъединяване (dazuhängen)"
+
+#: admin/partials/courtres-event.php
+msgid "Max. participants (0 = unlimited)"
+msgstr "Макс. участници (0 = неограничено)"
+
+#: public/class-courtres-public.php
+msgid "You are not allowed to join."
+msgstr "Нямате право да се присъедините."
+
+#: public/class-courtres-public.php
+msgid "Invalid date."
+msgstr "Невалидна дата."
+
+#: public/class-courtres-public.php
+msgid "Event not found."
+msgstr "Събитието не е намерено."
+
+#: public/class-courtres-public.php
+msgid "Invalid court."
+msgstr "Невалиден корт."
+
+#: public/class-courtres-public.php
+msgid "Joining is not enabled for this event."
+msgstr "Присъединяването не е активирано за това събитие."
+
+#: public/class-courtres-public.php
+msgid "This date does not match the event."
+msgstr "Тази дата не съответства на събитието."
+
+#: public/class-courtres-public.php
+msgid "This occurrence is in the past."
+msgstr "Това повторение е в миналото."
+
+#: public/class-courtres-public.php
+msgid "Ended"
+msgstr "Приключено"
+
+#: public/class-courtres-public.php
+msgid "Log in to join."
+msgstr "Влезте, за да се присъедините."
+
+#: public/class-courtres-public.php
+msgid "You cannot join."
+msgstr "Не можете да се присъедините."
+
+#: public/class-courtres-public.php
+msgid "Full."
+msgstr "Пълно."
+
+#: public/class-courtres-public.php
+msgid "This occurrence is full."
+msgstr "Това повторение е запълнено."
+
+#: public/class-courtres-public.php
+msgid "Could not save. Please try again."
+msgstr "Запазването не бе успешно. Опитайте отново."
+
+#: public/class-courtres-public.php
+msgid "dazuhängen"
+msgstr "присъедини се"
+
+#: public/class-courtres-public.php
+msgid "aushängen"
+msgstr "отпиши се"
+
+#: public/class-courtres-public.php
+msgid "%d participant"
+msgid_plural "%d participants"
+msgstr[0] "%d участник"
+msgstr[1] "%d участници"

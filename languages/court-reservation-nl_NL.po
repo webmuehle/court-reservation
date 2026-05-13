@@ -3,6 +3,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: POEditor.com\n"
 "Project-Id-Version: Court Reservation\n"
 "Language: nl\n"
@@ -1532,3 +1533,84 @@ msgstr ""
 msgid "Forever"
 msgstr ""
 
+#: 
+msgid "Close Court"
+msgstr "Baansluiting"
+
+#: 
+msgid "Closed"
+msgstr "Gesloten"
+
+#: admin/partials/courtres-event.php
+msgid "Allow joining (dazuhängen)"
+msgstr "Deelnemen toestaan (dazuhängen)"
+
+#: admin/partials/courtres-event.php
+msgid "Max. participants (0 = unlimited)"
+msgstr "Max. deelnemers (0 = onbeperkt)"
+
+#: public/class-courtres-public.php
+msgid "You are not allowed to join."
+msgstr "U mag zich niet aanmelden."
+
+#: public/class-courtres-public.php
+msgid "Invalid date."
+msgstr "Ongeldige datum."
+
+#: public/class-courtres-public.php
+msgid "Event not found."
+msgstr "Evenement niet gevonden."
+
+#: public/class-courtres-public.php
+msgid "Invalid court."
+msgstr "Ongeldige baan."
+
+#: public/class-courtres-public.php
+msgid "Joining is not enabled for this event."
+msgstr "Aanmelden is voor dit evenement niet ingeschakeld."
+
+#: public/class-courtres-public.php
+msgid "This date does not match the event."
+msgstr "Deze datum hoort niet bij dit evenement."
+
+#: public/class-courtres-public.php
+msgid "This occurrence is in the past."
+msgstr "Deze keer is al voorbij."
+
+#: public/class-courtres-public.php
+msgid "Ended"
+msgstr "Beëindigd"
+
+#: public/class-courtres-public.php
+msgid "Log in to join."
+msgstr "Log in om u aan te melden."
+
+#: public/class-courtres-public.php
+msgid "You cannot join."
+msgstr "U kunt zich niet aanmelden."
+
+#: public/class-courtres-public.php
+msgid "Full."
+msgstr "Vol."
+
+#: public/class-courtres-public.php
+msgid "This occurrence is full."
+msgstr "Deze keer is vol."
+
+#: public/class-courtres-public.php
+msgid "Could not save. Please try again."
+msgstr "Opslaan mislukt. Probeer het opnieuw."
+
+#: public/class-courtres-public.php
+msgid "dazuhängen"
+msgstr "aanmelden"
+
+#: public/class-courtres-public.php
+msgid "aushängen"
+msgstr "afmelden"
+
+#: public/class-courtres-public.php
+msgid "%d participant"
+msgid_plural "%d participants"
+msgstr[0] "%d deelnemer"
+msgstr[1] "%d deelnemers"

@@ -71,6 +71,44 @@ class Courtres_Base {
 	}
 
 	/**
+	 * Whether the event definition applies to a concrete calendar day (Y-m-d).
+	 *
+	 * @param object|array $event    Row from courtres_events.
+	 * @param string       $date_ymd Occurrence date Y-m-d (column date in table view).
+	 * @return bool
+	 */
+	protected function event_occurs_on_date( $event, $date_ymd ) {
+		if ( empty( $event ) || ! $date_ymd ) {
+			return false;
+		}
+
+		try {
+			$current_date = new DateTime( $date_ymd, wp_timezone() );
+		} catch ( \Exception $e ) {
+			return false;
+		}
+
+		if ( ! empty( $event->weekly_repeat ) ) {
+			if ( empty( $event->event_date ) ) {
+				return false;
+			}
+			try {
+				$anchor = new DateTime( $event->event_date, wp_timezone() );
+			} catch ( \Exception $e ) {
+				return false;
+			}
+			$interval = $current_date->diff( $anchor );
+			$days     = (int) $interval->format( '%a' );
+			if ( 0 !== $days % 7 ) {
+				return false;
+			}
+			return $this->isWeeklyEventActiveOnDate( $event, $current_date );
+		}
+
+		return isset( $event->event_date ) && $event->event_date === $date_ymd;
+	}
+
+	/**
 	 * Check if a weekly event is active on given date.
 	 *
 	 * @param object   $event Event row object.

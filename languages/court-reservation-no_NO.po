@@ -9,6 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.0.1\n"
 
 #: admin/class-courtres-admin.php:139
@@ -762,3 +763,77 @@ msgstr "November"
 
 msgid "December"
 msgstr "Desember"
+
+#: admin/partials/courtres-event.php
+msgid "Allow joining (dazuhängen)"
+msgstr "Tillat påmelding (dazuhängen)"
+
+#: admin/partials/courtres-event.php
+msgid "Max. participants (0 = unlimited)"
+msgstr "Maks. deltakere (0 = ubegrenset)"
+
+#: public/class-courtres-public.php
+msgid "You are not allowed to join."
+msgstr "Du har ikke tillatelse til å melde deg på."
+
+#: public/class-courtres-public.php
+msgid "Invalid date."
+msgstr "Ugyldig dato."
+
+#: public/class-courtres-public.php
+msgid "Event not found."
+msgstr "Arrangementet ble ikke funnet."
+
+#: public/class-courtres-public.php
+msgid "Invalid court."
+msgstr "Ugyldig bane."
+
+#: public/class-courtres-public.php
+msgid "Joining is not enabled for this event."
+msgstr "Påmelding er ikke aktivert for dette arrangementet."
+
+#: public/class-courtres-public.php
+msgid "This date does not match the event."
+msgstr "Denne datoen passer ikke til arrangementet."
+
+#: public/class-courtres-public.php
+msgid "This occurrence is in the past."
+msgstr "Denne forekomsten ligger i fortiden."
+
+#: public/class-courtres-public.php
+msgid "Ended"
+msgstr "Avsluttet"
+
+#: public/class-courtres-public.php
+msgid "Log in to join."
+msgstr "Logg inn for å melde deg på."
+
+#: public/class-courtres-public.php
+msgid "You cannot join."
+msgstr "Du kan ikke melde deg på."
+
+#: public/class-courtres-public.php
+msgid "Full."
+msgstr "Fullt."
+
+#: public/class-courtres-public.php
+msgid "This occurrence is full."
+msgstr "Denne forekomsten er full."
+
+#: public/class-courtres-public.php
+msgid "Could not save. Please try again."
+msgstr "Kunne ikke lagre. Prøv igjen."
+
+#: public/class-courtres-public.php
+msgid "dazuhängen"
+msgstr "meld på"
+
+#: public/class-courtres-public.php
+msgid "aushängen"
+msgstr "meld av"
+
+#: public/class-courtres-public.php
+msgid "%d participant"
+msgid_plural "%d participants"
+msgstr[0] "%d deltaker"
+msgstr[1] "%d deltakere"

@@ -13,6 +13,22 @@
 	}
 }
 
+/* Event optional join (Dazuhängen) */
+.courtres-event-attach {
+	margin-top: 0.4em;
+	font-size: 0.9em;
+	line-height: 1.35;
+	text-align: left;
+}
+.courtres-event-attach-names {
+	display: block;
+	margin-bottom: 0.15em;
+}
+.courtres-event-attach-msg {
+	display: inline-block;
+	margin-top: 0.2em;
+}
+
 table.reservations {
 	table-layout: fixed !important;
 	min-width: 600px;

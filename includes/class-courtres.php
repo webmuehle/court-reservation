@@ -152,6 +152,8 @@ class Courtres {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-courtres-activator.php';
 
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-courtres-event-attachment.php';
+
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
@@ -279,6 +281,9 @@ class Courtres {
 
 		$this->loader->add_action( 'wp_ajax_get_court', $plugin_public, 'ajax_get_court' );
 		$this->loader->add_action( 'wp_ajax_nopriv_get_court', $plugin_public, 'ajax_get_court' );
+
+		$this->loader->add_action( 'wp_ajax_courtres_event_attach_join', $plugin_public, 'ajax_event_attach_join' );
+		$this->loader->add_action( 'wp_ajax_courtres_event_attach_leave', $plugin_public, 'ajax_event_attach_leave' );
 
 		$this->loader->add_action( 'wp_ajax_schedule_challenge', $plugin_piramid_public, 'schedule_challenge' );
 		$this->loader->add_action( 'wp_ajax_nopriv_schedule_challenge', $plugin_piramid_public, 'schedule_challenge' );

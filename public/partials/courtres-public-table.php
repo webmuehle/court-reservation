@@ -87,8 +87,9 @@ if ( $court == null ) {
 			<?php
 			for ( $day = $fromDay;$day < $tillDay;$day++ ) {
 							$allowed_html = array(
-								'a'  => array(
+								'a'   => array(
 									'class'             => array(),
+									'href'              => array(),
 									'court-id'          => array(),
 									'data-day'          => array(),
 									'data-id'           => array(),
@@ -100,15 +101,32 @@ if ( $court == null ) {
 									'data-min-start'    => array(),
 									'data-min-player'   => array(),
 								),
-								'td' => array(
+								'td'  => array(
 									'class'     => array(),
+									'style'     => array(),
 									'court-id'  => array(),
 									'data-now'  => array(),
 									'data-cell' => array(),
 									'data-gid'  => array(),
 									'rowspan'   => array(),
 								),
-								'br' => array(),
+								'div' => array(
+									'class'           => array(),
+									'data-event-id'   => array(),
+									'data-occurrence' => array(),
+									'data-court-id'   => array(),
+									'data-max'        => array(),
+									'data-count'      => array(),
+								),
+								'ul'  => array(
+									'class' => array(),
+								),
+								'li'  => array(),
+								'span' => array(
+									'class' => array(),
+								),
+								'br'  => array(),
+								'strong' => array(),
 							);
 				echo wp_kses( $this->getTD( $court, $day, $j, 0, 30, date_i18n( 'Y-m-d', strtotime( '+' . $day . ' day', $nowTZTS ) ) ), $allowed_html );
 			}
@@ -142,8 +160,9 @@ if ( $court == null ) {
 				<?php
 				for ( $day = $fromDay;$day < $tillDay;$day++ ) {
 							$allowed_html = array(
-								'a'  => array(
+								'a'   => array(
 									'class'             => array(),
+									'href'              => array(),
 									'court-id'          => array(),
 									'data-day'          => array(),
 									'data-id'           => array(),
@@ -155,14 +174,32 @@ if ( $court == null ) {
 									'data-min-start'    => array(),
 									'data-min-player'   => array(),
 								),
-								'td' => array(
+								'td'  => array(
 									'class'     => array(),
+									'style'     => array(),
 									'court-id'  => array(),
 									'data-now'  => array(),
 									'data-cell' => array(),
 									'data-gid'  => array(),
 									'rowspan'   => array(),
 								),
+								'div' => array(
+									'class'           => array(),
+									'data-event-id'   => array(),
+									'data-occurrence' => array(),
+									'data-court-id'   => array(),
+									'data-max'        => array(),
+									'data-count'      => array(),
+								),
+								'ul'  => array(
+									'class' => array(),
+								),
+								'li'  => array(),
+								'span' => array(
+									'class' => array(),
+								),
+								'br'  => array(),
+								'strong' => array(),
 							);
 							echo wp_kses( $this->getTD( $court, $day, $j, 30, 0, date_i18n( 'Y-m-d', strtotime( '+' . $day . ' day', $nowTZTS ) ) ), $allowed_html );
 				}

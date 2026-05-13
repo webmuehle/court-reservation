@@ -154,6 +154,12 @@ class Courtres_Activator {
 				$wpdb->query( "ALTER TABLE $table_name ADD type varchar(56)" );
 				error_log( 'Added new column type in table ' . print_r( $table_name, true ) );
 			};
+			if ( ! array_key_exists( 'attach_enabled', $res ) ) {
+				$wpdb->query( "ALTER TABLE $table_name ADD attach_enabled tinyint(1) NOT NULL DEFAULT 0" );
+			}
+			if ( ! array_key_exists( 'attach_max', $res ) ) {
+				$wpdb->query( "ALTER TABLE $table_name ADD attach_max smallint unsigned NOT NULL DEFAULT 0" );
+			}
 			// < from 1.5.0
 		} else {
 			$sql = "CREATE TABLE $table_name (
@@ -171,9 +177,27 @@ class Courtres_Activator {
             repeatone datetime NULL DEFAULT NULL,
             start_ts bigint unsigned,
             end_ts bigint unsigned,
+            attach_enabled tinyint(1) NOT NULL DEFAULT 0,
+            attach_max smallint unsigned NOT NULL DEFAULT 0,
             FOREIGN KEY (courtid) REFERENCES {$table_courts}(id) ON DELETE CASCADE,
             UNIQUE KEY id (id)
           ) $charset_collate;";
+			dbDelta( $sql );
+		}
+
+		// Event attachments (Dazuhängen): one row per user per event occurrence date.
+		$table_attach = $wpdb->prefix . 'courtres_event_attachments';
+		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_attach ) ) !== $table_attach ) {
+			$sql = "CREATE TABLE $table_attach (
+                id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                event_id mediumint(9) unsigned NOT NULL,
+                occurrence_date date NOT NULL,
+                user_id bigint(20) unsigned NOT NULL,
+                created_at datetime NOT NULL,
+                PRIMARY KEY  (id),
+                UNIQUE KEY uq_event_occ_user (event_id, occurrence_date, user_id),
+                KEY idx_event_occ (event_id, occurrence_date)
+            ) $charset_collate;";
 			dbDelta( $sql );
 		}
 
@@ -378,6 +402,32 @@ class Courtres_Activator {
 					}
 				}
 			}
+		}
+
+		// Event attach (Dazuhängen): columns + table — runs on upgrade without re-activation.
+		$table_events_attach = $wpdb->prefix . 'courtres_events';
+		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_events_attach ) ) === $table_events_attach ) {
+			$res_attach = $wpdb->get_results( "SHOW COLUMNS FROM $table_events_attach", OBJECT_K );
+			if ( ! array_key_exists( 'attach_enabled', $res_attach ) ) {
+				$wpdb->query( "ALTER TABLE $table_events_attach ADD attach_enabled tinyint(1) NOT NULL DEFAULT 0" );
+			}
+			if ( ! array_key_exists( 'attach_max', $res_attach ) ) {
+				$wpdb->query( "ALTER TABLE $table_events_attach ADD attach_max smallint unsigned NOT NULL DEFAULT 0" );
+			}
+		}
+		$table_event_att = $wpdb->prefix . 'courtres_event_attachments';
+		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_event_att ) ) !== $table_event_att ) {
+			$sql_att = "CREATE TABLE $table_event_att (
+                id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                event_id mediumint(9) unsigned NOT NULL,
+                occurrence_date date NOT NULL,
+                user_id bigint(20) unsigned NOT NULL,
+                created_at datetime NOT NULL,
+                PRIMARY KEY  (id),
+                UNIQUE KEY uq_event_occ_user (event_id, occurrence_date, user_id),
+                KEY idx_event_occ (event_id, occurrence_date)
+            ) $charset_collate;";
+			dbDelta( $sql_att );
 		}
 
 		$option_several_reserve_person = $wpdb->get_row( "SELECT * FROM $table_name_courtres_settings WHERE option_name = 'several_reserve_person'" );

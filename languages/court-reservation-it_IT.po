@@ -9,6 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.0.1\n"
 
 #: admin/class-courtres-admin.php:139
@@ -762,3 +763,77 @@ msgstr "Novembre"
 
 msgid "December"
 msgstr "Dicembre"
+
+#: admin/partials/courtres-event.php
+msgid "Allow joining (dazuhängen)"
+msgstr "Consenti iscrizione (dazuhängen)"
+
+#: admin/partials/courtres-event.php
+msgid "Max. participants (0 = unlimited)"
+msgstr "Numero max. partecipanti (0 = illimitato)"
+
+#: public/class-courtres-public.php
+msgid "You are not allowed to join."
+msgstr "Non sei autorizzato a iscriverti."
+
+#: public/class-courtres-public.php
+msgid "Invalid date."
+msgstr "Data non valida."
+
+#: public/class-courtres-public.php
+msgid "Event not found."
+msgstr "Evento non trovato."
+
+#: public/class-courtres-public.php
+msgid "Invalid court."
+msgstr "Campo non valido."
+
+#: public/class-courtres-public.php
+msgid "Joining is not enabled for this event."
+msgstr "L'iscrizione non è attiva per questo evento."
+
+#: public/class-courtres-public.php
+msgid "This date does not match the event."
+msgstr "Questa data non corrisponde all'evento."
+
+#: public/class-courtres-public.php
+msgid "This occurrence is in the past."
+msgstr "Questa occorrenza è nel passato."
+
+#: public/class-courtres-public.php
+msgid "Ended"
+msgstr "Terminato"
+
+#: public/class-courtres-public.php
+msgid "Log in to join."
+msgstr "Accedi per iscriverti."
+
+#: public/class-courtres-public.php
+msgid "You cannot join."
+msgstr "Non puoi iscriverti."
+
+#: public/class-courtres-public.php
+msgid "Full."
+msgstr "Al completo."
+
+#: public/class-courtres-public.php
+msgid "This occurrence is full."
+msgstr "Questa occorrenza è al completo."
+
+#: public/class-courtres-public.php
+msgid "Could not save. Please try again."
+msgstr "Impossibile salvare. Riprova."
+
+#: public/class-courtres-public.php
+msgid "dazuhängen"
+msgstr "iscriviti"
+
+#: public/class-courtres-public.php
+msgid "aushängen"
+msgstr "cancella iscrizione"
+
+#: public/class-courtres-public.php
+msgid "%d participant"
+msgid_plural "%d participants"
+msgstr[0] "%d partecipante"
+msgstr[1] "%d partecipanti"

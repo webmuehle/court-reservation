@@ -304,7 +304,7 @@
 					}
 				);
 
-				$cr_table.find( "table.reservations a.reservation" ).click(
+				$cr_table.find( "table.reservations a.reservation:not(.courtres-event-attach-join)" ).click(
 					function () {
 						var d = $cr_dlg_reserve;
 						d.find( '[name="day"]' ).val( $( this ).attr( 'data-day' ) );
@@ -826,6 +826,110 @@
 		);
 		return o;
 	};
+
+	function courtresFillAttachBlock($wrap, d) {
+		var p = typeof courtres_params !== 'undefined' ? courtres_params : {};
+		$wrap.attr('data-count', d.count);
+		var namesPart = '';
+		var anon = parseInt(d.anonymization, 10) === 1;
+		if (anon) {
+			namesPart = '<span class="courtres-event-attach-names">' + $('<div/>').text(d.participant_label || '').html() + '</span>';
+		} else {
+			var escParts = [];
+			$.each(d.participants || [], function (i, item) {
+				escParts.push($('<div/>').text(item.name || '').html());
+			});
+			if (escParts.length) {
+				namesPart = '<span class="courtres-event-attach-names">' + escParts.join(', ') + '</span>';
+			}
+		}
+		var actions = '';
+		if (d.is_joined) {
+			actions += '<a href="#" class="' + (p.attach_leave_class || '') + ' courtres-event-attach-leave">' + $('<div/>').text(p.attach_txt_leave || '').html() + '</a>';
+		} else if (d.is_full) {
+			actions += '<span class="courtres-event-attach-msg">' + $('<div/>').text(p.attach_txt_full || '').html() + '</span>';
+		} else {
+			actions += '<a href="#" class="' + (p.attach_join_class || '') + ' courtres-event-attach-join">' + $('<div/>').text(p.attach_txt_join || '').html() + '</a>';
+		}
+		var inner = namesPart;
+		if (namesPart && actions) {
+			inner += '<br/>';
+		}
+		inner += actions;
+		$wrap.html(inner);
+	}
+
+	$( document.body ).on('click', '.courtres-event-attach-join', function (e) {
+		e.preventDefault();
+		var $w = $(this).closest('.courtres-event-attach');
+		var p = typeof courtres_params !== 'undefined' ? courtres_params : {};
+		if (!p.attach_nonce || !p.ajax_url) {
+			return;
+		}
+		$.ajax({
+			type: 'POST',
+			url: p.ajax_url,
+			dataType: 'json',
+			data: {
+				action: 'courtres_event_attach_join',
+				nonce: p.attach_nonce,
+				event_id: $w.attr( 'data-event-id' ),
+				occurrence_date: $w.attr( 'data-occurrence' ),
+				court_id: $w.attr( 'data-court-id' )
+			}
+		}).done(function (resp) {
+			if (resp && resp.success && resp.data) {
+				courtresFillAttachBlock($w, resp.data);
+			} else if (resp && resp.data && resp.data.message) {
+				window.alert(resp.data.message);
+			}
+		}).fail(function (xhr) {
+			try {
+				var r = JSON.parse(xhr.responseText);
+				if (r.data && r.data.message) {
+					window.alert(r.data.message);
+				}
+			} catch (err) {
+				window.console.warn('courtres attach', err);
+			}
+		});
+	});
+
+	$( document.body ).on('click', '.courtres-event-attach-leave', function (e) {
+		e.preventDefault();
+		var $w = $(this).closest('.courtres-event-attach');
+		var p = typeof courtres_params !== 'undefined' ? courtres_params : {};
+		if (!p.attach_nonce || !p.ajax_url) {
+			return;
+		}
+		$.ajax({
+			type: 'POST',
+			url: p.ajax_url,
+			dataType: 'json',
+			data: {
+				action: 'courtres_event_attach_leave',
+				nonce: p.attach_nonce,
+				event_id: $w.attr( 'data-event-id' ),
+				occurrence_date: $w.attr( 'data-occurrence' ),
+				court_id: $w.attr( 'data-court-id' )
+			}
+		}).done(function (resp) {
+			if (resp && resp.success && resp.data) {
+				courtresFillAttachBlock($w, resp.data);
+			} else if (resp && resp.data && resp.data.message) {
+				window.alert(resp.data.message);
+			}
+		}).fail(function (xhr) {
+			try {
+				var r = JSON.parse(xhr.responseText);
+				if (r.data && r.data.message) {
+					window.alert(r.data.message);
+				}
+			} catch (err) {
+				window.console.warn('courtres detach', err);
+			}
+		});
+	});
 
 })( jQuery );
 

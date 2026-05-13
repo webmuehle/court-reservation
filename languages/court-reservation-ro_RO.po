@@ -3,6 +3,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: POEditor.com\n"
 "Project-Id-Version: Court Reservation\n"
 "Language: ro\n"
@@ -1536,3 +1537,76 @@ msgstr "Rezervat"
 msgid "Pending"
 msgstr "În așteptare"
 
+#: admin/partials/courtres-event.php
+msgid "Allow joining (dazuhängen)"
+msgstr "Permiteți înscrierea (dazuhängen)"
+
+#: admin/partials/courtres-event.php
+msgid "Max. participants (0 = unlimited)"
+msgstr "Nr. max. participanți (0 = nelimitat)"
+
+#: public/class-courtres-public.php
+msgid "You are not allowed to join."
+msgstr "Nu aveți voie să vă înscrieți."
+
+#: public/class-courtres-public.php
+msgid "Invalid date."
+msgstr "Dată nevalidă."
+
+#: public/class-courtres-public.php
+msgid "Event not found."
+msgstr "Evenimentul nu a fost găsit."
+
+#: public/class-courtres-public.php
+msgid "Invalid court."
+msgstr "Teren nevalid."
+
+#: public/class-courtres-public.php
+msgid "Joining is not enabled for this event."
+msgstr "Înscrierea nu este activată pentru acest eveniment."
+
+#: public/class-courtres-public.php
+msgid "This date does not match the event."
+msgstr "Această dată nu corespunde evenimentului."
+
+#: public/class-courtres-public.php
+msgid "This occurrence is in the past."
+msgstr "Această apariție este în trecut."
+
+#: public/class-courtres-public.php
+msgid "Ended"
+msgstr "Încheiat"
+
+#: public/class-courtres-public.php
+msgid "Log in to join."
+msgstr "Conectați-vă pentru a vă înscrie."
+
+#: public/class-courtres-public.php
+msgid "You cannot join."
+msgstr "Nu vă puteți înscrie."
+
+#: public/class-courtres-public.php
+msgid "Full."
+msgstr "Complet."
+
+#: public/class-courtres-public.php
+msgid "This occurrence is full."
+msgstr "Această apariție este completă."
+
+#: public/class-courtres-public.php
+msgid "Could not save. Please try again."
+msgstr "Salvare eșuată. Încercați din nou."
+
+#: public/class-courtres-public.php
+msgid "dazuhängen"
+msgstr "înscrie-te"
+
+#: public/class-courtres-public.php
+msgid "aushängen"
+msgstr "renunță"
+
+#: public/class-courtres-public.php
+msgid "%d participant"
+msgid_plural "%d participants"
+msgstr[0] "%d participant"
+msgstr[1] "%d participanți"

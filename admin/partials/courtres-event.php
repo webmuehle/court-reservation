@@ -93,6 +93,9 @@ if ( isset( $_POST['delete'] ) && isset( $_POST['id'] ) && (int) $_POST['id'] > 
 	}
 	$res = $wpdb->delete( $table_name, array( 'id' => (int) $_POST['id'] ) );
 	if ( $res ) {
+		if ( class_exists( 'Courtres_Event_Attachment' ) ) {
+			Courtres_Event_Attachment::delete_all_for_event( (int) $_POST['id'] );
+		}
 		$is_deleted = true;
 		$message    = __( 'Succesfully deleted', 'court-reservation' );
 	}
@@ -117,6 +120,8 @@ $start_m              = isset( $_POST['start_m'] ) && $_POST['start_m'] ? saniti
 $end_m                = isset( $_POST['end_m'] ) && $_POST['end_m'] ? sanitize_text_field( $_POST['end_m'] ) : false;
 $dow                  = isset( $_POST['event_date_week'] ) ? intval( $_POST['event_date_week'] ) : false;
 $courtres_forever     = isset( $_POST['courtres_forever'] ) ? 0 : 1;
+$attach_enabled       = isset( $_POST['attach_enabled'] ) ? 1 : 0;
+$attach_max           = isset( $_POST['attach_max'] ) ? absint( wp_unslash( $_POST['attach_max'] ) ) : 0;
 if (isset($dow) && is_numeric($dow)) 
 {
 	$weekly_start_ = "weekly_start_" . $dow; 
@@ -207,6 +212,8 @@ if ( isset( $_POST['submit'] ) ) {
 				'event_first_date' 	 => $weekly_start,
 				'event_last_date' 	 => $weekly_end,
 				'courtres_forever' 	 => $courtres_forever,
+				'attach_enabled'     => $attach_enabled,
+				'attach_max'         => $attach_max,
 			)
 		);
 
@@ -258,6 +265,14 @@ if ( $event ) {
 	$event->start_m       = $start_m;
 	$event->end_m         = $end_m;
 	$event->type          = null;
+	$event->attach_enabled = 0;
+	$event->attach_max     = 0;
+}
+if ( $event && ! isset( $event->attach_enabled ) ) {
+	$event->attach_enabled = 0;
+}
+if ( $event && ! isset( $event->attach_max ) ) {
+	$event->attach_max = 0;
 }
 ?>
 
@@ -371,6 +386,22 @@ if ( $event ) {
 							<option value="00" <?php selected( $event->end_m, '00' ); ?>>00</option>
 							<option value="30" <?php selected( $event->end_m, '30' ); ?>>30</option>
 						</select>
+					</td>
+				</tr>
+
+				<tr>
+					<td><?php echo esc_html__( 'Allow joining (dazuhängen)', 'court-reservation' ); ?></td>
+					<td>
+						<label class="switch">
+							<input type="checkbox" name="attach_enabled" value="1" <?php checked( ! empty( $event->attach_enabled ) ); ?> />
+							<span class="slider round"></span>
+						</label>
+					</td>
+				</tr>
+				<tr>
+					<td><?php echo esc_html__( 'Max. participants (0 = unlimited)', 'court-reservation' ); ?></td>
+					<td>
+						<input type="number" name="attach_max" min="0" max="999" value="<?php echo esc_attr( (int) $event->attach_max ); ?>" />
 					</td>
 				</tr>
 

@@ -1271,6 +1271,8 @@ class Courtres_Admin extends Courtres_Base {
 			'event_date_week'        => 0,
 			'check_all'              => true, // true - find all intersected events or reservations, true - finish check if one intersected event or reservation found
 			'type'                   => false, // = challenge for challenges
+			'attach_enabled'         => 0,
+			'attach_max'             => 0,
 		);
 		$params   = wp_parse_args( $params, $defaults );
 
@@ -1333,6 +1335,8 @@ class Courtres_Admin extends Courtres_Base {
 				'event_first_date' => $params['event_first_date'],
 				'event_last_date' => $params['event_last_date'],
 				'courtres_forever' => $params['courtres_forever'],
+				'attach_enabled' => ! empty( $params['attach_enabled'] ) ? 1 : 0,
+				'attach_max'    => isset( $params['attach_max'] ) ? absint( $params['attach_max'] ) : 0,
 			);
 			$fields_format = array(
 				'%s',
@@ -1348,6 +1352,8 @@ class Courtres_Admin extends Courtres_Base {
 				'%s',
 				'%s',
 				'%s',
+				'%d',
+				'%d',
 				'%d',
 			);
 
