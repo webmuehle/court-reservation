@@ -23,27 +23,29 @@
 .courtres-event-attach-names {
 	display: block;
 	margin-bottom: 0.15em;
+	text-align: center;
 }
 .courtres-event-attach-msg {
 	display: inline-block;
 	margin-top: 0.2em;
 }
 
-table.reservations {
+table.table.reservations {
 	table-layout: fixed !important;
 	min-width: 600px;
 	margin: 0;
 }
 
-table.reservations td {
+/* Match both classes so we beat theme/Bootstrap `.table > tbody > tr > td { text-align: left }`. */
+table.table.reservations td {
 	text-align: center;
 	padding: 0.5em;
 	height: 6em;
 	vertical-align: middle !important;
 }
 
-table.reservations th {
-	text-align: center
+table.table.reservations th {
+	text-align: center;
 }
 
 .container-reservations .navigator {
