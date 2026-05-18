@@ -422,6 +422,7 @@
 										type: "POST",
 										url: $url_reserve,
 										data: $cr_frm_reserve.serialize(), // $(this).find('#cr-form-reserve').serialize(),
+										xhrFields: { withCredentials: true },
 										success: function (msg) {
 											const parsedMsg = JSON.parse(msg);
 											$( preloader ).fadeOut();
@@ -582,9 +583,9 @@
 												type: "POST",
 												url: $url_login,
 												data: $cr_frm_login.serialize(), // $(this).find('#cr-form-login').serialize(),
+												xhrFields: { withCredentials: true },
 												success: function (msg) {
-													// console.log(msg);
-													var j = jQuery.parseJSON( msg );
+													var j = ( typeof msg === 'object' ) ? msg : jQuery.parseJSON( msg );
 													if ( ! j.loggedin) {
 														$btnLogin.prop( 'disabled', false ).removeClass( 'is-loading' ).text( originalLoginText );
 														$cr_dlg_login.find( '#login-error-text' ).text( j.message );
@@ -592,6 +593,17 @@
 													} else {
 														$cr_dlg_login.find( '#login-error-text' ).text( '' );
 														$cr_dlg_login.find( '#login-error' ).hide();
+														if ( j.reservation_nonce ) {
+															$cr_frm_reserve.find( 'input[name="courtres_add_reservation_nonce"]' ).val( j.reservation_nonce );
+														}
+														if ( j.login_token ) {
+															var $loginToken = $cr_frm_reserve.find( 'input[name="courtres_login_token"]' );
+															if ( ! $loginToken.length ) {
+																$loginToken = $( '<input type="hidden" name="courtres_login_token" />' ).appendTo( $cr_frm_reserve );
+															}
+															$loginToken.val( j.login_token );
+														}
+														$( 'body' ).addClass( 'logged-in' );
 														$cr_dlg_reserve.find( '#cr-show-login' ).remove();
 														$cr_dlg_reserve.find( '#playerid' ).replaceWith( j.display_name );
 														// $cr_dlg_reserve.find('#partnerid').find('option:contains(' + j.display_name + ')').remove();

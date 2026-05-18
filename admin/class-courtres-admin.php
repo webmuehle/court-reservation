@@ -138,6 +138,42 @@ class Courtres_Admin extends Courtres_Base {
 		echo esc_html( $msg );
 	}
 
+	/**
+	 * Verify reservation CSRF nonce, or a one-time token issued after popup login.
+	 *
+	 * @return bool
+	 */
+	private function verify_add_reservation_security() {
+		if ( ! isset( $_REQUEST['courtres_add_reservation_nonce'] ) ) {
+			return false;
+		}
+
+		$nonce = sanitize_text_field( wp_unslash( $_REQUEST['courtres_add_reservation_nonce'] ) );
+		if ( wp_verify_nonce( $nonce, 'courtres_add_reservation' ) ) {
+			return true;
+		}
+
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+
+		$login_token = isset( $_REQUEST['courtres_login_token'] )
+			? sanitize_text_field( wp_unslash( $_REQUEST['courtres_login_token'] ) )
+			: '';
+		if ( '' === $login_token ) {
+			return false;
+		}
+
+		$user_id      = get_current_user_id();
+		$stored_token = get_transient( 'courtres_after_login_' . $user_id );
+		if ( ! is_string( $stored_token ) || ! hash_equals( $stored_token, $login_token ) ) {
+			return false;
+		}
+
+		delete_transient( 'courtres_after_login_' . $user_id );
+		return true;
+	}
+
 	// private function doesOverlap($hour, $from, $to)
 	// {
 	// return ($hour >= $from && $hour < $to);
@@ -178,8 +214,8 @@ class Courtres_Admin extends Courtres_Base {
 			return $this->handleError( __( 'No permission.', 'court-reservation' ) );
 		}
 
-		// CSRF verification
-		if ( ! isset( $_REQUEST['courtres_add_reservation_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['courtres_add_reservation_nonce'] ) ), 'courtres_add_reservation' ) ) {
+		// CSRF verification (accept fresh nonce or one-time token from popup login).
+		if ( ! $this->verify_add_reservation_security() ) {
 			return $this->handleError( __( 'Security check failed.', 'court-reservation' ) );
 		}
 
@@ -619,13 +655,15 @@ class Courtres_Admin extends Courtres_Base {
 			);
 		} else {
 			wp_set_current_user( $user_signon->ID );
-			wp_set_auth_cookie( $user_signon->ID );
-			status_header( 200 );
-			echo json_encode(
+			$login_token = wp_generate_password( 20, false );
+			set_transient( 'courtres_after_login_' . $user_signon->ID, $login_token, 5 * MINUTE_IN_SECONDS );
+			wp_send_json(
 				array(
-					'loggedin'     => true,
-					'display_name' => $user_signon->display_name,
-					'message'      => __( 'Login successful, redirecting...' ),
+					'loggedin'          => true,
+					'display_name'      => $user_signon->display_name,
+					'message'           => __( 'Login successful, redirecting...' ),
+					'reservation_nonce' => wp_create_nonce( 'courtres_add_reservation' ),
+					'login_token'       => $login_token,
 				)
 			);
 		}
