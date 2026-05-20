@@ -1,314 +1,177 @@
-=== Court Reservation - Manage Your Court Bookings Online === 
+=== Court Reservation – Tennis, Padel & Sports Court Booking ===
 Contributors: webmuehle
 Donate link: https://www.webmuehle.at/
-Tags: Court Reservation, Padel, Tennis, Padel, Pickleball
+Tags: court booking, tennis booking, padel booking, sports reservation, pickleball, tennis club, booking system, court management
 Requires at least: 3.0.1
-Tested up to: 6.7.2
+Tested up to: 7.0.0
 Stable tag: 1.11.0
 Requires PHP: 5.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-
-With this plugin, integrating a reservation system for tennis, padel, and other sports is easy and quick.
+Court Reservation is an easy-to-use WordPress plugin for managing tennis, padel, pickleball, and sports court bookings online.
 
 == Description ==
-With this plugin, integrating a reservation system on your WordPress site is easy and quick. With just a few clicks, you can create additional courts that can then be integrated via shortcode anywhere on your website.
-With our new ULTIMATE plan, you can create unlimited pyramid competitions/tournaments, where your club members can challenge each other. Pyramids are as fast and easy to set up as our regular court reservations system and bring a lot of new excitement into your club.
 
- 
-**FEATURES OF THE FREE VERSION**
-* Create one court
-* Weekly recurring, or single events (such as trainings, tournaments, etc.)
-* Making reservations in the frontend
-* Deleting reservations in the frontend
-* Member management within the Plugin Settings (limited to 100 members)
-* Customize the design of the reservation table
-* "Calendar View"
-* Close Courts (e.g. if damaged)
+Court Reservation helps sports clubs and facilities manage court reservations directly on their WordPress website. Whether you run a tennis club, padel club, pickleball facility, or multi-sports center, the plugin makes online court booking simple for both administrators and members.
 
-**FEATURES OF THE PREMIUM VERSION**
-* All of the FREE VERSION, but no limitation in possible courts or members
-* For just 129,99$ a year
+Allow members to reserve courts online 24/7, manage recurring events and tournaments, and organize ladder competitions directly from your website.
 
-**FEATURES OF THE ULTIMATE VERSION**
-* All of the PREMIUM VERSION, and
-* WooCommerce Payment Gateway - Add individual prices for bookings
-* Anonymization-Mode  - No visible names for 100% GDP compliance
-* Ladder Competitions / Pyramid Tournaments
+The plugin is mobile-friendly, GDPR-ready, and designed for easy setup without technical knowledge.
+
+== Why Court Reservation? ==
+
+* Easy setup in just a few minutes
+* Optimized for tennis and padel clubs
+* Frontend booking for members
+* Responsive mobile-friendly design
+* GDPR-ready anonymization mode
+* WooCommerce payment integration
+* Ladder competitions & pyramid tournaments
+* Regular updates and active support
+
+== FREE VERSION FEATURES ==
+
+* Create and manage 1 court
+* Frontend court reservations
+* Frontend reservation cancellation
+* Weekly recurring or single events
+* Member management (up to 100 members)
+* Customizable reservation table design
+* Responsive calendar view
+* Temporarily close courts for maintenance
+* Mobile-friendly interface
+
+== PREMIUM VERSION FEATURES ==
+
+Includes everything from the FREE version plus:
+
+* Unlimited courts
+* Unlimited members
+* More flexibility for clubs of all sizes
+
+Available from only $129.99 per year.
+
+== ULTIMATE VERSION FEATURES ==
+
+Includes everything from the PREMIUM version plus:
+
+* WooCommerce payment integration
+* Individual pricing for reservations
+* GDPR-friendly anonymization mode
+* Ladder competitions & pyramid tournaments
 * Individual colors for reservation types
-* For just 299,99$ a year
+* Advanced event management
 
+Available from only $299.99 per year.
 
-A detailed list of all functions can be found on <a href="https://www.courtreservation.io" target="_blank">https://www.courtreservation.io</a>.
+== Feature Comparison ==
 
-== Use these Shortcodes to integrate reservation tables anywhere on your website:== 
+| Feature | Free | Premium | Ultimate |
+|--------|------|----------|-----------|
+| Courts | 1 | Unlimited | Unlimited |
+| Members | 100 | Unlimited | Unlimited |
+| Frontend Reservations | Yes | Yes | Yes |
+| WooCommerce Payments | No | No | Yes |
+| Ladder Competitions | No | No | Yes |
+| Anonymization Mode | No | No | Yes |
 
-Full View- All-courts:
+== Shortcodes ==
+
+Display all courts:
 [courtreservation-full-view]
 
-Full View - Specific courts:
+Display selected courts:
 [courtreservation-full-view id=1,2,3]
 
-Single court view:
+Display a single court:
 [courtreservation id=1]
 
+== Live Demo ==
 
-**SUPPORT**
-The plugin is constantly being developed and supported. Support inquiries please only by email <a href="mailto:office@webmuehle.at">office@webmuehle.at</a>
+<a href="https://www.courtreservation.io" target="_blank">View Live Demo & Features</a>
 
+== Frequently Asked Questions ==
+
+= Which sports are supported? =
+
+The plugin works perfectly for tennis, padel, pickleball, badminton, squash, and many other sports.
+
+= Is the plugin mobile-friendly? =
+
+Yes, the reservation system is fully responsive and optimized for smartphones and tablets.
+
+= Can members reserve courts themselves? =
+
+Yes, members can create and cancel reservations directly in the frontend.
+
+= Does the plugin support online payments? =
+
+Yes, WooCommerce payment integration is included in the Ultimate version.
+
+= Is the plugin GDPR compliant? =
+
+Yes, the Ultimate version includes an anonymization mode for GDPR-friendly reservation displays.
+
+== SUPPORT ==
+
+The plugin is actively maintained and continuously improved.
+
+Support:
+<a href="mailto:office@webmuehle.at">office@webmuehle.at</a>
+
+More information:
+<a href="https://www.courtreservation.io" target="_blank">https://www.courtreservation.io</a>
 
 == Installation ==
 
-Upload the plugin via ZIP or install and activate it via the WordPress plugin installer. Afterwards all settings can be adjusted.
-
+1. Upload the plugin ZIP file via the WordPress plugin installer
+2. Activate the plugin
+3. Configure your courts and settings
+4. Add the shortcode to any page or post
 
 == Screenshots ==
 
-1. Customizable User Interface.
-2. Via (additional plugin required) Tab-Navigation quick access to every court.
-3. Create and delete reservations in a simple frontend.
-4. Create weekly or single events in the backend.
-5. Pyramid Tournament on desktop and mobile.
+1. Fully customizable reservation interface
+2. Quick court navigation with tabs
+3. Easy frontend reservation management
+4. Create recurring or single events in the backend
+5. Pyramid tournaments on desktop and mobile devices
 
 == Video Review ==
+
 [youtube https://www.youtube.com/watch?v=twkmSQSuGME]
 
-== Changelog ==
+== Upgrade Notice ==
+
 = 1.11.0 =
-* Optional "Dazuhängen" (join) for events: per-event setting in the admin, optional maximum participants
-* Event occurrences stay blocked as before; members can sign up in the reservation table (link, participant list, join/leave) with logged-in user checks and unique rows per user/date
-* New database support for per-occurrence participants (incl. weekly recurring events); database upgrade runs on update
-* AJAX join/leave with nonces and capability checks
+Introduced optional participant joining for events, including recurring events, with frontend join/leave functionality and improved database support.
+
+== Changelog ==
+
+= 1.11.0 =
+* Added optional participant joining for events
+* Added maximum participant limits
+* Members can join or leave events directly in the reservation table
+* Improved recurring event participant handling
+* Added AJAX join/leave functionality with security checks
 
 = 1.10.14 =
-* Performance optimization in getTD (reduced repeated ishalfhour checks)
-* UI optimizations
-* Exact time slots for reservation types
+* Performance optimizations
+* UI improvements
+* Exact reservation time slots
 
 = 1.10.13 =
-* Security Issues Fixed
+* Security fixes
 
 = 1.10.12 =
-* Excat Duraction added
+* Added exact duration handling
 
 = 1.10.11 =
-* Security Issues Fixed
+* Security fixes
 
 = 1.10.10 =
-* Security Issues Fixed
+* Security fixes
 
 = 1.10.9 =
-* Security Issues Fixed
-
-= 1.10.8 =
-* Flexible number of reservations per person
-
-= 1.10.7 =
-* Performance Update
-
-= 1.10.6 =
-* Romanian added
-
-= 1.10.5 =
-* Language Strings added
-
-= 1.10.4 =
-* Optimized booking process
-
-= 1.10.3 =
-* Bug fixes ultimate version
-* Language FR added
-
-= 1.10.2 =
-* Bug fixes ultimate version
-
-= 1.10.1 =
-* Default reservation type added
-
-= 1.10.0 =
-* WooCommerce Payment Gateway added
-
-= 1.9.2 =
-* Anonymization mode optimized
-
-= 1.9.1 =
-* Close court feature added
-
-= 1.9.0 =
-* Mobile view optimized
-* Recurring events improved
-* Anonymization mode
-
-= 1.8.9 =
-* Languages added
-
-= 1.8.8 =
-* Popup loading issue fixed
-
-= 1.8.7 =
-* PHP 8 warnings fixed
-* Performance increased
-
-= 1.8.6 =
-* Navigation fixed
-
-= 1.8.5 =
-* Diverse bug fixes
-
-= 1.8.4 =
-* Min-Max-issue solved
-
-= 1.8.3 =
-* Bug weekly event (sunday) removed
-* New Freemius SDK
-
-== Changelog ==
-= 1.8.2 =
-* "Jumps" in calender navigation possible now
-
-= 1.8.1 =
-* Diverse bug fixes
-
-= 1.8.0 =
-* Multiple colours for events and reservations
-* Anonymisation mode
-
-= 1.7.9 =
-* Event text bugs
-
-= 1.7.8 =
-* Fixed reservation type bugs
-
-= 1.7.6 =
-* Fixed pyramid bugs
-
-= 1.7.5 =
-* Fixed pyramid bugs
-
-= 1.7.4 =
-* Added Email template possibility
-
-= 1.7.3 =
-* Bugsfixes
-
-= 1.7.2 =
-* Freemius and table issue fix
-
-= 1.7.2 =
-* Searchable players dropdown
-
-= 1.7.1 =
-* UI issue (spaces) fixed
-
-= 1.7.0 =
-* New Freemius SDK
-
-= 1.5.1 =
-* Fixed e-mail-notifications time issue
-
-= 1.5.0 =
-* refined game settings
-* integrated Ultimate plan
-* added ladder competitions
-* added half-hour events
-* added filter by gid on Upcoming Reservations page in admin
-* if event overlaps in time with another reservation added link to this reservations in admin
-* if event overlaps in time with another event added link to this events in admin
-
-= 1.4.12 =
-* Freemius update
-
-= 1.4.11 = 
-Filter and show reservations (admin) by date, and made it sortable
-Languages Updated: ES, NO, IT, NL
-
-= 1.4.10 = 
-Issue fixed: Code migration to WordPress v.5.5
-
-= 1.4.9 = 
-Issue fixed: Timezone in the database (MySql)
-
-= 1.4.8 = 
-Issue fixed: Allow to reserve a court till the end of the current hour or half-hour
-
-= 1.4.7 = 
-Allow to reserve a court till the end of the current hour or half-hour
-Show blocked events or reservation till the end of its time 
-Issue fixed: migrate events after update of the previous version
-
-= 1.4.6 =
-UTC-Timezone issue fixed
-
-= 1.4.5 =
-Event bugs fixed
-
-= 1.4.4 =
-Timezone issue fixed
-
-= 1.4.3 =
-Several bugs fixed
-
-= 1.4.1 =
-
-
-= 1.4.0 =
-* Optimized event scheduling
-* Extended design options
-* More detailed settings
-* More reliable reservation management
-* Saving past reservations
-
-= 1.3.1 =
-* Italian language added
-
-= 1.3.0 =
-* Calender View added
-* Various exception added
-* Mobile view enhanced
-* Spanish translation added
-* Dutch translation added
-* Norwegian translation added
-
-= 1.2 =
-* UI colors configuration
-* UI button title text configuration
-* Bugfixes by update/deactivation/activation remove any data, by uninstall only
-* Bugfixes in IE
-
-= 1.1.3 =
-* Half-hour reservation is optional
-* Freemius update
-* PHP Version-issue fixed
-
-= 1.1.2 =
-* More Teammates
-* More Reservation's courts at the page
-
-= 1.1.1 =
-* Bugfixes by login via Dialog
-* Bugfixes by jquery-ui conflicts
-
-= 1.1.0 =
-* Freemius integration done
-
-
-= 1.0.5 =
-* Style bugs fixed
-
-= 1.0.4 =
-* Various bugs fixed
-
-= 1.0.3 =
-* Language added (ENG + GER)
-
-= 1.0.2 =
-* Updated Readme + CSS Update
-
-= 1.0.1 =
-* Updated Readme
-
-= 1.0 =
-* Implemented basic features
-
-== Upgrade Notice ==
+* Security fixes
