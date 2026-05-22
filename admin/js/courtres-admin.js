@@ -51,9 +51,6 @@
 				}
 			);
 
-			// +RA 2020-05-09 datepicker
-			$( '.datepicker' ).datepicker( { dateFormat: $( '.datepicker' ).data( 'eventdateformat' ) } );
-
 			// for arrange players in piramids
 			$( ".sortable" ).sortable(
 				{

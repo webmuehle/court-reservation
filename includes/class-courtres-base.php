@@ -71,6 +71,136 @@ class Courtres_Base {
 	}
 
 	/**
+	 * Sanitize, deduplicate, and sort event occurrence dates (Y-m-d).
+	 *
+	 * @param string|array $raw Comma-separated string or list of date strings.
+	 * @return string[] Ascending unique Y-m-d dates.
+	 */
+	protected function sanitize_event_selected_dates( $raw ) {
+		if ( is_string( $raw ) ) {
+			$raw = array_map( 'trim', explode( ',', $raw ) );
+		}
+		if ( ! is_array( $raw ) ) {
+			return array();
+		}
+
+		$dates = array();
+		foreach ( $raw as $date_str ) {
+			$date_str = sanitize_text_field( (string) $date_str );
+			if ( ! $date_str ) {
+				continue;
+			}
+			$parsed = DateTime::createFromFormat( 'Y-m-d', $date_str, wp_timezone() );
+			if ( ! $parsed || $parsed->format( 'Y-m-d' ) !== $date_str ) {
+				continue;
+			}
+			$dates[] = $date_str;
+		}
+
+		$dates = array_values( array_unique( $dates ) );
+		sort( $dates, SORT_STRING );
+
+		return $dates;
+	}
+
+	/**
+	 * Decode stored selected_dates for an event row.
+	 *
+	 * @param object|array $event Event row.
+	 * @return string[] Ascending Y-m-d dates, or empty if none stored.
+	 */
+	protected function get_event_selected_dates( $event ) {
+		if ( is_array( $event ) ) {
+			$event = (object) $event;
+		}
+		if ( empty( $event ) || ! property_exists( $event, 'selected_dates' ) || ! $event->selected_dates ) {
+			return array();
+		}
+
+		$decoded = json_decode( $event->selected_dates, true );
+		if ( ! is_array( $decoded ) ) {
+			return $this->sanitize_event_selected_dates( $event->selected_dates );
+		}
+
+		return $this->sanitize_event_selected_dates( $decoded );
+	}
+
+	/**
+	 * Whether a weekly event uses explicit multi-date selection (new format).
+	 *
+	 * @param object|array $event Event row.
+	 * @return bool
+	 */
+	protected function event_uses_selected_dates( $event ) {
+		return ! empty( $this->get_event_selected_dates( $event ) );
+	}
+
+	/**
+	 * Encode selected dates for DB storage.
+	 *
+	 * @param string[] $dates Y-m-d dates.
+	 * @return string JSON array.
+	 */
+	protected function encode_event_selected_dates( $dates ) {
+		$dates = $this->sanitize_event_selected_dates( $dates );
+		return wp_json_encode( $dates );
+	}
+
+	/**
+	 * Dates for admin Flatpickr (stored selection or legacy weekly expansion).
+	 *
+	 * @param object|array $event Event row.
+	 * @return string[] Y-m-d dates.
+	 */
+	protected function get_event_selected_dates_for_admin( $event ) {
+		$stored = $this->get_event_selected_dates( $event );
+		if ( ! empty( $stored ) ) {
+			return $stored;
+		}
+
+		if ( is_array( $event ) ) {
+			$event = (object) $event;
+		}
+		if ( empty( $event->weekly_repeat ) || empty( $event->event_date ) ) {
+			return array();
+		}
+
+		$dates      = array();
+		$anchor_dow = (int) gmdate( 'w', strtotime( $event->event_date ) );
+		$first_ts   = ( property_exists( $event, 'event_first_date' ) && $event->event_first_date ) ? strtotime( $event->event_first_date ) : false;
+		$last_ts    = ( property_exists( $event, 'event_last_date' ) && $event->event_last_date ) ? strtotime( $event->event_last_date ) : false;
+
+		if ( $first_ts && $last_ts && $last_ts >= $first_ts ) {
+			$cursor = $first_ts;
+			while ( $cursor <= $last_ts ) {
+				if ( (int) gmdate( 'w', $cursor ) === $anchor_dow ) {
+					$dates[] = gmdate( 'Y-m-d', $cursor );
+				}
+				$cursor = strtotime( '+1 day', $cursor );
+			}
+			return $this->sanitize_event_selected_dates( $dates );
+		}
+
+		if ( ! property_exists( $event, 'courtres_forever' ) || (int) $event->courtres_forever !== 0 ) {
+			return array();
+		}
+
+		$start = $first_ts ? $first_ts : strtotime( $event->event_date );
+		if ( $start < strtotime( 'today' ) ) {
+			$start = strtotime( 'today' );
+		}
+		while ( (int) gmdate( 'w', $start ) !== $anchor_dow ) {
+			$start = strtotime( '+1 day', $start );
+		}
+		for ( $week = 0; $week < 52; $week++ ) {
+			$dates[] = gmdate( 'Y-m-d', $start );
+			$start   = strtotime( '+1 week', $start );
+		}
+
+		return $this->sanitize_event_selected_dates( $dates );
+	}
+
+	/**
 	 * Whether the event definition applies to a concrete calendar day (Y-m-d).
 	 *
 	 * @param object|array $event    Row from courtres_events.
@@ -82,21 +212,27 @@ class Courtres_Base {
 			return false;
 		}
 
-		try {
-			$current_date = new DateTime( $date_ymd, wp_timezone() );
-		} catch ( \Exception $e ) {
-			return false;
+		if ( is_array( $event ) ) {
+			$event = (object) $event;
 		}
 
 		if ( ! empty( $event->weekly_repeat ) ) {
+			$selected_dates = $this->get_event_selected_dates( $event );
+			if ( ! empty( $selected_dates ) ) {
+				return in_array( $date_ymd, $selected_dates, true );
+			}
+
 			if ( empty( $event->event_date ) ) {
 				return false;
 			}
+
 			try {
-				$anchor = new DateTime( $event->event_date, wp_timezone() );
+				$current_date = new DateTime( $date_ymd, wp_timezone() );
+				$anchor       = new DateTime( $event->event_date, wp_timezone() );
 			} catch ( \Exception $e ) {
 				return false;
 			}
+
 			$interval = $current_date->diff( $anchor );
 			$days     = (int) $interval->format( '%a' );
 			if ( 0 !== $days % 7 ) {
@@ -468,6 +604,32 @@ class Courtres_Base {
 		);
 		$params   = wp_parse_args( $params, $defaults );
 
+		if ( 1 === (int) $params['is_event_weekly_repeat'] && ! empty( $params['selected_dates'] ) ) {
+			$selected_dates = $this->sanitize_event_selected_dates( $params['selected_dates'] );
+			if ( empty( $selected_dates ) ) {
+				return array( __( 'Please select at least one date.', 'court-reservation' ) );
+			}
+			$errors = array();
+			foreach ( $selected_dates as $date_ymd ) {
+				$day_params                        = $params;
+				$day_params['is_event_weekly_repeat'] = 0;
+				$day_params['event_date']             = $date_ymd;
+				unset( $day_params['selected_dates'] );
+				$day_errors = $this->check_period( $day_params );
+				if ( $day_errors ) {
+					if ( isset( $day_errors['overlaps'] ) ) {
+						$errors = array_merge( $errors, $day_errors['overlaps'] );
+					} else {
+						$errors = array_merge( $errors, $day_errors );
+					}
+					if ( ! $params['check_all'] ) {
+						break;
+					}
+				}
+			}
+			return $errors;
+		}
+
 				global $wpdb;
 		$event_table              = $this->getTable( 'events' );
 		$errors                   = array();
@@ -522,14 +684,18 @@ class Courtres_Base {
 				$is_day = false; // should be here initilized
 				// check days
 				if ( $event->weekly_repeat ) {
-					if ( ! $this->isWeeklyEventActiveOnDate( $event, $curEventDate ) ) {
-						continue;
-					}
-					$eventDate  = new DateTime( $event->event_date );
-					$eeInterval = $curEventDate->diff( $eventDate );
-					$eventTab   = 1;
-					if ( $eeInterval->days % 7 === 0 ) {
-						$is_day = true;
+					$eventTab = 1;
+					if ( $this->event_uses_selected_dates( $event ) ) {
+						$is_day = $this->event_occurs_on_date( $event, $curEventDate->format( 'Y-m-d' ) );
+					} else {
+						if ( ! $this->isWeeklyEventActiveOnDate( $event, $curEventDate ) ) {
+							continue;
+						}
+						$eventDate  = new DateTime( $event->event_date );
+						$eeInterval = $curEventDate->diff( $eventDate );
+						if ( $eeInterval->days % 7 === 0 ) {
+							$is_day = true;
+						}
 					}
 				} else {
 					$eventTab = 0;

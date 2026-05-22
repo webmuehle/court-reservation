@@ -160,6 +160,10 @@ class Courtres_Activator {
 			if ( ! array_key_exists( 'attach_max', $res ) ) {
 				$wpdb->query( "ALTER TABLE $table_name ADD attach_max smallint unsigned NOT NULL DEFAULT 0" );
 			}
+			if ( ! array_key_exists( 'selected_dates', $res ) ) {
+				$wpdb->query( "ALTER TABLE $table_name ADD selected_dates text NULL DEFAULT NULL" );
+				error_log( 'Added new column selected_dates in table ' . print_r( $table_name, true ) );
+			}
 			// < from 1.5.0
 		} else {
 			$sql = "CREATE TABLE $table_name (
@@ -179,6 +183,7 @@ class Courtres_Activator {
             end_ts bigint unsigned,
             attach_enabled tinyint(1) NOT NULL DEFAULT 0,
             attach_max smallint unsigned NOT NULL DEFAULT 0,
+            selected_dates text NULL DEFAULT NULL,
             FOREIGN KEY (courtid) REFERENCES {$table_courts}(id) ON DELETE CASCADE,
             UNIQUE KEY id (id)
           ) $charset_collate;";
@@ -413,6 +418,9 @@ class Courtres_Activator {
 			}
 			if ( ! array_key_exists( 'attach_max', $res_attach ) ) {
 				$wpdb->query( "ALTER TABLE $table_events_attach ADD attach_max smallint unsigned NOT NULL DEFAULT 0" );
+			}
+			if ( ! array_key_exists( 'selected_dates', $res_attach ) ) {
+				$wpdb->query( "ALTER TABLE $table_events_attach ADD selected_dates text NULL DEFAULT NULL" );
 			}
 		}
 		$table_event_att = $wpdb->prefix . 'courtres_event_attachments';

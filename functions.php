@@ -192,6 +192,68 @@ function email_message($message1,$option_email_3,$option_email_4,$option_email_5
 	return $message;
 }
 
+/**
+ * Plugin bootstrap file path for asset URLs.
+ *
+ * @return string
+ */
+function courtres_plugin_file() {
+	return dirname( __FILE__ ) . '/courtres.php';
+}
+
+/**
+ * Register Flatpickr library and init script (call from wp_enqueue_scripts).
+ *
+ * @param string $init_script_rel_path Path relative to plugin root, e.g. admin/js/courtres-flatpickr.js.
+ * @param string $init_version        Script version for cache busting.
+ * @param array  $init_deps           Extra script dependencies.
+ */
+function courtres_register_flatpickr_assets( $init_script_rel_path, $init_version, $init_deps = array() ) {
+	$plugin_name  = 'courtres';
+	$flatpickr_ver = '4.6.13';
+	$base         = plugins_url( 'admin/assets/flatpickr/', courtres_plugin_file() );
+
+	wp_register_style(
+		$plugin_name . '-flatpickr',
+		$base . 'flatpickr.min.css',
+		array(),
+		$flatpickr_ver,
+		'all'
+	);
+	wp_register_script(
+		$plugin_name . '-flatpickr',
+		$base . 'flatpickr.min.js',
+		array(),
+		$flatpickr_ver,
+		true
+	);
+	wp_register_script(
+		$plugin_name . '-flatpickr-de',
+		$base . 'l10n-de.js',
+		array( $plugin_name . '-flatpickr' ),
+		$flatpickr_ver,
+		true
+	);
+	wp_register_script(
+		$plugin_name . '-flatpickr-init',
+		plugins_url( $init_script_rel_path, courtres_plugin_file() ),
+		array_merge( array( $plugin_name . '-flatpickr-de', 'jquery' ), (array) $init_deps ),
+		$init_version,
+		true
+	);
+}
+
+/**
+ * Enqueue registered Flatpickr assets.
+ */
+function courtres_enqueue_flatpickr_assets() {
+	$plugin_name = 'courtres';
+	wp_enqueue_style( $plugin_name . '-flatpickr' );
+	wp_enqueue_script( $plugin_name . '-flatpickr' );
+	wp_enqueue_script( $plugin_name . '-flatpickr-de' );
+	wp_enqueue_script( $plugin_name . '-flatpickr-init' );
+}
+
 function get_court_calendar($courtID,$nowTZTS,$fromDay,$tillDay,$type)
 { ?>
 
@@ -267,8 +329,8 @@ function get_court_calendar($courtID,$nowTZTS,$fromDay,$tillDay,$type)
 				<form action='' method='POST' name='kalendar'>
 
 					<div id='cr_calendar' style='cursor: pointer; position: relative; width: 197px; margin-top: 10px; text-align: left;'>
-						<input name='datum' value='YYYY-MM-DD' type='text' style='outline: none; padding: 8px 10px 6px; width: 110px; background: transparent; font-size: 14px; color: lightgray; border: none;' onfocus='this.value=""; this.style.color="inherit"; this.style.border="0px solid black";'>
-						<div name='ponisti' class='button' style='padding-top: 3px; width: 28px; height: 24px; margin-top: 2px; position: absolute; right: 0; top: 0; color: inherit;' onclick='document.getElementById("strelice_<?php echo esc_html($courtID); ?>").style.display="none"; document.getElementById("drugi_kal_<?php echo esc_html($courtID); ?>").style.display="none"; document.getElementById("prvi_kal_<?php echo esc_html($courtID); ?>").style.display="flex";'>
+						<input name='datum' id='cr-datum-<?php echo esc_attr( $courtID ); ?>' class='cr-flatpickr cr-reservation-date-input' data-court-id='<?php echo esc_attr( $courtID ); ?>' value='<?php echo esc_attr( $odabrani_dan ); ?>' type='text' readonly='readonly' autocomplete='off' placeholder='<?php echo esc_attr__( 'YYYY-MM-DD', 'court-reservation' ); ?>' style='outline: none; padding: 8px 10px 6px; width: 110px; background: transparent; font-size: 14px; color: inherit; border: none; cursor: pointer;'>
+						<div name='ponisti' class='button cr-calendar-dismiss' style='padding-top: 3px; width: 28px; height: 24px; margin-top: 2px; position: absolute; right: 0; top: 0; color: inherit;' onclick='document.getElementById("strelice_<?php echo esc_html($courtID); ?>").style.display="none"; document.getElementById("drugi_kal_<?php echo esc_html($courtID); ?>").style.display="none"; document.getElementById("prvi_kal_<?php echo esc_html($courtID); ?>").style.display="flex";'>
 							<img src="<?php echo plugin_dir_url( __FILE__ ).'public/images/kalendar.png'; ?>" style="width:18px;">
 						</div>
 					</div>

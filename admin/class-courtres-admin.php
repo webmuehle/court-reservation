@@ -57,7 +57,7 @@ class Courtres_Admin extends Courtres_Base {
 
 		$this->plugin_name    = $plugin_name;
 		$this->version        = $version;
-		$this->assets_version = $version . '.01';
+		$this->assets_version = $version . '.02';
 	}
 
 	public function get_version() {
@@ -86,9 +86,18 @@ class Courtres_Admin extends Courtres_Base {
 		wp_enqueue_style( $this->plugin_name . '-pricing', plugin_dir_url( __FILE__ ) . 'css/courtres-pricing.css', array(), $this->version, 'all' );
 		// 20.05.2019, astoian - color picker
 		wp_enqueue_style( $this->plugin_name . '-ui-cp', plugin_dir_url( __FILE__ ) . 'css/huebee.css', array(), $this->version, 'all' );
-		// +RA 2020-05-09
-		// enqueue styles for jquery-ui-datepicker
 		wp_enqueue_style( 'jqueryui', plugin_dir_url( __FILE__ ) . 'vendor/jquery-ui/jquery-ui.css', false, null );
+	}
+
+	/**
+	 * Register Flatpickr (shared init script).
+	 */
+	public function register_flatpickr_assets() {
+		courtres_register_flatpickr_assets(
+			'admin/js/courtres-flatpickr.js',
+			$this->assets_version,
+			array( $this->plugin_name )
+		);
 	}
 
 	/**
@@ -103,20 +112,16 @@ class Courtres_Admin extends Courtres_Base {
 		// 20.05.2019, astoian - color picker
 		wp_enqueue_script( $this->plugin_name . '-ui-cp', plugin_dir_url( __FILE__ ) . 'js/huebee.pkgd.min.js', array( 'jquery' ), $this->version, false );
 
-		// 2021-03-13, astoian - load deps before use
-		 // +RA 2020-05-09
-		wp_enqueue_script( 'jquery-ui-datepicker' );
-		// for arrange players in piramids
-		// wp_enqueue_script('jquery-ui-draggable');
 		wp_enqueue_script( 'jquery-ui-sortable' );
 
-		// 2021-03-13, astoina - add deps to wait for them
+		$this->register_flatpickr_assets();
+		courtres_enqueue_flatpickr_assets();
+
 		wp_enqueue_script(
 			$this->plugin_name,
 			plugin_dir_url( __FILE__ ) . 'js/courtres-admin.js',
 			array(
 				'jquery',
-				'jquery-ui-datepicker',
 				'jquery-ui-sortable',
 			),
 			$this->assets_version,
@@ -320,11 +325,7 @@ class Courtres_Admin extends Courtres_Base {
 			$dayWeek = (int) $datetime->format( 'N' );
 			foreach ( $eventsBlocks as $eventBlock ) {
 				if ( $eventBlock->weekly_repeat == 1 ) {
-					if ( ! $this->isWeeklyEventActiveOnDate( $eventBlock, $datetime ) ) {
-						continue;
-					}
-					$dayWeekEvent = (int) gmdate( 'N', strtotime( $eventBlock->event_date ) );
-					if ( $dayWeekEvent != $dayWeek ) {
+					if ( ! $this->event_occurs_on_date( $eventBlock, $dateStr ) ) {
 						continue;
 					}
 				} else {
@@ -1307,6 +1308,7 @@ class Courtres_Admin extends Courtres_Base {
 			'is_event_weekly_repeat' => false,
 			'dow'                    => false,
 			'event_date_week'        => 0,
+			'selected_dates'         => array(),
 			'check_all'              => true, // true - find all intersected events or reservations, true - finish check if one intersected event or reservation found
 			'type'                   => false, // = challenge for challenges
 			'attach_enabled'         => 0,
@@ -1326,11 +1328,15 @@ class Courtres_Admin extends Courtres_Base {
 			$result['errors'][] = __( 'Please create a court first.', 'court-reservation' );
 		}
 
-		if ( $params['is_event_weekly_repeat'] == 1 ) {
-			$curEventDateWeek     = $params['event_date_week'];
-			$last_sundy           = gmdate( 'Y-m-d', strtotime( 'last sunday' ) );
-			$event_timestamp      = strtotime( $last_sundy . '+ ' . $curEventDateWeek . ' days' );
-			$params['event_date'] = date_i18n( 'Y-m-d', $event_timestamp );
+		$selected_dates = array();
+		if ( 1 === (int) $params['is_event_weekly_repeat'] ) {
+			$selected_dates = $this->sanitize_event_selected_dates( $params['selected_dates'] );
+			if ( empty( $selected_dates ) ) {
+				$result['errors'][] = __( 'Please select at least one date.', 'court-reservation' );
+			} else {
+				$params['event_date']      = $selected_dates[0];
+				$params['event_date_week'] = (int) gmdate( 'w', strtotime( $selected_dates[0] ) );
+			}
 		}
 
 		if ( ! $params['event_date'] || ! $params['start']['h'] || ! $params['end']['h'] ) {
@@ -1370,11 +1376,12 @@ class Courtres_Admin extends Courtres_Base {
 				'start_ts'      => $start_ts,
 				'end_ts'        => $end_ts,
 				'type'          => $params['type'],
-				'event_first_date' => $params['event_first_date'],
-				'event_last_date' => $params['event_last_date'],
-				'courtres_forever' => $params['courtres_forever'],
-				'attach_enabled' => ! empty( $params['attach_enabled'] ) ? 1 : 0,
-				'attach_max'    => isset( $params['attach_max'] ) ? absint( $params['attach_max'] ) : 0,
+				'event_first_date' => isset( $params['event_first_date'] ) ? $params['event_first_date'] : null,
+				'event_last_date'  => isset( $params['event_last_date'] ) ? $params['event_last_date'] : null,
+				'courtres_forever' => isset( $params['courtres_forever'] ) ? $params['courtres_forever'] : 0,
+				'selected_dates'   => ! empty( $selected_dates ) ? $this->encode_event_selected_dates( $selected_dates ) : null,
+				'attach_enabled'   => ! empty( $params['attach_enabled'] ) ? 1 : 0,
+				'attach_max'       => isset( $params['attach_max'] ) ? absint( $params['attach_max'] ) : 0,
 			);
 			$fields_format = array(
 				'%s',
@@ -1391,6 +1398,7 @@ class Courtres_Admin extends Courtres_Base {
 				'%s',
 				'%s',
 				'%d',
+				'%s',
 				'%d',
 				'%d',
 			);

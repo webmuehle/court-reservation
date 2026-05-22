@@ -16,40 +16,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 ?>
 
-<script>
-function court_reservation_weekly(day)
-{ 
-	for (x=0;x<=6;x++) { document.getElementById("court_reservation_weekly_"+x+"_start").style.display="none"; }
-	for (x=0;x<=6;x++) { document.getElementById("court_reservation_weekly_"+x+"_end").style.display="none"; }
-	document.getElementById("court_reservation_weekly_"+day+"_start").style.display="table-row";
-	document.getElementById("court_reservation_weekly_"+day+"_end").style.display="table-row";
-}
-
-function court_reservation_forever_(day)
-{ 
-
-	if (document.getElementById("courtres_forever").checked == true) 
-	{ 
-		for (x=0;x<=6;x++) { document.getElementById("court_reservation_weekly_"+x+"_start").style.display="none"; }
-		for (x=0;x<=6;x++) { document.getElementById("court_reservation_weekly_"+x+"_end").style.display="none"; }
-	} 
-	else 
-	{ 
-		for (x=0;x<=6;x++) { document.getElementById("court_reservation_weekly_"+x+"_start").style.display="none"; }
-		for (x=0;x<=6;x++) { document.getElementById("court_reservation_weekly_"+x+"_end").style.display="none"; }
-
-		courtres_day=document.getElementById("courtres_date_week").value;
-		if (!courtres_day)  
-		{ 
-			document.getElementById("courtres_date_week").value=0;
-			courtres_day=0; 
-		}
-		document.getElementById("court_reservation_weekly_"+courtres_day+"_start").style.display="table-row";
-		document.getElementById("court_reservation_weekly_"+courtres_day+"_end").style.display="table-row";
-	}
-}
-</script>
-
 <?php
 wp_enqueue_style( 'jqueryui', plugin_dir_url( __FILE__ ) . '../vendor/jquery-ui/jquery-ui.css', false, null );
 // echo plugin_dir_url(__FILE__) . '../vendor/jquery-ui/jquery-ui.css'; die;
@@ -118,17 +84,9 @@ $start_h              = isset( $_POST['start'] ) && $_POST['start'] ? intval( $_
 $end_h                = isset( $_POST['end'] ) && $_POST['end'] ? intval( $_POST['end'] ) : false;
 $start_m              = isset( $_POST['start_m'] ) && $_POST['start_m'] ? sanitize_text_field( $_POST['start_m'] ) : false;
 $end_m                = isset( $_POST['end_m'] ) && $_POST['end_m'] ? sanitize_text_field( $_POST['end_m'] ) : false;
-$dow                  = isset( $_POST['event_date_week'] ) ? intval( $_POST['event_date_week'] ) : false;
-$courtres_forever     = isset( $_POST['courtres_forever'] ) ? 0 : 1;
+$selected_dates_post  = isset( $_POST['selected_dates'] ) ? sanitize_text_field( wp_unslash( $_POST['selected_dates'] ) ) : '';
 $attach_enabled       = isset( $_POST['attach_enabled'] ) ? 1 : 0;
 $attach_max           = isset( $_POST['attach_max'] ) ? absint( wp_unslash( $_POST['attach_max'] ) ) : 0;
-if (isset($dow) && is_numeric($dow)) 
-{
-	$weekly_start_ = "weekly_start_" . $dow; 
-	if (isset( $_POST[$weekly_start_] )) { $weekly_start = sanitize_text_field( $_POST[$weekly_start_] ); } else { unset($weekly_start); }
-	$weekly_end_ = "weekly_end_" . $dow; 
-	if (isset( $_POST[$weekly_end_] )) { $weekly_end = sanitize_text_field( $_POST[$weekly_end_] ); } else { unset($weekly_end); }
-}
 
 // submitted form >
 if ( isset( $_POST['submit'] ) ) {
@@ -208,11 +166,8 @@ if ( isset( $_POST['submit'] ) ) {
 				),
 				'event_id'               => $id,
 				'is_event_weekly_repeat' => $curEventWeeklyRepeat,
-				'event_date_week'        => $dow,
-				'event_first_date' 	 => $weekly_start,
-				'event_last_date' 	 => $weekly_end,
-				'courtres_forever' 	 => $courtres_forever,
-				'attach_enabled'     => $attach_enabled,
+				'selected_dates'         => $selected_dates_post,
+				'attach_enabled'         => $attach_enabled,
 				'attach_max'         => $attach_max,
 			)
 		);
@@ -244,6 +199,10 @@ if ( isset( $eventID ) && $eventID ) {
 	$event = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE id = %d", absint( $eventID ) ) );
 }
 if ( $event ) {
+	$event_admin_dates = '';
+	if ( '1' === (string) $tab ) {
+		$event_admin_dates = implode( ',', $this->get_event_selected_dates_for_admin( $event ) );
+	}
 	$event->event_date = $event->event_date == '0000-00-00' ? '' : mysql2date( 'd-m-Y', $event->event_date );
 	$event->start_m    = $event->start_ts ? date_i18n( 'i', $event->start_ts ) : '';
 	$event->end_m      = $event->end_ts ? date_i18n( 'i', $event->end_ts ) : '';
@@ -258,7 +217,7 @@ if ( $event ) {
 	$event->start         = $start_h;
 	$event->end           = $end_h;
 	$event->repeatone     = null;
-	$event->dow           = $dow;
+	$event->dow           = 0;
 	$event->courtid       = 0;
 	$event->event_date    = $event_date;
 	$event->weekly_repeat = $curEventWeeklyRepeat;
@@ -273,6 +232,10 @@ if ( $event && ! isset( $event->attach_enabled ) ) {
 }
 if ( $event && ! isset( $event->attach_max ) ) {
 	$event->attach_max = 0;
+}
+
+if ( ! isset( $event_admin_dates ) ) {
+	$event_admin_dates = '';
 }
 ?>
 
@@ -345,26 +308,32 @@ if ( $event && ! isset( $event->attach_max ) ) {
 					<td><input type="text" name="name" maxlength="255" value="<?php echo esc_attr( $event->name ); ?>" required /></td>
 				</tr>
 				<?php if ( $tab == '1' ) { ?>
-					 <tr>
+					<tr>
 						<td><?php echo esc_html__( 'Repeat weekly', 'court-reservation' ); ?></td>
-						<td><input type="hidden" name="weekly_repeat" value="1" checked /></td>
+						<td><input type="hidden" name="weekly_repeat" value="1" /></td>
 					</tr>
 					<tr>
-						<td><?php echo esc_html__( 'Date of weekly events', 'court-reservation' ); ?></td>
+						<td><?php echo esc_html__( 'Dates', 'court-reservation' ); ?></td>
 						<td>
-							<select id="courtres_date_week" name="event_date_week" onchange="court_reservation_weekly(this.value);">
-								<option value=""></option>
-								<?php for ( $dowi = 0; $dowi < sizeof( $days ); $dowi++ ) { ?>
-									<option value="<?php echo esc_attr( $dowi ); ?>" <?php selected( $dowi, $event->dow ); ?>><?php echo esc_html( $days[ $dowi ] ); ?></option>
-								<?php } ?>
-							</select>
+							<input
+								type="text"
+								id="courtres-event-dates"
+								name="selected_dates"
+								class="courtres-event-dates cr-flatpickr"
+								data-flatpickr-mode="multiple"
+								value="<?php echo esc_attr( $event_admin_dates ); ?>"
+								required
+								autocomplete="off"
+								readonly="readonly"
+							/>
+							<p class="description"><?php echo esc_html__( 'Click the calendar to select all dates for this event.', 'court-reservation' ); ?></p>
 						</td>
 					</tr>
 				<?php } else { ?>
 					<tr>
 						<td><?php echo esc_html__( 'Date of the event', 'court-reservation' ); ?></td>
 						<td>
-							<input type="text" name="event_date" class="datepicker" data-eventdateformat = "dd-mm-yy" value="<?php echo esc_attr( $event->event_date ); ?>" required>
+							<input type="text" name="event_date" class="cr-flatpickr datepicker" data-flatpickr-format="d-m-Y" value="<?php echo esc_attr( $event->event_date ); ?>" autocomplete="off" readonly="readonly" required>
 						</td>
 					</tr>
 				<?php } ?>
@@ -404,76 +373,6 @@ if ( $event && ! isset( $event->attach_max ) ) {
 						<input type="number" name="attach_max" min="0" max="999" value="<?php echo esc_attr( (int) $event->attach_max ); ?>" />
 					</td>
 				</tr>
-
-				<?php if ( $tab == '1' ) { ?>
-
-				<tr>
-					<td>
-						<?php echo esc_html__( 'Forever', 'court-reservation' ); ?>
-					</td>
-					<td>
-						<label class="switch">
-							<input id="courtres_forever" type="checkbox" name="courtres_forever" <?php echo (!isset($event->courtres_forever) || $event->courtres_forever == 0 ) ? 'checked' : ''; ?> onchange="court_reservation_forever_();">
-							<span class="slider round"></span>
-						</label>
-					</td>
-				</tr>
-
-				<?php
-				$courtres_weekly_1 = array("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday");
-				foreach ($courtres_weekly_1 as $courtres_weekly_2 => $courtres_weekly_3)
-				{ ?>
-
-				<tr id="court_reservation_weekly_<?php echo $courtres_weekly_2; ?>_start" style="<?php if (!isset($event->dow) || $event->dow == "" || $event->dow != $courtres_weekly_2 || !isset($event->courtres_forever) || $event->courtres_forever == 0 ) { echo "display: none;"; } ?>">
-					<td><?php $courtres_weekly_4 = "Select first " . $courtres_weekly_3; echo esc_html__( $courtres_weekly_4, 'court-reservation' ); ?></td>
-					<td>
-
-						<select name="weekly_start_<?php echo $courtres_weekly_2; ?>" id="weekly_start_<?php echo $courtres_weekly_2; ?>">
-								<?php 
-
-									if (gmdate('l') == $courtres_weekly_3) { $courtres_weekly_5 = "today"; }
-									else { $courtres_weekly_5 = "Next " . $courtres_weekly_3; }
-									$courtres_weekly_6 = strtotime($courtres_weekly_5, time()); 
-									if (isset($event->event_first_date) && $event->event_first_date != "") 
-									{ $event_first_date = $event->event_first_date; } else { $event_first_date = "1970-01-01"; }
-								?>
-
-									<option value="<?php echo gmdate('Y-m-d', $courtres_weekly_6); ?>" <?php selected( gmdate('Y-m-d', $courtres_weekly_6), $event_first_date ); ?>><?php echo gmdate('d. m. Y. ', $courtres_weekly_6); ?></option>
-
-								<?php for ($weeks=1;$weeks<=51;$weeks++)
-								{
-									$courtres_weekly_6 = strtotime('+1 Week', $courtres_weekly_6); ?>
-									<option value="<?php echo gmdate('Y-m-d', $courtres_weekly_6); ?>" <?php selected( gmdate('Y-m-d', $courtres_weekly_6), $event_first_date ); ?> ><?php echo gmdate('d. m. Y. ', $courtres_weekly_6); ?></option>
-
-								<?php } ?>
-						</select>
-					</td>
-				</tr>
-				<tr id="court_reservation_weekly_<?php echo $courtres_weekly_2; ?>_end" style="<?php if (!isset($event->dow) || $event->dow == "" || $event->dow != $courtres_weekly_2 || !isset($event->courtres_forever) || $event->courtres_forever == 0 ) { echo "display: none;"; } ?>">
-					<td><?php $courtres_weekly_4 = "Select last " . $courtres_weekly_3; echo esc_html__( $courtres_weekly_4, 'court-reservation' ); ?></td>
-					<td>
-						<select name="weekly_end_<?php echo $courtres_weekly_2; ?>" id="weekly_end_<?php echo $courtres_weekly_2; ?>">
-								<?php 
-									$courtres_weekly_7 = strtotime($courtres_weekly_5, time()); 
-									$courtres_weekly_7 = strtotime('+1 Week', $courtres_weekly_7); 
-									if (isset($event->event_last_date) && $event->event_last_date != "") 
-									{ $event_last_date = $event->event_last_date; } else { $event_last_date = "1970-01-01"; }
-								?>
-
-									<option value="<?php echo gmdate('Y-m-d', $courtres_weekly_7); ?>" <?php selected( gmdate('Y-m-d', $courtres_weekly_7), $event_last_date ); ?>><?php echo gmdate('d. m. Y. ', $courtres_weekly_7); ?></option>
-
-								<?php for ($weeks=1;$weeks<=51;$weeks++)
-								{
-									$courtres_weekly_7 = strtotime('+1 Week', $courtres_weekly_7); ?>
-									<option value="<?php echo gmdate('Y-m-d', $courtres_weekly_7); ?>" <?php selected( gmdate('Y-m-d', $courtres_weekly_7), $event_last_date ); ?>><?php echo gmdate('d. m. Y. ', $courtres_weekly_7); ?></option>
-
-								<?php } ?>
-						</select>
-					</td>
-				</tr>
-
-				<?php } ?>
-				<?php } ?>
 
 				<tr>
 					<td><?php echo esc_html__( 'Court', 'court-reservation' ); ?></td>
@@ -738,171 +637,7 @@ button.ui-button::-moz-focus-inner {
 	border: 0;
 	padding: 0;
 }
-.ui-datepicker {
-	width: 17em;
-	padding: .2em .2em 0;
-	display: none;
-}
-.ui-datepicker .ui-datepicker-header {
-	position: relative;
-	padding: .2em 0;
-}
-.ui-datepicker .ui-datepicker-prev,
-.ui-datepicker .ui-datepicker-next {
-	position: absolute;
-	top: 2px;
-	width: 1.8em;
-	height: 1.8em;
-}
-.ui-datepicker .ui-datepicker-prev-hover,
-.ui-datepicker .ui-datepicker-next-hover {
-	top: 1px;
-}
-.ui-datepicker .ui-datepicker-prev {
-	left: 2px;
-}
-.ui-datepicker .ui-datepicker-next {
-	right: 2px;
-}
-.ui-datepicker .ui-datepicker-prev-hover {
-	left: 1px;
-}
-.ui-datepicker .ui-datepicker-next-hover {
-	right: 1px;
-}
-.ui-datepicker .ui-datepicker-prev span,
-.ui-datepicker .ui-datepicker-next span {
-	display: block;
-	position: absolute;
-	left: 50%;
-	margin-left: -8px;
-	top: 50%;
-	margin-top: -8px;
-}
-.ui-datepicker .ui-datepicker-title {
-	margin: 0 2.3em;
-	line-height: 1.8em;
-	text-align: center;
-}
-.ui-datepicker .ui-datepicker-title select {
-	font-size: 1em;
-	margin: 1px 0;
-}
-.ui-datepicker select.ui-datepicker-month,
-.ui-datepicker select.ui-datepicker-year {
-	width: 45%;
-}
-.ui-datepicker table {
-	width: 100%;
-	font-size: .9em;
-	border-collapse: collapse;
-	margin: 0 0 .4em;
-}
-.ui-datepicker th {
-	padding: .7em .3em;
-	text-align: center;
-	font-weight: bold;
-	border: 0;
-}
-.ui-datepicker td {
-	border: 0;
-	padding: 1px;
-}
-.ui-datepicker td span,
-.ui-datepicker td a {
-	display: block;
-	padding: .2em;
-	text-align: right;
-	text-decoration: none;
-}
-.ui-datepicker .ui-datepicker-buttonpane {
-	background-image: none;
-	margin: .7em 0 0 0;
-	padding: 0 .2em;
-	border-left: 0;
-	border-right: 0;
-	border-bottom: 0;
-}
-.ui-datepicker .ui-datepicker-buttonpane button {
-	float: right;
-	margin: .5em .2em .4em;
-	cursor: pointer;
-	padding: .2em .6em .3em .6em;
-	width: auto;
-	overflow: visible;
-}
-.ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
-	float: left;
-}
-
-/* with multiple calendars */
-.ui-datepicker.ui-datepicker-multi {
-	width: auto;
-}
-.ui-datepicker-multi .ui-datepicker-group {
-	float: left;
-}
-.ui-datepicker-multi .ui-datepicker-group table {
-	width: 95%;
-	margin: 0 auto .4em;
-}
-.ui-datepicker-multi-2 .ui-datepicker-group {
-	width: 50%;
-}
-.ui-datepicker-multi-3 .ui-datepicker-group {
-	width: 33.3%;
-}
-.ui-datepicker-multi-4 .ui-datepicker-group {
-	width: 25%;
-}
-.ui-datepicker-multi .ui-datepicker-group-last .ui-datepicker-header,
-.ui-datepicker-multi .ui-datepicker-group-middle .ui-datepicker-header {
-	border-left-width: 0;
-}
-.ui-datepicker-multi .ui-datepicker-buttonpane {
-	clear: left;
-}
-.ui-datepicker-row-break {
-	clear: both;
-	width: 100%;
-	font-size: 0;
-}
-
-/* RTL support */
-.ui-datepicker-rtl {
-	direction: rtl;
-}
-.ui-datepicker-rtl .ui-datepicker-prev {
-	right: 2px;
-	left: auto;
-}
-.ui-datepicker-rtl .ui-datepicker-next {
-	left: 2px;
-	right: auto;
-}
-.ui-datepicker-rtl .ui-datepicker-prev:hover {
-	right: 1px;
-	left: auto;
-}
-.ui-datepicker-rtl .ui-datepicker-next:hover {
-	left: 1px;
-	right: auto;
-}
-.ui-datepicker-rtl .ui-datepicker-buttonpane {
-	clear: right;
-}
-.ui-datepicker-rtl .ui-datepicker-buttonpane button {
-	float: left;
-}
-.ui-datepicker-rtl .ui-datepicker-buttonpane button.ui-datepicker-current,
-.ui-datepicker-rtl .ui-datepicker-group {
-	float: right;
-}
-.ui-datepicker-rtl .ui-datepicker-group-last .ui-datepicker-header,
-.ui-datepicker-rtl .ui-datepicker-group-middle .ui-datepicker-header {
-	border-right-width: 0;
-	border-left-width: 1px;
-}
+/* Event dates use Flatpickr (see courtres-flatpickr.js). */
 .ui-dialog {
 	overflow: hidden;
 	position: absolute;

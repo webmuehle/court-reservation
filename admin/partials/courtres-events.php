@@ -134,7 +134,7 @@ require 'courtres-notice-upgrade.php';
 						if ( $tab == '1' ) {
 							?>
 								<th class="manage-column column-title column-primary">
-								<?php echo esc_html__( 'Weekday', 'court-reservation' ); ?>
+								<?php echo esc_html__( 'Dates', 'court-reservation' ); ?>
 								</th>
 								<?php
 						} else {
@@ -167,8 +167,18 @@ require 'courtres-notice-upgrade.php';
 							<td><?php echo esc_html( $item->courtname ); ?></td>
 							<?php
 							if ( $tab == '1' ) {
+								$listed_dates = $this->get_event_selected_dates_for_admin( $item );
+								if ( ! empty( $listed_dates ) ) {
+									$date_label = sprintf(
+										/* translators: %d: number of selected dates */
+										_n( '%d date', '%d dates', count( $listed_dates ), 'court-reservation' ),
+										count( $listed_dates )
+									);
+								} else {
+									$date_label = $days[ gmdate( 'w', strtotime( $item->event_date ) ) ];
+								}
 								?>
-									<td><?php echo esc_html($days[ gmdate( 'w', strtotime( $item->event_date ) ) ]); ?></td>
+									<td><?php echo esc_html( $date_label ); ?></td>
 									<?php
 							} else {
 								?>

@@ -62,6 +62,13 @@ class Courtres_Public extends Courtres_Base {
 	private $attach_participant_cache = array();
 
 	/**
+	 * Set when a reservation shortcode with calendar navigator is rendered.
+	 *
+	 * @var bool
+	 */
+	private static $reservation_flatpickr_needed = false;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.3
@@ -72,7 +79,7 @@ class Courtres_Public extends Courtres_Base {
 
 		$this->plugin_name    = $plugin_name;
 		$this->version        = $version;
-		$this->assets_version = $version . '.07';
+		$this->assets_version = $version . '.09';
 	}
 
 	/**
@@ -92,6 +99,44 @@ class Courtres_Public extends Courtres_Base {
 	 *
 	 * @since    1.0.3
 	 */
+	/**
+	 * Register Flatpickr assets (enqueued when the reservation shortcode uses the calendar navigator).
+	 */
+	public function register_reservation_flatpickr_assets() {
+		courtres_register_flatpickr_assets(
+			'admin/js/courtres-flatpickr.js',
+			$this->assets_version,
+			array( $this->plugin_name )
+		);
+	}
+
+	/**
+	 * Mark that the current page needs the reservation calendar datepicker.
+	 */
+	public function request_reservation_flatpickr() {
+		self::$reservation_flatpickr_needed = true;
+	}
+
+	/**
+	 * Flatpickr for the reservation calendar date field (appendTo body avoids table clipping).
+	 */
+	public function enqueue_reservation_flatpickr() {
+		static $enqueued = false;
+		if ( $enqueued || ! self::$reservation_flatpickr_needed ) {
+			return;
+		}
+		$enqueued = true;
+
+		courtres_enqueue_flatpickr_assets();
+	}
+
+	/**
+	 * Enqueue Flatpickr in the footer when the shortcode ran after wp_enqueue_scripts (page builders, blocks).
+	 */
+	public function enqueue_reservation_flatpickr_footer() {
+		$this->enqueue_reservation_flatpickr();
+	}
+
 	public function enqueue_scripts() {
 		 // 22.02.2019, astoian - resolving jquery-ui conflicts
 		// wp_enqueue_script( 'jquery-ui-core', false, array('jquery') );
@@ -285,41 +330,9 @@ class Courtres_Public extends Courtres_Base {
 			}
 
 			if ( $block->weekly_repeat ) {
-				$currentDate = new DateTime( $date );
-				$eventDate   = new DateTime( $block->event_date );
-				$interval    = $currentDate->diff( $eventDate );
-				if ( $interval->days % 7 === 0 ) {
-					if ( $this->doesOverlap( $hour, $event_start_time, $event_end_time ) ) 
-					{
-
-						$courtres_event_first_day1 = "yes";
-						if (isset($block->event_first_date) && $block->event_first_date != "") 
-						{ 
-
-							$courtres_event_day_cur = $currentDate->format('Y-m-d');
-
-							$courtres_event__day_x = new DateTime($block->event_first_date); 
-							$courtres_event_first_day = $courtres_event__day_x->format('Y-m-d');
-
-							$courtres_event__day_x = new DateTime($block->event_last_date); 
-							$courtres_event_last_day = $courtres_event__day_x->format('Y-m-d');
-
-						}
-						else { $courtres_event_first_day1 = "no"; }
-
-						if 
-						( 
-						     (	
-							$courtres_event_first_day1 != "no" && 
-						    	$courtres_event_day_cur >= $courtres_event_first_day && 
-							$courtres_event_day_cur <= $courtres_event_last_day
-						     ) || ( isset($block->courtres_forever) && $block->courtres_forever == 0) 
-						) 
-						{
-							$this->blocked_by_date_cache[ $cache_key ] = $block;
-							return $block;
-						}
-					}
+				if ( $this->event_occurs_on_date( $block, $date ) && $this->doesOverlap( $hour, $event_start_time, $event_end_time ) ) {
+					$this->blocked_by_date_cache[ $cache_key ] = $block;
+					return $block;
 				}
 			} else {
 				if ( $block->event_date == $date ) {
@@ -358,39 +371,9 @@ class Courtres_Public extends Courtres_Base {
 				}
 
 				if ( $block->weekly_repeat ) {
-					$currentDate = new DateTime( $date );
-					$eventDate   = new DateTime( $block->event_date );
-					$interval    = $currentDate->diff( $eventDate );
-					if ( $interval->days % 7 === 0 ) {
-						if ( $this->doesOverlap( $hour, $event_start_time, $event_end_time ) ) {
-						$courtres_event_first_day1 = "yes";
-						if (isset($block->event_first_date) && $block->event_first_date != "") 
-						{ 
-
-							$courtres_event_day_cur = $currentDate->format('Y-m-d');
-
-							$courtres_event__day_x = new DateTime($block->event_first_date); 
-							$courtres_event_first_day = $courtres_event__day_x->format('Y-m-d');
-
-							$courtres_event__day_x = new DateTime($block->event_last_date); 
-							$courtres_event_last_day = $courtres_event__day_x->format('Y-m-d');
-
-						}
-						else { $courtres_event_first_day1 = "no"; }
-
-						if 
-						( 
-						     (	
-							$courtres_event_first_day1 != "no" && 
-						    	$courtres_event_day_cur >= $courtres_event_first_day && 
-							$courtres_event_day_cur <= $courtres_event_last_day
-						     ) || ( isset($block->courtres_forever) && $block->courtres_forever == 0) 
-						) 
-						{
-							$this->blocked_by_date_multi_cache[ $cache_key ] = $block;
-							return $block;
-						}
-						}
+					if ( $this->event_occurs_on_date( $block, $date ) && $this->doesOverlap( $hour, $event_start_time, $event_end_time ) ) {
+						$this->blocked_by_date_multi_cache[ $cache_key ] = $block;
+						return $block;
 					}
 				} else {
 					if ( $block->event_date == $date ) {
@@ -1367,7 +1350,11 @@ class Courtres_Public extends Courtres_Base {
 		$cr_ids[] = $atts['id'];
 		ob_start();
 		include 'partials/' . $this->plugin_name . '-public-display.php';
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/courtres-public.js', array( 'jquery' ), $this->assets_version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/courtres-public.js', array( 'jquery' ), $this->assets_version, true );
+		if ( $this->iscalenderviewnavigator() ) {
+			$this->request_reservation_flatpickr();
+			$this->enqueue_reservation_flatpickr();
+		}
 
 		$court_id = $atts['id'];
 		$ctr_btn_save_ = array( $court_id => 'Save' );
@@ -1413,6 +1400,7 @@ class Courtres_Public extends Courtres_Base {
 					'cr_btn_cancel'           => __( 'Cancel', 'court-reservation' ),
 					'cr_option_ui_dateformat' => $this->getDateFormat(),
 					'ajax_url'                => admin_url( 'admin-ajax.php' ),
+					'today_ymd'               => gmdate( 'Y-m-d' ),
 				),
 				$attach_local
 			)
@@ -1431,7 +1419,11 @@ class Courtres_Public extends Courtres_Base {
 		$cr_ids_ = explode(",",$atts['id']);
 		ob_start();
 		include 'partials/' . $this->plugin_name . '-public-display-full-view.php';
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/courtres-public.js', array( 'jquery' ), $this->assets_version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/courtres-public.js', array( 'jquery' ), $this->assets_version, true );
+		if ( $this->iscalenderviewnavigator() ) {
+			$this->request_reservation_flatpickr();
+			$this->enqueue_reservation_flatpickr();
+		}
 
 		$ctr_btn_save_ = 'Save';
 
@@ -1481,6 +1473,7 @@ class Courtres_Public extends Courtres_Base {
 					'cr_btn_cancel'           => __( 'Cancel', 'court-reservation' ),
 					'cr_option_ui_dateformat' => $this->getDateFormat(),
 					'ajax_url'                => admin_url( 'admin-ajax.php' ),
+					'today_ymd'               => gmdate( 'Y-m-d' ),
 				),
 				$attach_local
 			)

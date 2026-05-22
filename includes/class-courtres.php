@@ -217,6 +217,7 @@ class Courtres {
 		$this->loader->add_action( 'admin_post_add_piramid', $plugin_admin, 'isPiramidsAddRedirect' );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'register_flatpickr_assets' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
 		$this->loader->add_action( 'admin_post_add_reservation', $plugin_admin, 'add_reservation' );
@@ -251,6 +252,8 @@ class Courtres {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'register_reservation_flatpickr_assets' );
+		$this->loader->add_action( 'wp_footer', $plugin_public, 'enqueue_reservation_flatpickr_footer', 5 );
 
 		$this->loader->add_shortcode( 'courtreservation', $plugin_public, 'public_shortcode' );
 		$this->loader->add_shortcode( 'courtreservation-full-view', $plugin_public, 'public_shortcode_full_view' );

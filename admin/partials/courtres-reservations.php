@@ -105,9 +105,9 @@ if ( $is_view_expired ) {
 		<form method="get" action="">
 			<input name="page" type="hidden" value="courtres-reservations">
 			<label for="datepicker-start-date">Date from</label>
-			<input id="datepicker-start-date" name="datepicker-start-date" class="datepicker" type="text" placeholder="Enter start date" value="<?php echo ( isset( $get_datepicker_start_date ) && $get_datepicker_start_date != '' ) ? esc_html($get_datepicker_start_date) : ''; ?>" autocomplete="off">
+			<input id="datepicker-start-date" name="datepicker-start-date" class="cr-flatpickr datepicker" data-flatpickr-format="Y-m-d" type="text" placeholder="Enter start date" value="<?php echo ( isset( $get_datepicker_start_date ) && $get_datepicker_start_date != '' ) ? esc_html($get_datepicker_start_date) : ''; ?>" autocomplete="off" readonly="readonly">
 			<label for="datepicker-final-date">Date to</label>
-			<input id="datepicker-final-date" name="datepicker-final-date" class="datepicker" type="text" placeholder="Enter final date" value="<?php echo ( isset( $get_datepicker_final_date ) && $get_datepicker_final_date != '' ) ? esc_html($get_datepicker_final_date) : ''; ?>" autocomplete="off">
+			<input id="datepicker-final-date" name="datepicker-final-date" class="cr-flatpickr datepicker" data-flatpickr-format="Y-m-d" type="text" placeholder="Enter final date" value="<?php echo ( isset( $get_datepicker_final_date ) && $get_datepicker_final_date != '' ) ? esc_html($get_datepicker_final_date) : ''; ?>" autocomplete="off" readonly="readonly">
 			&emsp;
 			<label for="datepicker-final-date">Gid</label>
 			<input id="gid" name="gid" class="" type="text" placeholder="Enter gid" value="<?php echo ( isset( $get_gid ) && $get_gid != '' ) ? esc_attr( $get_gid ) : ''; ?>" autocomplete="off">

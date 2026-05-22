@@ -1,6 +1,65 @@
 (function ($) {
 	'use strict';
 
+	function courtresReinitDatepickers( id ) {
+		if ( typeof window.courtresInitFlatpickr !== 'function' ) {
+			return;
+		}
+		var root = document.getElementById( 'drugi_kal_' + id );
+		window.courtresInitFlatpickr( root || document );
+	}
+
+	window.courtresNavigateToStep = function ( id, step ) {
+		if ( typeof courtres_params === 'undefined' ) {
+			return;
+		}
+		var $step = parseInt( step, 10 );
+		if ( isNaN( $step ) ) {
+			$step = 0;
+		}
+		var akcija = String( id ).indexOf( '_' ) !== -1 ? 'ajax_cr_navigator_full_view' : 'ajax_cr_navigator';
+
+		$( '#cr-reservations-' + id + ' td' ).each(
+			function (i, row) {
+				$( row ).animate(
+					{
+						left: '+=100',
+						opacity: '0'
+					},
+					300 * i
+				);
+			}
+		);
+
+		$.ajax(
+			{
+				type: 'GET',
+				url: courtres_params.ajax_url,
+				data: {
+					id: id,
+					action: akcija,
+					navigaor: 'pick',
+					navigator_step: $step
+				},
+				success: function (cnt) {
+					$( '#cr-reservations-' + id ).fadeOut(
+						'slow',
+						function () {
+							$( this ).replaceWith( cnt );
+							$( '#cr-table-' + id ).find( '#cr-today-my' ).html( $( '#cr-reservations-' + id ).data( 'navigator-my' ) );
+							$( document ).trigger( 'courtres:table-replaced', [ id ] );
+							$( '#cr-reservations-' + id ).fadeIn( 1000 );
+							courtresReinitDatepickers( id );
+						}
+					);
+				},
+				error: function (err) {
+					console.error( err.responseText );
+				}
+			}
+		);
+	};
+
 	$( document ).ready(
 		function () {
 
@@ -13,6 +72,10 @@
 			);
 
 			var cr_params = (typeof courtres_params !== 'undefined') ? courtres_params : null;
+			$( document ).on( 'courtres:table-replaced', function ( e, id ) {
+				dialogs( id );
+			} );
+
 			if (cr_params && cr_params.cr_ids.length > 0) {
 				for (var i = 0; i < cr_params.cr_ids.length; i++) {
 					var cr_id = cr_params.cr_ids[i];
@@ -216,6 +279,7 @@
 														$( this ).replaceWith( kalen );
 														if ($cr_days.data( 'navigator' ) === 'prev-month') { $( '#drugi_kal_' + id ).css("display", "block"); }
 														if ($cr_days.data( 'navigator' ) === 'next-month') { $( '#drugi_kal_' + id ).css("display", "block"); }
+														courtresReinitDatepickers( id );
 														$( '.kalendar-dani' ).on(
 															'click',
 															function () {

@@ -166,22 +166,23 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 		include 'partials/' . $this->plugin_name . '-public-piramid.php';
 
 		wp_enqueue_style( $this->plugin_name . 'datepicker', plugin_dir_url( __FILE__ ) . 'css/piramid-public.css', array(), $this->assets_version, 'all' );
-		wp_enqueue_style( $this->plugin_name . 'piramid', plugin_dir_url( __FILE__ ) . 'css/jquery-ui.datepicker.min.css', array(), $this->assets_version, 'all' );
 
 		wp_add_inline_style( $this->plugin_name . 'inline_piramid', plugin_dir_url( __FILE__ ) . 'css/inline_css.php' );
 
-		// 2021-03-13, astoian - load deps before use
-		wp_enqueue_script( 'jquery-ui-datepicker' );
+		courtres_register_flatpickr_assets(
+			'admin/js/courtres-flatpickr.js',
+			$this->assets_version
+		);
+		courtres_enqueue_flatpickr_assets();
 
 		wp_enqueue_script(
 			$this->plugin_name . 'piramid',
 			plugin_dir_url( __FILE__ ) . 'js/piramid-public.js',
 			array(
 				'jquery',
-				'jquery-ui-datepicker',
 			),
 			$this->assets_version,
-			false
+			true
 		);
 		wp_localize_script(
 			$this->plugin_name . 'piramid',

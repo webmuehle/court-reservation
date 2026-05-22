@@ -118,7 +118,7 @@ $the_player  = $atts['the_player'];
 			<fieldset>
 
 				<label for="cr-game-date-<?php echo esc_attr( $piramid['id'] ); ?>"><?php esc_html_e( 'Game Date', 'court-reservation' ); ?>*</label>
-				<input id="cr-game-date-<?php echo esc_attr( $piramid['id'] ); ?>" name="cr_game[date]" class="cr-input-field cr-game-date datepicker" data-date_format="dd-mm-yy" type="text" placeholder="<?php esc_html_e( 'Select a game date', 'court-reservation' ); ?>" value="" size="10" required>
+				<input id="cr-game-date-<?php echo esc_attr( $piramid['id'] ); ?>" name="cr_game[date]" class="cr-input-field cr-game-date cr-flatpickr datepicker" data-flatpickr-format="d-m-Y" type="text" placeholder="<?php esc_html_e( 'Select a game date', 'court-reservation' ); ?>" value="" size="10" autocomplete="off" readonly="readonly" required>
 				<br />
 
 				<label for="cr-court-select"><?php esc_html_e( 'Court', 'court-reservation' ); ?>*</label>

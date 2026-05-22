@@ -62,8 +62,8 @@
 				<form action='' method='POST' name='kalendar'>
 
 					<div id='cr_calendar' style='cursor: pointer; position: relative; width: 197px; margin-top: 10px; text-align: left;'>
-						<input name='datum' value='YYYY-MM-DD' type='text' style='outline: none; padding: 8px 10px 6px; width: 110px; background: transparent; font-size: 14px; color: lightgray; border: none;' onfocus='this.value=""; this.style.color="inherit"; this.style.border="0px solid black";'>
-						<div name='ponisti' class='button' style='padding-top: 3px; width: 28px; height: 24px; margin-top: 4px; position: absolute; right: 0; top: 0; color: inherit;' onclick='document.getElementById("strelice_<?php echo esc_html($courtID); ?>").style.display="none"; document.getElementById("drugi_kal_<?php echo esc_html($courtID); ?>").style.display="none"; document.getElementById("prvi_kal_<?php echo esc_html($courtID); ?>").style.display="flex";'>
+						<input name='datum' id='cr-datum-<?php echo esc_attr( $courtID ); ?>' class='cr-flatpickr cr-reservation-date-input' data-court-id='<?php echo esc_attr( $courtID ); ?>' value='<?php echo esc_attr( $odabrani_dan ); ?>' type='text' readonly='readonly' autocomplete='off' placeholder='<?php echo esc_attr__( 'YYYY-MM-DD', 'court-reservation' ); ?>' style='outline: none; padding: 8px 10px 6px; width: 110px; background: transparent; font-size: 14px; color: inherit; border: none; cursor: pointer;'>
+						<div name='ponisti' class='button cr-calendar-dismiss' style='padding-top: 3px; width: 28px; height: 24px; margin-top: 4px; position: absolute; right: 0; top: 0; color: inherit;' onclick='document.getElementById("strelice_<?php echo esc_html($courtID); ?>").style.display="none"; document.getElementById("drugi_kal_<?php echo esc_html($courtID); ?>").style.display="none"; document.getElementById("prvi_kal_<?php echo esc_html($courtID); ?>").style.display="flex";'>
 							<img src="<?php echo plugin_dir_url( __FILE__ ).'../../public/images/kalendar.png'; ?>" style="width:18px;">
 						</div>
 					</div>

@@ -10,12 +10,6 @@
 
 			the_player = $( ".cr-piramid" ).data( "the_player" );
 
-			$( '.datepicker' ).datepicker(
-				{
-					dateFormat: $( '.datepicker' ).data( 'date_format' )
-				}
-			);
-
 			// accepting the challenge by direct link (from email)
 			if (cr_params.user_can_accept) {
 				$( ".cr-challenge-item .cr-challenge-action.accept" ).trigger( "click" );

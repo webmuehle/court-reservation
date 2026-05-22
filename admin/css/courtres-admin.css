@@ -13,6 +13,20 @@ table.t-form select{
 	vertical-align: baseline;
 }
 
+#courtres-event-dates.flatpickr-input {
+	min-width: 220px;
+	max-width: 100%;
+}
+
+.flatpickr-calendar,
+.flatpickr-calendar.open {
+	z-index: 100001 !important;
+}
+
+#datepicker-form-wrapper input.cr-flatpickr {
+	min-width: 10em;
+}
+
 tr.event-expired {
 	text-decoration: line-through;
 }
