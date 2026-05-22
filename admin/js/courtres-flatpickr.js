@@ -28,6 +28,33 @@
 		);
 	}
 
+	function ensureCalendarOverlay( instance ) {
+		var cal = instance && instance.calendarContainer;
+		if ( ! cal ) {
+			return;
+		}
+		if ( cal.parentNode !== document.body ) {
+			document.body.appendChild( cal );
+		}
+		cal.classList.remove( 'inline', 'static' );
+		cal.style.position = 'fixed';
+		cal.style.zIndex = '100002';
+	}
+
+	function overlayHooks() {
+		return {
+			onReady: function ( selectedDates, dateStr, instance ) {
+				ensureCalendarOverlay( instance );
+			},
+			onOpen: function ( selectedDates, dateStr, instance ) {
+				ensureCalendarOverlay( instance );
+				if ( typeof instance._positionCalendar === 'function' ) {
+					instance._positionCalendar();
+				}
+			},
+		};
+	}
+
 	function baseOptions() {
 		return {
 			locale: getLocale(),
@@ -78,7 +105,7 @@
 	}
 
 	function bindCalendarWrapper( input, fp ) {
-		var wrap = input.closest( '#cr_calendar' );
+		var wrap = input.closest( '.cr-calendar-picker' );
 		if ( ! wrap || wrap.getAttribute( 'data-cr-fp-wrap' ) ) {
 			return;
 		}
@@ -123,8 +150,10 @@
 
 		var fp = flatpickr(
 			input,
-			Object.assign( {}, baseOptions(), {
+			Object.assign( {}, baseOptions(), overlayHooks(), {
 				dateFormat: 'Y-m-d',
+				disableMobile: true,
+				closeOnSelect: true,
 				onChange: function ( selectedDates, dateStr ) {
 					if ( ! dateStr || ! courtId ) {
 						return;
@@ -223,9 +252,18 @@
 		$( 'form[name="kalendar"]' ).on( 'submit', function ( e ) {
 			e.preventDefault();
 		} );
-		$( document ).on( 'click', '[id^="prvi_kal_"] a.button', function () {
+		$( document ).on( 'click', '[id^="prvi_kal_"] a.button', function ( e ) {
+			if ( $( e.currentTarget ).closest( '[data-navigator]' ).length ) {
+				return;
+			}
+			var navId = $( this ).closest( '[id^="prvi_kal_"]' ).attr( 'id' );
+			if ( ! navId ) {
+				return;
+			}
+			var courtId = navId.replace( 'prvi_kal_', '' );
 			window.setTimeout( function () {
-				window.courtresInitFlatpickr( document );
+				var root = document.getElementById( 'drugi_kal_' + courtId );
+				window.courtresInitFlatpickr( root || document );
 			}, 50 );
 		} );
 	} );

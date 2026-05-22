@@ -318,9 +318,9 @@ function get_court_calendar($courtID,$nowTZTS,$fromDay,$tillDay,$type)
 				$razlika =  round( ($odabrani_dan_-$danas_) / (60 * 60 * 24) ); ?>
 
 
-		<div id='strelice_<?php echo esc_html($courtID); ?>' style='display: none; position: relative; height: 0; width: 100%; max-width: 197px;'>
-			<div id='cr-days-prev-<?php echo esc_html($courtID); ?>' data-navigator='prev-month' style='position: absolute; cursor: pointer; border: none; height: 20px; left: 0px; top: 54px; z-index: 10; font-size: 22px; width: 30px; padding: 0; line-height: 20px; text-align: center; background: transparent; color: inherit; box-sizing: border-box;' data-day='<?php echo esc_html($prosli_zadnji1); ?>'><</div>
-			<div id='cr-days-next-<?php echo esc_html($courtID); ?>' data-navigator='next-month' style='position: absolute; cursor: pointer; border: none; height: 20px; right: 0px; top: 54px; z-index: 10; font-size: 22px; width: 30px; padding: 0; line-height: 20px; text-align: center; background: transparent; color: inherit; box-sizing: border-box;' data-day='<?php echo esc_html($danas_zadnji1); ?>'>></div>
+		<div id='strelice_<?php echo esc_html($courtID); ?>' style='display: none; position: relative; height: 0; width: 100%; max-width: 197px; overflow: visible;'>
+			<div id='cr-days-prev-month-<?php echo esc_html($courtID); ?>' data-navigator='prev-month' style='position: absolute; cursor: pointer; border: none; height: 20px; left: 0px; top: 54px; z-index: 10; font-size: 22px; width: 30px; padding: 0; line-height: 20px; text-align: center; background: transparent; color: inherit; box-sizing: border-box;' data-day='<?php echo esc_html($prosli_zadnji1); ?>'><</div>
+			<div id='cr-days-next-month-<?php echo esc_html($courtID); ?>' data-navigator='next-month' style='position: absolute; cursor: pointer; border: none; height: 20px; right: 0px; top: 54px; z-index: 10; font-size: 22px; width: 30px; padding: 0; line-height: 20px; text-align: center; background: transparent; color: inherit; box-sizing: border-box;' data-day='<?php echo esc_html($danas_zadnji1); ?>'>></div>
 		</div>
 
 		<div style="width: 100%; <?php if (!isset($_POST['sljedeci'])) { echo " display: none;"; } ?>" id="drugi_kal_<?php echo esc_attr( $courtID ); ?>">
@@ -328,7 +328,7 @@ function get_court_calendar($courtID,$nowTZTS,$fromDay,$tillDay,$type)
 
 				<form action='' method='POST' name='kalendar'>
 
-					<div id='cr_calendar' style='cursor: pointer; position: relative; width: 197px; margin-top: 10px; text-align: left;'>
+					<div class='cr-calendar-picker' id='cr_calendar_<?php echo esc_attr( $courtID ); ?>' style='cursor: pointer; position: relative; width: 197px; margin-top: 10px; text-align: left;'>
 						<input name='datum' id='cr-datum-<?php echo esc_attr( $courtID ); ?>' class='cr-flatpickr cr-reservation-date-input' data-court-id='<?php echo esc_attr( $courtID ); ?>' value='<?php echo esc_attr( $odabrani_dan ); ?>' type='text' readonly='readonly' autocomplete='off' placeholder='<?php echo esc_attr__( 'YYYY-MM-DD', 'court-reservation' ); ?>' style='outline: none; padding: 8px 10px 6px; width: 110px; background: transparent; font-size: 14px; color: inherit; border: none; cursor: pointer;'>
 						<div name='ponisti' class='button cr-calendar-dismiss' style='padding-top: 3px; width: 28px; height: 24px; margin-top: 2px; position: absolute; right: 0; top: 0; color: inherit;' onclick='document.getElementById("strelice_<?php echo esc_html($courtID); ?>").style.display="none"; document.getElementById("drugi_kal_<?php echo esc_html($courtID); ?>").style.display="none"; document.getElementById("prvi_kal_<?php echo esc_html($courtID); ?>").style.display="flex";'>
 							<img src="<?php echo plugin_dir_url( __FILE__ ).'public/images/kalendar.png'; ?>" style="width:18px;">

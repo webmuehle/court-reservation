@@ -250,7 +250,20 @@ table.reservations .cr-tooltip:hover .cr-tooltiptext {
 	opacity: 0.9;
 }
 
-/* Flatpickr (reservation calendar) — appended to body, above table/scroll/dialog layers */
+/* Flatpickr (reservation calendar) — fixed overlay on body, never reflows the table */
+body > .flatpickr-calendar {
+	position: fixed !important;
+	z-index: 100002 !important;
+	margin: 0 !important;
+}
+
+body > .flatpickr-calendar.open,
+body > .flatpickr-calendar.inline,
+body > .flatpickr-calendar.static {
+	position: fixed !important;
+	z-index: 100002 !important;
+}
+
 .flatpickr-calendar {
 	z-index: 100002 !important;
 }
@@ -263,14 +276,28 @@ input.cr-reservation-date-input.flatpickr-input {
 	cursor: pointer;
 }
 
-#cr_calendar {
+.cr-calendar-picker,
+.cr-calendar-picker .flatpickr-wrapper {
+	display: inline-block;
+	width: auto;
+	max-width: 197px;
 	overflow: visible;
+	vertical-align: top;
 }
 
 .container-reservations .navigator,
 .container-reservations #drugi_kal,
-.container-reservations [id^="drugi_kal_"] {
+.container-reservations [id^="drugi_kal_"],
+.container-reservations [id^="strelice_"] {
 	overflow: visible;
+}
+
+[id^="strelice_"] {
+	pointer-events: none;
+}
+
+[id^="strelice_"] [data-navigator] {
+	pointer-events: auto;
 }
 
 /* Piramid / legacy UI */

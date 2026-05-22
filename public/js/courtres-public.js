@@ -74,6 +74,8 @@
 			var cr_params = (typeof courtres_params !== 'undefined') ? courtres_params : null;
 			$( document ).on( 'courtres:table-replaced', function ( e, id ) {
 				dialogs( id );
+				courtresReinitDatepickers( id );
+				actions2( id );
 			} );
 
 			if (cr_params && cr_params.cr_ids.length > 0) {
@@ -137,14 +139,14 @@
 
 			function actions2(id) {
 				var $step = 0;
-				// $( '#cr_calendar_1_' + id + ', #cr_calendar_2_' + id + ', #cr_calendar_3_' + id ).on(
-				$( '.kalendar-dani' ).on(
-					'click',
-					function () {
-						$(".kalendar-dani").css("color","darkgray");
-						$(".kalendar-dani").css("font-weight","normal");
-						$("#" + this.id).css("color","black");
-						$("#" + this.id).css("font-weight","bold");
+				var $table = $( '#cr-table-' + id );
+				if ( ! $table.length ) {
+					return;
+				}
+				$table.off( 'click.courtresDays', '.kalendar-dani' );
+				$table.on( 'click.courtresDays', '.kalendar-dani', function () {
+						$table.find( '.kalendar-dani' ).css( { color: 'darkgray', fontWeight: 'normal' } );
+						$( this ).css( { color: 'black', fontWeight: 'bold' } );
 						var $cr_days = $( this );
 						$cr_days.append( '<img src="' + window.courtres_params.cr_url + '/images/spinner.gif" />' );
 						$cr_days.addClass( 'button--active' );
@@ -193,17 +195,17 @@
 								}
 							}
 						);
-					}
-				)
+					} );
 			}
 
 			function actions(id) {
-				// const $url_navigator = $('#cr-days-prev-' + id).data('action');
-				// console.log($url_navigator);
 				var $step = 0;
-				$( '#cr-days-prev-' + id + ', #cr-days-prev-month-' + id + ', #cr-days-today-' + id + ', #cr-days-next-' + id + ', #cr-days-next-month-' + id ).on(
-					'click',
-					function () {
+				var $table = $( '#cr-table-' + id );
+				if ( ! $table.length ) {
+					return;
+				}
+				$table.off( 'click.courtresNav', '[data-navigator]' );
+				$table.on( 'click.courtresNav', '[data-navigator]', function () {
 						var $cr_days = $( this );
 						$cr_days.append( '<img src="' + window.courtres_params.cr_url + '/images/spinner.gif" />' );
 						$cr_days.addClass( 'button--active' );
@@ -280,46 +282,7 @@
 														if ($cr_days.data( 'navigator' ) === 'prev-month') { $( '#drugi_kal_' + id ).css("display", "block"); }
 														if ($cr_days.data( 'navigator' ) === 'next-month') { $( '#drugi_kal_' + id ).css("display", "block"); }
 														courtresReinitDatepickers( id );
-														$( '.kalendar-dani' ).on(
-															'click',
-															function () {
-															$(".kalendar-dani").css("color","darkgray");
-															$(".kalendar-dani").css("font-weight","normal");
-															$("#" + this.id).css("color","black");
-															$("#" + this.id).css("font-weight","bold");
-															var $cr_days = $( this );
-															$step = $( this ).attr("data-day");
-
-															$.ajax(
-															{
-
-																type: "GET",
-																url: courtres_params.ajax_url,
-																data: {
-																	id: id,
-																	action: akcija,
-																	navigaor: $cr_days.data( 'navigator' ),
-																	navigator_step: $step
-																},
-																success: function (cnt) {
-																	$( '#cr-reservations-' + id ).fadeOut(
-																	'slow',
-																	function () {
-																		$( this ).replaceWith( cnt );
-																		$( '#cr-table-' + id ).find( '#cr-today-my' ).html( $( '#cr-reservations-' + id ).data( 'navigator-my' ) );
-																		dialogs( id );
-																		$( '#cr-reservations-' + id ).fadeIn( 1000 );
-																		$cr_days.find( 'img' ).remove();
-																		$cr_days.removeClass( 'button--active' );
-																		// console.log( cnt );
-																		}
-																	);
-																},
-																error: function (err) {
-																console.error( err.responseText );
-																}
-															});
-														});
+														actions2( id );
 													}
 												);
 											},
@@ -336,8 +299,7 @@
 							}
 						);
 
-					}
-				)
+					} );
 			}
 
 			// init dialogs for each shortcode
