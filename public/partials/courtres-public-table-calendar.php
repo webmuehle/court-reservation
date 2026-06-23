@@ -64,7 +64,7 @@
 					<div class='cr-calendar-picker' id='cr_calendar_<?php echo esc_attr( $courtID ); ?>'>
 						<input name='datum' id='cr-datum-<?php echo esc_attr( $courtID ); ?>' class='cr-reservation-date-input' data-court-id='<?php echo esc_attr( $courtID ); ?>' value='<?php echo esc_attr( $odabrani_dan ); ?>' type='text' readonly='readonly' autocomplete='off' placeholder='<?php echo esc_attr__( 'YYYY-MM-DD', 'court-reservation' ); ?>' style='outline: none; padding: 8px 10px 6px; width: 110px; background: transparent; font-size: 14px; color: inherit; border: none; cursor: pointer;'>
 						<button type="button" class='button cr-calendar-dismiss' aria-label="<?php echo esc_attr__( 'Close calendar', 'court-reservation' ); ?>" data-court-id="<?php echo esc_attr( $courtID ); ?>">
-							<img src="<?php echo plugin_dir_url( __FILE__ ).'../../public/images/kalendar.png'; ?>" style="width:18px;">
+							<?php courtres_calendar_icon( array( 'class' => 'cr-calendar-icon--sm' ) ); ?>
 						</button>
 					</div>
 

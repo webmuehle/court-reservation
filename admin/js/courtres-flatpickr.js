@@ -249,6 +249,7 @@
 			'click',
 			function ( e ) {
 				if ( e.target.closest( '.cr-calendar-dismiss' ) ) {
+					e.stopPropagation();
 					return;
 				}
 				openPicker( e );
@@ -395,6 +396,10 @@
 
 	window.courtresInitReservationDatepickers = window.courtresInitFlatpickr;
 
+	function readCourtId( el ) {
+		return el.getAttribute( 'data-court-id' ) || $( el ).data( 'courtId' ) || '';
+	}
+
 	$( document ).ready( function () {
 		window.courtresInitFlatpickr();
 		$( 'form[name="kalendar"]' ).on( 'submit', function ( e ) {
@@ -402,7 +407,7 @@
 		} );
 		$( document ).on( 'click', '.cr-calendar-open', function ( e ) {
 			e.preventDefault();
-			var courtId = $( this ).data( 'court-id' );
+			var courtId = readCourtId( this );
 			if ( ! courtId || typeof window.courtresExpandCalendarPanel !== 'function' ) {
 				return;
 			}
@@ -414,9 +419,16 @@
 		} );
 		$( document ).on( 'click', '.cr-calendar-dismiss', function ( e ) {
 			e.preventDefault();
-			var courtId = $( this ).data( 'court-id' );
+			e.stopPropagation();
+			var courtId = readCourtId( this );
 			if ( ! courtId || typeof window.courtresCollapseCalendarPanel !== 'function' ) {
 				return;
+			}
+			var visibleInput = document.querySelector(
+				'#cr-datum-' + courtId + ', #drugi_kal_' + courtId + ' .cr-reservation-date-input'
+			);
+			if ( visibleInput && visibleInput._flatpickr && visibleInput._flatpickr.isOpen ) {
+				visibleInput._flatpickr.close();
 			}
 			window.courtresCollapseCalendarPanel( courtId );
 		} );

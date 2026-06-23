@@ -248,10 +248,33 @@ function courtres_register_flatpickr_assets( $init_script_rel_path, $init_versio
  */
 function courtres_enqueue_flatpickr_assets() {
 	$plugin_name = 'courtres';
+	wp_enqueue_style( 'dashicons' );
 	wp_enqueue_style( $plugin_name . '-flatpickr' );
 	wp_enqueue_script( $plugin_name . '-flatpickr' );
 	wp_enqueue_script( $plugin_name . '-flatpickr-de' );
 	wp_enqueue_script( $plugin_name . '-flatpickr-init' );
+}
+
+/**
+ * WordPress Dashicons calendar icon for the reservation navigator.
+ *
+ * @param array $args Optional. class, echo.
+ * @return string
+ */
+function courtres_calendar_icon( $args = array() ) {
+	$args = wp_parse_args(
+		$args,
+		array(
+			'class' => '',
+			'echo'  => true,
+		)
+	);
+	$classes = trim( 'dashicons dashicons-calendar-alt cr-calendar-icon ' . $args['class'] );
+	$html    = '<span class="' . esc_attr( $classes ) . '" aria-hidden="true"></span>';
+	if ( $args['echo'] ) {
+		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above.
+	}
+	return $html;
 }
 
 function get_court_calendar($courtID,$nowTZTS,$fromDay,$tillDay,$type)
@@ -267,8 +290,8 @@ function get_court_calendar($courtID,$nowTZTS,$fromDay,$tillDay,$type)
 			<a class="button" id="cr-days-next-<?php echo esc_html( $courtID ); ?>" data-navigator="next">
 				<span>&gt;</span>
 			</a>
-			<a class="button cr-calendar-open" href="#" data-court-id="<?php echo esc_attr( $courtID ); ?>">
-				<img src="<?php echo plugin_dir_url( __FILE__ ).'public/images/kalendar.png'; ?>" style="width:20px;">
+			<a class="button cr-calendar-open" href="#" data-court-id="<?php echo esc_attr( $courtID ); ?>" aria-label="<?php echo esc_attr__( 'Open calendar', 'court-reservation' ); ?>">
+				<?php courtres_calendar_icon(); ?>
 			</a>
 			<div id="cr-today-my"><?php echo esc_html(date_i18n( 'F', strtotime( '+0 day', $nowTZTS ) )) . ' ' . esc_html(date_i18n( 'Y', strtotime( '+0 day', $nowTZTS ) )); ?></div>
 
@@ -332,7 +355,7 @@ function get_court_calendar($courtID,$nowTZTS,$fromDay,$tillDay,$type)
 					<div class='cr-calendar-picker' id='cr_calendar_<?php echo esc_attr( $courtID ); ?>'>
 						<input name='datum' id='cr-datum-<?php echo esc_attr( $courtID ); ?>' class='cr-reservation-date-input' data-court-id='<?php echo esc_attr( $courtID ); ?>' value='<?php echo esc_attr( $odabrani_dan ); ?>' type='text' readonly='readonly' autocomplete='off' placeholder='<?php echo esc_attr__( 'YYYY-MM-DD', 'court-reservation' ); ?>' style='outline: none; padding: 8px 10px 6px; width: 110px; background: transparent; font-size: 14px; color: inherit; border: none; cursor: pointer;'>
 						<button type="button" class='button cr-calendar-dismiss' aria-label="<?php echo esc_attr__( 'Close calendar', 'court-reservation' ); ?>" data-court-id="<?php echo esc_attr( $courtID ); ?>">
-							<img src="<?php echo plugin_dir_url( __FILE__ ).'public/images/kalendar.png'; ?>" style="width:18px;">
+							<?php courtres_calendar_icon( array( 'class' => 'cr-calendar-icon--sm' ) ); ?>
 						</button>
 					</div>
 

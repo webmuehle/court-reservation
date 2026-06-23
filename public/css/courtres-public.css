@@ -368,7 +368,7 @@ body > .flatpickr-calendar.static {
 }
 
 .cr-calendar-picker .cr-calendar-dismiss {
-	padding-top: 3px;
+	padding: 0;
 	width: 28px;
 	height: 24px;
 	margin-top: 2px;
@@ -379,6 +379,39 @@ body > .flatpickr-calendar.static {
 	background: transparent;
 	border: none;
 	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.cr-calendar-icon.dashicons {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	font-size: 20px;
+	line-height: 1;
+	color: #50575e;
+	transition: color 0.15s ease;
+}
+
+.cr-calendar-icon--sm.dashicons {
+	width: 18px;
+	height: 18px;
+	font-size: 18px;
+}
+
+.container-reservations .navigator a.cr-calendar-open {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 5px 10px;
+}
+
+.container-reservations .navigator a.cr-calendar-open:hover .cr-calendar-icon,
+.cr-calendar-dismiss:hover .cr-calendar-icon {
+	color: #2271b1;
 }
 
 input.cr-reservation-date-input {
