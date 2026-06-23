@@ -33,6 +33,32 @@ class Courtres_i18n {
 	 * @since    1.0.3
 	 */
 	public function load_plugin_textdomain() {
+		$domain_path = dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/';
+
+		load_plugin_textdomain(
+			'court-reservation',
+			false,
+			$domain_path
+		);
+
+		// Some strings use the "courtres" text domain; reuse the same translation files.
+		add_filter(
+			'load_textdomain_mofile',
+			function ( $mofile, $domain ) {
+				if ( 'courtres' === $domain ) {
+					$mofile = str_replace( 'courtres-', 'court-reservation-', $mofile );
+				}
+				return $mofile;
+			},
+			10,
+			2
+		);
+
+		load_plugin_textdomain(
+			'courtres',
+			false,
+			$domain_path
+		);
 	}
 
 

@@ -4,7 +4,7 @@ Donate link: https://www.webmuehle.at/
 Tags: court booking, tennis booking, padel booking, sports reservation, pickleball, tennis club, booking system, court management
 Requires at least: 3.0.1
 Tested up to: 7.0.0
-Stable tag: 1.12.0
+Stable tag: 1.12.1
 Requires PHP: 5.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -145,6 +145,9 @@ More information:
 == Upgrade Notice ==
 
 
+= 1.12.1 =
+Fixed plugin translations not loading when a non-English WordPress locale is selected.
+
 = 1.12.0 =
 Improved weekly events logic 
 
@@ -152,6 +155,14 @@ Improved weekly events logic
 Introduced optional participant joining for events, including recurring events, with frontend join/leave functionality and improved database support.
 
 == Changelog ==
+
+= 1.12.1 =
+* Fixed plugin translations not loading for non-English WordPress locales
+* Restored loading of the court-reservation text domain
+* Added fallback for strings using the courtres text domain
+
+= 1.12.0 =
+* Improved weekly events logic
 
 = 1.11.0 =
 * Added optional participant joining for events
