@@ -325,8 +325,8 @@ body > .flatpickr-calendar.static {
 	--cr-cal-text-muted: #64748b;
 	--cr-cal-border: rgba(15, 23, 42, 0.08);
 	--cr-cal-radius: 10px;
-	--cr-cal-cell: 32px;
-	--cr-cal-width: 224px;
+	--cr-cal-cell: 28px;
+	--cr-cal-width: calc(var(--cr-cal-cell) * 7);
 	--cr-cal-shadow: 0 4px 24px rgba(15, 23, 42, 0.1), 0 1px 3px rgba(15, 23, 42, 0.06);
 	--cr-cal-transition: 0.18s ease;
 	--cr-cal-picker-height: 52px;
@@ -352,11 +352,29 @@ body > .flatpickr-calendar.static {
 }
 
 .cr-calendar-expanded-inner {
+	width: var(--cr-cal-width);
 	max-width: var(--cr-cal-width);
 	background: var(--cr-cal-surface);
 	margin-bottom: 0;
 	padding: 0 0 10px;
 	box-sizing: border-box;
+	display: grid;
+	grid-template-columns: repeat(7, var(--cr-cal-cell));
+}
+
+.cr-calendar-expanded-inner > form[name="kalendar"] {
+	grid-column: 1 / -1;
+}
+
+/* Legacy float line-break / clear nodes — not needed in grid layout */
+.cr-calendar-expanded-inner > div[style*="width: 0px"],
+.cr-calendar-expanded-inner > div[style*="clear: both"] {
+	display: none !important;
+	width: 0 !important;
+	height: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	overflow: hidden !important;
 }
 
 .cr-calendar-month-nav {
@@ -581,6 +599,7 @@ input.cr-reservation-date-input:focus-visible {
 	display: flex !important;
 	align-items: center !important;
 	justify-content: center !important;
+	float: none !important;
 	font-size: 0.6875rem !important;
 	font-weight: 600 !important;
 	color: var(--cr-cal-text-muted) !important;
@@ -595,6 +614,7 @@ input.cr-reservation-date-input:focus-visible {
 	width: var(--cr-cal-cell) !important;
 	height: var(--cr-cal-cell) !important;
 	box-sizing: border-box !important;
+	float: none !important;
 }
 
 .cr-calendar-expanded-inner .kalendar-dani {
@@ -602,7 +622,6 @@ input.cr-reservation-date-input:focus-visible {
 	display: flex !important;
 	align-items: center !important;
 	justify-content: center !important;
-	float: left;
 	padding-top: 0 !important;
 	text-align: center !important;
 	font-size: 0.875rem !important;
