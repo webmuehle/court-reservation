@@ -375,6 +375,7 @@ body > .flatpickr-calendar.static {
 	position: absolute;
 	right: 0;
 	top: 0;
+	z-index: 5;
 	color: inherit;
 	background: transparent;
 	border: none;
@@ -382,6 +383,7 @@ body > .flatpickr-calendar.static {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	pointer-events: auto;
 }
 
 .cr-calendar-icon.dashicons {

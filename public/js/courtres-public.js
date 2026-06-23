@@ -50,6 +50,9 @@
 		if ( keepOpen ) {
 			window.courtresExpandCalendarPanel( id );
 			courtresReinitDatepickers( id );
+			if ( typeof window.courtresBindCalendarDismissButtons === 'function' ) {
+				window.courtresBindCalendarDismissButtons( document.getElementById( 'drugi_kal_' + id ) );
+			}
 			$( document ).trigger( 'courtres:calendar-replaced', [ id ] );
 		} else {
 			courtresCollapseCalendarPanel( id );

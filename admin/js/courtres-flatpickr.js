@@ -231,6 +231,28 @@
 		return Math.round( ( sel - today ) / 86400000 );
 	}
 
+	function collapseCalendarFromButton( btn, visibleInput ) {
+		var courtId = readCourtId( btn );
+		if ( ! courtId || typeof window.courtresCollapseCalendarPanel !== 'function' ) {
+			return;
+		}
+		if ( visibleInput && visibleInput._flatpickr && visibleInput._flatpickr.isOpen ) {
+			visibleInput._flatpickr.close();
+		}
+		window.courtresCollapseCalendarPanel( courtId );
+	}
+
+	function readCourtId( el ) {
+		if ( ! el ) {
+			return '';
+		}
+		var node = el.closest ? el.closest( '[data-court-id]' ) : el;
+		if ( ! node ) {
+			return '';
+		}
+		return node.getAttribute( 'data-court-id' ) || $( node ).data( 'courtId' ) || '';
+	}
+
 	function bindReservationOpen( visibleInput, fp ) {
 		var wrap = visibleInput.closest( '.cr-calendar-picker' );
 		if ( ! wrap || wrap.getAttribute( 'data-cr-fp-wrap' ) ) {
@@ -245,11 +267,21 @@
 		};
 		visibleInput.addEventListener( 'click', openPicker );
 		visibleInput.addEventListener( 'focus', openPicker );
+
+		var dismissBtn = wrap.querySelector( '.cr-calendar-dismiss' );
+		if ( dismissBtn && ! dismissBtn.getAttribute( 'data-cr-dismiss-bound' ) ) {
+			dismissBtn.setAttribute( 'data-cr-dismiss-bound', '1' );
+			dismissBtn.addEventListener( 'click', function ( e ) {
+				e.preventDefault();
+				e.stopPropagation();
+				collapseCalendarFromButton( dismissBtn, visibleInput );
+			} );
+		}
+
 		wrap.addEventListener(
 			'click',
 			function ( e ) {
 				if ( e.target.closest( '.cr-calendar-dismiss' ) ) {
-					e.stopPropagation();
 					return;
 				}
 				openPicker( e );
@@ -396,12 +428,30 @@
 
 	window.courtresInitReservationDatepickers = window.courtresInitFlatpickr;
 
-	function readCourtId( el ) {
-		return el.getAttribute( 'data-court-id' ) || $( el ).data( 'courtId' ) || '';
+	function bindCalendarDismissButtons( root ) {
+		var scope = root || document;
+		scope.querySelectorAll( '.cr-calendar-dismiss' ).forEach( function ( btn ) {
+			if ( btn.getAttribute( 'data-cr-dismiss-bound' ) ) {
+				return;
+			}
+			btn.setAttribute( 'data-cr-dismiss-bound', '1' );
+			btn.addEventListener( 'click', function ( e ) {
+				e.preventDefault();
+				e.stopPropagation();
+				var picker = btn.closest( '.cr-calendar-picker' );
+				var visibleInput = picker
+					? picker.querySelector( '.cr-reservation-date-input' )
+					: null;
+				collapseCalendarFromButton( btn, visibleInput );
+			} );
+		} );
 	}
+
+	window.courtresBindCalendarDismissButtons = bindCalendarDismissButtons;
 
 	$( document ).ready( function () {
 		window.courtresInitFlatpickr();
+		bindCalendarDismissButtons( document );
 		$( 'form[name="kalendar"]' ).on( 'submit', function ( e ) {
 			e.preventDefault();
 		} );
@@ -415,22 +465,18 @@
 			window.setTimeout( function () {
 				var root = document.getElementById( 'drugi_kal_' + courtId );
 				window.courtresInitFlatpickr( root || document );
+				bindCalendarDismissButtons( root || document );
 			}, 50 );
 		} );
 		$( document ).on( 'click', '.cr-calendar-dismiss', function ( e ) {
 			e.preventDefault();
 			e.stopPropagation();
-			var courtId = readCourtId( this );
-			if ( ! courtId || typeof window.courtresCollapseCalendarPanel !== 'function' ) {
-				return;
-			}
-			var visibleInput = document.querySelector(
-				'#cr-datum-' + courtId + ', #drugi_kal_' + courtId + ' .cr-reservation-date-input'
-			);
-			if ( visibleInput && visibleInput._flatpickr && visibleInput._flatpickr.isOpen ) {
-				visibleInput._flatpickr.close();
-			}
-			window.courtresCollapseCalendarPanel( courtId );
+			var btn = this;
+			var picker = btn.closest ? btn.closest( '.cr-calendar-picker' ) : null;
+			var visibleInput = picker
+				? picker.querySelector( '.cr-reservation-date-input' )
+				: null;
+			collapseCalendarFromButton( btn, visibleInput );
 		} );
 		$( window ).on( 'resize scroll', function () {
 			document.querySelectorAll( 'input.cr-reservation-date-input[data-cr-fp-init]' ).forEach( function ( input ) {
