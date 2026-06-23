@@ -79,7 +79,7 @@ class Courtres_Public extends Courtres_Base {
 
 		$this->plugin_name    = $plugin_name;
 		$this->version        = $version;
-		$this->assets_version = $version . '.16';
+		$this->assets_version = $version . '.17';
 	}
 
 	/**
@@ -1756,7 +1756,8 @@ class Courtres_Public extends Courtres_Base {
 	public function ajax_cr_navigator_calendar() {
 		global $wpdb;
 		status_header( 200 );
-		$courtID = isset( $_REQUEST['id'] ) ? absint( $_REQUEST['id'] ) : 0;
+		$courtID_raw = isset( $_REQUEST['id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['id'] ) ) : '';
+		$courtID     = preg_match( '/^[\d_]+$/', $courtID_raw ) ? $courtID_raw : absint( $courtID_raw );
 		include 'partials/' . $this->plugin_name . '-public-table-calendar.php';
 		wp_die();
 	}

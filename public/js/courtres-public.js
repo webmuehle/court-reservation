@@ -29,13 +29,54 @@
 		if ( anchor && anchor._flatpickr && anchor._flatpickr.isOpen ) {
 			anchor._flatpickr.close();
 		}
-		document.querySelectorAll( 'body > .flatpickr-calendar.open' ).forEach( function ( cal ) {
+		document.querySelectorAll( 'body > .flatpickr-calendar' ).forEach( function ( cal ) {
 			cal.classList.remove( 'open' );
 			cal.style.display = 'none';
+			cal.style.pointerEvents = 'none';
 		} );
 	};
 
+	function courtresHandleCalendarToggle( trigger ) {
+		var courtId = courtresReadCourtId( trigger );
+		if ( ! courtId ) {
+			return;
+		}
+		var isDismiss = trigger.classList.contains( 'cr-calendar-dismiss' );
+		var isOpenBtn = trigger.classList.contains( 'cr-calendar-open' );
+		if ( isDismiss || ( isOpenBtn && courtresIsCalendarPanelOpen( courtId ) ) ) {
+			window.courtresCollapseCalendarPanel( courtId );
+			return;
+		}
+		if ( isOpenBtn ) {
+			window.courtresExpandCalendarPanel( courtId );
+			window.setTimeout( function () {
+				var root = document.getElementById( 'drugi_kal_' + courtId );
+				if ( typeof window.courtresInitFlatpickr === 'function' ) {
+					window.courtresInitFlatpickr( root || document );
+				}
+				window.courtresCloseFlatpickrOverlays( courtId );
+			}, 50 );
+		}
+	}
+
+	document.addEventListener(
+		'click',
+		function ( e ) {
+			var trigger = e.target.closest
+				? e.target.closest( '.cr-calendar-dismiss, .cr-calendar-open' )
+				: null;
+			if ( ! trigger ) {
+				return;
+			}
+			e.preventDefault();
+			e.stopPropagation();
+			courtresHandleCalendarToggle( trigger );
+		},
+		true
+	);
+
 	window.courtresExpandCalendarPanel = function ( id ) {
+		window.courtresCloseFlatpickrOverlays( id );
 		var wrap = document.getElementById( 'cr_calendar_wrap_' + id );
 		if ( wrap ) {
 			wrap.classList.remove( 'cr-calendar-expanded--collapsed' );
@@ -134,6 +175,7 @@
 			window.courtresCleanupFlatpickrCalendars( root );
 		}
 		window.courtresInitFlatpickr( root );
+		window.courtresCloseFlatpickrOverlays( id );
 	}
 
 	window.courtresNavigateToStep = function ( id, step ) {
@@ -200,29 +242,6 @@
 			);
 
 			var cr_params = (typeof courtres_params !== 'undefined') ? courtres_params : null;
-
-			$( document ).on( 'click', '.cr-calendar-dismiss', function ( e ) {
-				e.preventDefault();
-				e.stopImmediatePropagation();
-				var courtId = courtresReadCourtId( this );
-				if ( courtId ) {
-					window.courtresCollapseCalendarPanel( courtId );
-				}
-			} );
-			$( document ).on( 'click', '.cr-calendar-open', function ( e ) {
-				e.preventDefault();
-				var courtId = courtresReadCourtId( this );
-				if ( ! courtId ) {
-					return;
-				}
-				window.courtresExpandCalendarPanel( courtId );
-				window.setTimeout( function () {
-					var root = document.getElementById( 'drugi_kal_' + courtId );
-					if ( typeof window.courtresInitFlatpickr === 'function' ) {
-						window.courtresInitFlatpickr( root || document );
-					}
-				}, 50 );
-			} );
 
 			$( document ).on( 'courtres:table-replaced', function ( e, id ) {
 				dialogs( id );

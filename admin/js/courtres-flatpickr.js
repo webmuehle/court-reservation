@@ -232,6 +232,11 @@
 		}
 		destroyAnchor( document.getElementById( 'cr-fp-anchor-' + courtId ) );
 		window.courtresCleanupFlatpickrCalendars( root || document );
+		document.querySelectorAll( 'body > .flatpickr-calendar' ).forEach( function ( cal ) {
+			if ( cal.parentNode ) {
+				cal.parentNode.removeChild( cal );
+			}
+		} );
 	};
 
 	function todayYmd() {
@@ -274,27 +279,11 @@
 		var openPicker = function ( e ) {
 			if ( e ) {
 				e.preventDefault();
+				e.stopPropagation();
 			}
 			fp.open();
 		};
 		visibleInput.addEventListener( 'click', openPicker );
-		visibleInput.addEventListener( 'focus', openPicker );
-		wrap.addEventListener(
-			'click',
-			function ( e ) {
-				var dismissBtn = e.target.closest( '.cr-calendar-dismiss' );
-				if ( dismissBtn ) {
-					e.preventDefault();
-					e.stopPropagation();
-					var courtId = dismissBtn.getAttribute( 'data-court-id' );
-					if ( courtId && typeof window.courtresCollapseCalendarPanel === 'function' ) {
-						window.courtresCollapseCalendarPanel( courtId );
-					}
-					return;
-				}
-				openPicker( e );
-			}
-		);
 	}
 
 	function initMultipleInput( input ) {

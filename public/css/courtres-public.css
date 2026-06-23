@@ -313,7 +313,7 @@ body > .flatpickr-calendar.static {
 	position: absolute;
 	top: 42px;
 	left: 0;
-	z-index: 1001;
+	z-index: 100003;
 	width: 197px;
 	max-width: 100%;
 	background: #f9fafb;
@@ -376,7 +376,7 @@ body > .flatpickr-calendar.static {
 	position: absolute;
 	right: 0;
 	top: 0;
-	z-index: 5;
+	z-index: 2;
 	color: inherit;
 	background: transparent;
 	border: none;
