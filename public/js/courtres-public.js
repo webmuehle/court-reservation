@@ -6,6 +6,35 @@
 		return wrap && ! wrap.classList.contains( 'cr-calendar-expanded--collapsed' );
 	}
 
+	function courtresReadCourtId( el ) {
+		if ( ! el ) {
+			return '';
+		}
+		var node = el.closest ? el.closest( '[data-court-id]' ) : el;
+		if ( ! node ) {
+			return '';
+		}
+		return node.getAttribute( 'data-court-id' ) || '';
+	}
+
+	window.courtresCloseFlatpickrOverlays = function ( id ) {
+		var root = document.getElementById( 'drugi_kal_' + id );
+		if ( root ) {
+			var input = root.querySelector( '.cr-reservation-date-input' );
+			if ( input && input._flatpickr && input._flatpickr.isOpen ) {
+				input._flatpickr.close();
+			}
+		}
+		var anchor = document.getElementById( 'cr-fp-anchor-' + id );
+		if ( anchor && anchor._flatpickr && anchor._flatpickr.isOpen ) {
+			anchor._flatpickr.close();
+		}
+		document.querySelectorAll( 'body > .flatpickr-calendar.open' ).forEach( function ( cal ) {
+			cal.classList.remove( 'open' );
+			cal.style.display = 'none';
+		} );
+	};
+
 	window.courtresExpandCalendarPanel = function ( id ) {
 		var wrap = document.getElementById( 'cr_calendar_wrap_' + id );
 		if ( wrap ) {
@@ -15,12 +44,15 @@
 	};
 
 	window.courtresCollapseCalendarPanel = function ( id ) {
+		window.courtresCloseFlatpickrOverlays( id );
 		var wrap = document.getElementById( 'cr_calendar_wrap_' + id );
 		if ( wrap ) {
 			wrap.classList.add( 'cr-calendar-expanded--collapsed' );
 		}
 		$( '#prvi_kal_' + id ).css( 'display', 'flex' );
-		if ( typeof window.courtresDestroyFlatpickr === 'function' ) {
+		if ( typeof window.courtresDestroyFlatpickrByCourtId === 'function' ) {
+			window.courtresDestroyFlatpickrByCourtId( id );
+		} else if ( typeof window.courtresDestroyFlatpickr === 'function' ) {
 			var root = document.getElementById( 'drugi_kal_' + id );
 			if ( root ) {
 				window.courtresDestroyFlatpickr( root );
@@ -30,6 +62,31 @@
 
 	function courtresCollapseCalendarPanel( id ) {
 		window.courtresCollapseCalendarPanel( id );
+	}
+
+	function courtresSyncCalendarPanelAfterNav( id, step, nav ) {
+		if ( ! courtresIsCalendarPanelOpen( id ) || typeof courtres_params === 'undefined' ) {
+			return;
+		}
+		window.courtresCloseFlatpickrOverlays( id );
+		$.ajax(
+			{
+				type: 'GET',
+				url: courtres_params.ajax_url,
+				data: {
+					id: id,
+					action: 'ajax_cr_navigator_calendar',
+					navigaor: nav || 'pick',
+					navigator_step: step
+				},
+				success: function ( kalen ) {
+					courtresReplaceCalendarPanel( id, kalen, nav || 'pick' );
+				},
+				error: function ( err ) {
+					console.error( err.responseText );
+				}
+			}
+		);
 	}
 
 	function courtresReplaceCalendarPanel( id, kalen, nav ) {
@@ -42,7 +99,10 @@
 			nav === 'next-month' ||
 			courtresIsCalendarPanelOpen( id );
 
-		if ( typeof window.courtresDestroyFlatpickr === 'function' ) {
+		window.courtresCloseFlatpickrOverlays( id );
+		if ( typeof window.courtresDestroyFlatpickrByCourtId === 'function' ) {
+			window.courtresDestroyFlatpickrByCourtId( id );
+		} else if ( typeof window.courtresDestroyFlatpickr === 'function' ) {
 			window.courtresDestroyFlatpickr( $panel[0] );
 		}
 		$panel.replaceWith( kalen );
@@ -50,9 +110,6 @@
 		if ( keepOpen ) {
 			window.courtresExpandCalendarPanel( id );
 			courtresReinitDatepickers( id );
-			if ( typeof window.courtresBindCalendarDismissButtons === 'function' ) {
-				window.courtresBindCalendarDismissButtons( document.getElementById( 'drugi_kal_' + id ) );
-			}
 			$( document ).trigger( 'courtres:calendar-replaced', [ id ] );
 		} else {
 			courtresCollapseCalendarPanel( id );
@@ -87,6 +144,7 @@
 		if ( isNaN( $step ) ) {
 			$step = 0;
 		}
+		window.courtresCloseFlatpickrOverlays( id );
 		var akcija = String( id ).indexOf( '_' ) !== -1 ? 'ajax_cr_navigator_full_view' : 'ajax_cr_navigator';
 
 		$( '#cr-reservations-' + id + ' td' ).each(
@@ -119,7 +177,7 @@
 							$( '#cr-table-' + id ).find( '#cr-today-my' ).html( $( '#cr-reservations-' + id ).data( 'navigator-my' ) );
 							$( document ).trigger( 'courtres:table-replaced', [ id ] );
 							$( '#cr-reservations-' + id ).fadeIn( 1000 );
-							courtresReinitDatepickers( id );
+							courtresSyncCalendarPanelAfterNav( id, $step, 'pick' );
 						}
 					);
 				},
@@ -142,6 +200,30 @@
 			);
 
 			var cr_params = (typeof courtres_params !== 'undefined') ? courtres_params : null;
+
+			$( document ).on( 'click', '.cr-calendar-dismiss', function ( e ) {
+				e.preventDefault();
+				e.stopImmediatePropagation();
+				var courtId = courtresReadCourtId( this );
+				if ( courtId ) {
+					window.courtresCollapseCalendarPanel( courtId );
+				}
+			} );
+			$( document ).on( 'click', '.cr-calendar-open', function ( e ) {
+				e.preventDefault();
+				var courtId = courtresReadCourtId( this );
+				if ( ! courtId ) {
+					return;
+				}
+				window.courtresExpandCalendarPanel( courtId );
+				window.setTimeout( function () {
+					var root = document.getElementById( 'drugi_kal_' + courtId );
+					if ( typeof window.courtresInitFlatpickr === 'function' ) {
+						window.courtresInitFlatpickr( root || document );
+					}
+				}, 50 );
+			} );
+
 			$( document ).on( 'courtres:table-replaced', function ( e, id ) {
 				dialogs( id );
 				courtresReinitDatepickers( id );
@@ -224,6 +306,7 @@
 						$cr_days.append( '<img src="' + window.courtres_params.cr_url + '/images/spinner.gif" />' );
 						$cr_days.addClass( 'button--active' );
 						$step = $( this ).attr("data-day");
+						window.courtresCloseFlatpickrOverlays( id );
 						$( '#cr-reservations-' + id + ' td' ).each(
 							function (i, row) {
 								// $(row).fadeOut(300*i);
@@ -260,6 +343,7 @@
 											$( '#cr-reservations-' + id ).fadeIn( 1000 );
 											$cr_days.find( 'img' ).remove();
 											$cr_days.removeClass( 'button--active' );
+											courtresSyncCalendarPanelAfterNav( id, $step, 'pick' );
 										}
 									);
 								},
@@ -280,6 +364,7 @@
 				$table.off( 'click.courtresNav', '[data-navigator]' );
 				$table.on( 'click.courtresNav', '[data-navigator]', function () {
 						var $cr_days = $( this );
+						window.courtresCloseFlatpickrOverlays( id );
 						$cr_days.append( '<img src="' + window.courtres_params.cr_url + '/images/spinner.gif" />' );
 						$cr_days.addClass( 'button--active' );
 						if ($cr_days.data( 'navigator' ) === 'prev') {

@@ -278,6 +278,7 @@ body > .flatpickr-calendar {
 
 body > .flatpickr-calendar:not(.open) {
 	display: none !important;
+	pointer-events: none !important;
 }
 
 body > .flatpickr-calendar.open,
