@@ -59,21 +59,36 @@
 		}
 	}
 
+	// Capture phase only for dismiss — must run before Flatpickr swallows the click.
 	document.addEventListener(
 		'click',
 		function ( e ) {
-			var trigger = e.target.closest
-				? e.target.closest( '.cr-calendar-dismiss, .cr-calendar-open' )
-				: null;
-			if ( ! trigger ) {
+			var dismiss = e.target.closest ? e.target.closest( '.cr-calendar-dismiss' ) : null;
+			if ( ! dismiss ) {
 				return;
 			}
 			e.preventDefault();
 			e.stopPropagation();
-			courtresHandleCalendarToggle( trigger );
+			var courtId = courtresReadCourtId( dismiss );
+			if ( courtId ) {
+				window.courtresCollapseCalendarPanel( courtId );
+			}
 		},
 		true
 	);
+
+	$( document ).on( 'click', '.cr-calendar-open', function ( e ) {
+		e.preventDefault();
+		courtresHandleCalendarToggle( this );
+	} );
+
+	window.courtresPurgeFlatpickrOverlays = function () {
+		document.querySelectorAll( 'body > .flatpickr-calendar' ).forEach( function ( cal ) {
+			cal.classList.remove( 'open' );
+			cal.style.display = 'none';
+			cal.style.pointerEvents = 'none';
+		} );
+	};
 
 	window.courtresExpandCalendarPanel = function ( id ) {
 		window.courtresCloseFlatpickrOverlays( id );
@@ -247,10 +262,14 @@
 				dialogs( id );
 				courtresReinitDatepickers( id );
 				actions2( id );
+				window.courtresPurgeFlatpickrOverlays();
 			} );
 			$( document ).on( 'courtres:calendar-replaced', function ( e, id ) {
 				actions2( id );
 			} );
+
+			courtresBindNavigatorHandlers();
+			window.courtresPurgeFlatpickrOverlays();
 
 			if (cr_params && cr_params.cr_ids.length > 0) {
 				for (var i = 0; i < cr_params.cr_ids.length; i++) {
@@ -311,172 +330,178 @@
 				)
 			}
 
-			function actions2(id) {
-				var $step = 0;
-				var $table = $( '#cr-table-' + id );
-				if ( ! $table.length ) {
-					return;
-				}
-				$table.off( 'click.courtresDays', '.kalendar-dani' );
-				$table.on( 'click.courtresDays', '.kalendar-dani', function () {
-						$table.find( '.kalendar-dani' ).css( { color: 'darkgray', fontWeight: 'normal' } );
-						$( this ).css( { color: 'black', fontWeight: 'bold' } );
-						var $cr_days = $( this );
-						$cr_days.append( '<img src="' + window.courtres_params.cr_url + '/images/spinner.gif" />' );
-						$cr_days.addClass( 'button--active' );
-						$step = $( this ).attr("data-day");
-						window.courtresCloseFlatpickrOverlays( id );
-						$( '#cr-reservations-' + id + ' td' ).each(
-							function (i, row) {
-								// $(row).fadeOut(300*i);
-								$( row ).animate(
-									{
-										left: '+=100',
-										opacity: '0'
-									},
-									300 * i
-								);
-							}
-						);
-
-						if (id.includes("_")) { var akcija="ajax_cr_navigator_full_view"; } else { var akcija="ajax_cr_navigator"; }
-
-						$.ajax(
-							{
-
-								type: "GET",
-								url: courtres_params.ajax_url,
-								data: {
-									id: id,
-									action: akcija,
-									navigaor: $cr_days.data( 'navigator' ),
-									navigator_step: $step
-								},
-								success: function (cnt) {
-									$( '#cr-reservations-' + id ).fadeOut(
-										'slow',
-										function () {
-											$( this ).replaceWith( cnt );
-											$( '#cr-table-' + id ).find( '#cr-today-my' ).html( $( '#cr-reservations-' + id ).data( 'navigator-my' ) );
-											dialogs( id );
-											$( '#cr-reservations-' + id ).fadeIn( 1000 );
-											$cr_days.find( 'img' ).remove();
-											$cr_days.removeClass( 'button--active' );
-											courtresSyncCalendarPanelAfterNav( id, $step, 'pick' );
-										}
-									);
-								},
-								error: function (err) {
-									console.error( err.responseText );
-								}
-							}
-						);
-					} );
+			function courtresNavigatorAction( akcija ) {
+				return String( akcija ).indexOf( '_' ) !== -1 ? 'ajax_cr_navigator_full_view' : 'ajax_cr_navigator';
 			}
 
-			function actions(id) {
-				var $step = 0;
-				var $table = $( '#cr-table-' + id );
-				if ( ! $table.length ) {
+			function courtresBindNavigatorHandlers() {
+				if ( courtresBindNavigatorHandlers._bound ) {
 					return;
 				}
-				$table.off( 'click.courtresNav', '[data-navigator]' );
-				$table.on( 'click.courtresNav', '[data-navigator]', function () {
-						var $cr_days = $( this );
-						window.courtresCloseFlatpickrOverlays( id );
-						$cr_days.append( '<img src="' + window.courtres_params.cr_url + '/images/spinner.gif" />' );
-						$cr_days.addClass( 'button--active' );
-						if ($cr_days.data( 'navigator' ) === 'prev') {
-							$step -= parseInt( $( "#cr-table-" + id ).data( 'navigator-step' ) ) || 0;
-							$step  = $step < 0 ? 0 : $step;
-						} else if ($cr_days.data( 'navigator' ) === 'next') {
-							if (window.innerWidth > 900) {
-								$step = +$step + (parseInt($("#cr-table-" + id).data('navigator-step')) || 0);
-							} else { 
-								$step = +$step + 1;
-							}
-						} else if ($cr_days.data( 'navigator' ) === 'prev-month') {
-							$step = +$step - (parseInt($cr_days.data('day')) || 0);
-						} else if ($cr_days.data( 'navigator' ) === 'next-month') {
-							$step = +$step + (parseInt($cr_days.data('day')) || 0);
-						} else {
-							$step = 0;
-						}
-						$( '#cr-reservations-' + id + ' td' ).each(
-							function (i, row) {
-								// $(row).fadeOut(300*i);
-								$( row ).animate(
-									{
-										left: '+=100',
-										opacity: '0'
-									},
-									300 * i
-								);
-							}
-						);
+				courtresBindNavigatorHandlers._bound = true;
 
-						if (id.includes("_")) { var akcija="ajax_cr_navigator_full_view"; } else { var akcija="ajax_cr_navigator"; }
-						$.ajax(
-							{
-								type: "GET",
-								url: courtres_params.ajax_url,
-								data: {
-									id: id,
-									action: akcija,
-									navigaor: $cr_days.data( 'navigator' ),
-									navigator_step: $step
+				$( document ).on( 'click.courtresDays', '.container-reservations .kalendar-dani', function () {
+					var $cr_days = $( this );
+					var $table = $cr_days.closest( '[id^="cr-table-"]' );
+					if ( ! $table.length ) {
+						return;
+					}
+					var id = $table.attr( 'id' ).replace( /^cr-table-/, '' );
+					var $step = $( this ).attr( 'data-day' );
+
+					$table.find( '.kalendar-dani' ).css( { color: 'darkgray', fontWeight: 'normal' } );
+					$cr_days.css( { color: 'black', fontWeight: 'bold' } );
+					$cr_days.append( '<img src="' + window.courtres_params.cr_url + '/images/spinner.gif" />' );
+					$cr_days.addClass( 'button--active' );
+					window.courtresCloseFlatpickrOverlays( id );
+					$( '#cr-reservations-' + id + ' td' ).each(
+						function ( i, row ) {
+							$( row ).animate(
+								{
+									left: '+=100',
+									opacity: '0'
 								},
-								success: function (cnt) {
-									$( '#cr-reservations-' + id ).fadeOut(
-										'slow',
-										function () {
-											$( this ).replaceWith( cnt );
-											$( '#cr-table-' + id ).find( '#cr-today-my' ).html( $( '#cr-reservations-' + id ).data( 'navigator-my' ) );
-											$( '#cr-reservations-' + id ).fadeIn( 1000 );
-											$cr_days.find( 'img' ).remove();
-											$cr_days.removeClass( 'button--active' );
-											dialogs( id );
-											// console.log( cnt );
+								300 * i
+							);
+						}
+					);
+
+					$.ajax(
+						{
+							type: 'GET',
+							url: courtres_params.ajax_url,
+							data: {
+								id: id,
+								action: courtresNavigatorAction( id ),
+								navigaor: $cr_days.data( 'navigator' ),
+								navigator_step: $step
+							},
+							success: function ( cnt ) {
+								$( '#cr-reservations-' + id ).fadeOut(
+									'slow',
+									function () {
+										$( this ).replaceWith( cnt );
+										$( '#cr-table-' + id ).find( '#cr-today-my' ).html( $( '#cr-reservations-' + id ).data( 'navigator-my' ) );
+										dialogs( id );
+										$( '#cr-reservations-' + id ).fadeIn( 1000 );
+										$cr_days.find( 'img' ).remove();
+										$cr_days.removeClass( 'button--active' );
+										courtresSyncCalendarPanelAfterNav( id, $step, 'pick' );
+									}
+								);
+							},
+							error: function ( err ) {
+								console.error( err.responseText );
+							}
+						}
+					);
+				} );
+
+				$( document ).on( 'click.courtresNav', '.container-reservations [data-navigator]', function () {
+					var $cr_days = $( this );
+					var $table = $cr_days.closest( '[id^="cr-table-"]' );
+					if ( ! $table.length ) {
+						return;
+					}
+					var id = $table.attr( 'id' ).replace( /^cr-table-/, '' );
+					var $step = 0;
+
+					window.courtresCloseFlatpickrOverlays( id );
+					$cr_days.append( '<img src="' + window.courtres_params.cr_url + '/images/spinner.gif" />' );
+					$cr_days.addClass( 'button--active' );
+					if ( $cr_days.data( 'navigator' ) === 'prev' ) {
+						$step -= parseInt( $table.data( 'navigator-step' ), 10 ) || 0;
+						$step  = $step < 0 ? 0 : $step;
+					} else if ( $cr_days.data( 'navigator' ) === 'next' ) {
+						if ( window.innerWidth > 900 ) {
+							$step = +$step + ( parseInt( $table.data( 'navigator-step' ), 10 ) || 0 );
+						} else {
+							$step = +$step + 1;
+						}
+					} else if ( $cr_days.data( 'navigator' ) === 'prev-month' ) {
+						$step = +$step - ( parseInt( $cr_days.data( 'day' ), 10 ) || 0 );
+					} else if ( $cr_days.data( 'navigator' ) === 'next-month' ) {
+						$step = +$step + ( parseInt( $cr_days.data( 'day' ), 10 ) || 0 );
+					} else {
+						$step = 0;
+					}
+					$( '#cr-reservations-' + id + ' td' ).each(
+						function ( i, row ) {
+							$( row ).animate(
+								{
+									left: '+=100',
+									opacity: '0'
+								},
+								300 * i
+							);
+						}
+					);
+
+					$.ajax(
+						{
+							type: 'GET',
+							url: courtres_params.ajax_url,
+							data: {
+								id: id,
+								action: courtresNavigatorAction( id ),
+								navigaor: $cr_days.data( 'navigator' ),
+								navigator_step: $step
+							},
+							success: function ( cnt ) {
+								$( '#cr-reservations-' + id ).fadeOut(
+									'slow',
+									function () {
+										$( this ).replaceWith( cnt );
+										$( '#cr-table-' + id ).find( '#cr-today-my' ).html( $( '#cr-reservations-' + id ).data( 'navigator-my' ) );
+										$( '#cr-reservations-' + id ).fadeIn( 1000 );
+										$cr_days.find( 'img' ).remove();
+										$cr_days.removeClass( 'button--active' );
+										dialogs( id );
+									}
+								);
+
+								var navAction = $cr_days.data( 'navigator' );
+								if (
+									navAction === 'prev-month' ||
+									navAction === 'next-month' ||
+									courtresIsCalendarPanelOpen( id )
+								) {
+									$.ajax(
+										{
+											type: 'GET',
+											url: courtres_params.ajax_url,
+											data: {
+												id: id,
+												action: 'ajax_cr_navigator_calendar',
+												navigaor: navAction,
+												navigator_step: $step
+											},
+											success: function ( kalen ) {
+												courtresReplaceCalendarPanel( id, kalen, navAction );
+											},
+											error: function ( err ) {
+												console.error( err.responseText );
+											}
 										}
 									);
-								
-
-									var navAction = $cr_days.data( 'navigator' );
-									if (
-										navAction === 'prev-month' ||
-										navAction === 'next-month' ||
-										courtresIsCalendarPanelOpen( id )
-									) {
-										$.ajax(
-											{
-												type: "GET",
-												url: courtres_params.ajax_url,
-												data: {
-													id: id,
-													action: 'ajax_cr_navigator_calendar',
-													navigaor: navAction,
-													navigator_step: $step
-												},
-												success: function (kalen) {
-													courtresReplaceCalendarPanel( id, kalen, navAction );
-												},
-												error: function (err) {
-													console.error( err.responseText );
-												}
-											}
-										);
-									} else {
-										courtresCollapseCalendarPanel( id );
-									}
-
-								},
-								error: function (err) {
-									console.error( err.responseText );
+								} else {
+									courtresCollapseCalendarPanel( id );
 								}
+							},
+							error: function ( err ) {
+								console.error( err.responseText );
 							}
-						);
+						}
+					);
+				} );
+			}
 
-					} );
+			function actions2( id ) {
+				courtresBindNavigatorHandlers();
+			}
+
+			function actions( id ) {
+				courtresBindNavigatorHandlers();
 			}
 
 			// init dialogs for each shortcode

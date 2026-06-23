@@ -49,7 +49,7 @@ table.table.reservations th {
 }
 
 .container-reservations .navigator {
-	position: sticky;
+	position: relative;
 	left: 0;
 	margin-top: 5px;
 	margin-bottom: 5px;
@@ -57,7 +57,7 @@ table.table.reservations th {
 	flex-direction: row;
 	flex-wrap: nowrap;
 	align-items: center;
-	z-index: 2;
+	z-index: 100004;
 }
 
 .container-reservations .navigator a.button {
@@ -307,6 +307,7 @@ body > .flatpickr-calendar.static {
 
 .cr-calendar-expanded--collapsed {
 	display: none !important;
+	pointer-events: none !important;
 }
 
 .cr-calendar-expanded {
