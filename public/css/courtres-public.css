@@ -329,6 +329,9 @@ body > .flatpickr-calendar.static {
 	--cr-cal-width: 224px;
 	--cr-cal-shadow: 0 4px 24px rgba(15, 23, 42, 0.1), 0 1px 3px rgba(15, 23, 42, 0.06);
 	--cr-cal-transition: 0.18s ease;
+	--cr-cal-picker-height: 52px;
+	--cr-cal-month-row-height: 44px;
+	--cr-cal-nav-size: 32px;
 }
 
 .cr-calendar-expanded {
@@ -356,18 +359,24 @@ body > .flatpickr-calendar.static {
 }
 
 .cr-calendar-month-nav {
-	position: relative;
-	height: 0;
+	position: absolute;
+	inset: 0;
+	height: auto;
 	overflow: visible;
+	pointer-events: none;
+	z-index: 11;
 }
 
 .cr-calendar-month-prev,
 .cr-calendar-month-next {
 	position: absolute;
-	top: 52px;
-	z-index: 10;
-	width: 32px;
-	height: 32px;
+	top: calc(
+		var(--cr-cal-picker-height) +
+		(var(--cr-cal-month-row-height) - var(--cr-cal-nav-size)) / 2
+	);
+	z-index: 12;
+	width: var(--cr-cal-nav-size);
+	height: var(--cr-cal-nav-size);
 	padding: 0;
 	border: none;
 	font-size: 0;
@@ -380,6 +389,7 @@ body > .flatpickr-calendar.static {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	pointer-events: auto;
 	transition: background var(--cr-cal-transition), color var(--cr-cal-transition), box-shadow var(--cr-cal-transition);
 }
 
@@ -421,22 +431,27 @@ body > .flatpickr-calendar.static {
 }
 
 .cr-calendar-month-prev {
-	left: 4px;
+	left: 8px;
 }
 
 .cr-calendar-month-next {
-	right: 4px;
+	right: 8px;
+}
+
+.cr-calendar-expanded-panel {
+	position: relative;
 }
 
 .cr-calendar-picker {
 	cursor: pointer;
 	position: relative;
 	width: 100%;
+	min-height: var(--cr-cal-picker-height);
 	margin-top: 0;
 	text-align: left;
 	display: flex;
 	align-items: center;
-	padding: 10px 10px 8px;
+	padding: 0 10px;
 	box-sizing: border-box;
 	border-bottom: 1px solid var(--cr-cal-border);
 	background: var(--cr-cal-surface-muted);
@@ -527,14 +542,19 @@ input.cr-reservation-date-input:focus-visible {
 /* Month title — overrides inline blue top border */
 .cr-calendar-expanded-inner form[name="kalendar"] > div:not(.cr-calendar-picker) {
 	width: 100% !important;
+	min-height: var(--cr-cal-month-row-height) !important;
 	box-sizing: border-box !important;
 	border-top: none !important;
 	border-bottom: 1px solid var(--cr-cal-border) !important;
-	padding: 12px 40px !important;
+	padding: 0 40px !important;
 	position: relative !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
 	text-align: center !important;
 	font-size: 0.9375rem !important;
 	font-weight: 600 !important;
+	line-height: 1.25 !important;
 	color: var(--cr-cal-text) !important;
 	letter-spacing: 0.02em;
 	background: var(--cr-cal-surface);
@@ -624,26 +644,33 @@ body > .flatpickr-calendar:after,
 }
 
 .flatpickr-months {
-	padding: 8px 8px 0;
+	padding: 0 8px;
+	display: flex;
+	align-items: center;
+	min-height: 44px;
 }
 
 .flatpickr-months .flatpickr-month {
-	height: 40px;
+	height: 44px;
 	border-radius: 8px;
+	display: flex;
+	align-items: center;
 }
 
 .flatpickr-months .flatpickr-prev-month,
 .flatpickr-months .flatpickr-next-month {
-	height: 36px;
-	width: 36px;
+	height: var(--cr-cal-nav-size);
+	width: var(--cr-cal-nav-size);
 	padding: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	border-radius: 50%;
-	top: 50%;
-	margin-top: 0;
-	transform: translateY(-50%);
+	top: auto;
+	bottom: auto;
+	position: relative;
+	transform: none;
+	flex-shrink: 0;
 	transition: background var(--cr-cal-transition), color var(--cr-cal-transition);
 }
 
@@ -671,7 +698,15 @@ body > .flatpickr-calendar:after,
 	font-size: 0.9375rem;
 	font-weight: 600;
 	color: var(--cr-cal-text);
-	padding-top: 10px;
+	position: static;
+	width: auto;
+	height: auto;
+	padding: 0;
+	line-height: 1.25;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: 1;
 }
 
 .flatpickr-current-month span.cur-month {
