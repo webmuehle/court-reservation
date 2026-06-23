@@ -2,14 +2,34 @@
 	'use strict';
 
 	function courtresIsCalendarPanelOpen( id ) {
-		var panel = document.getElementById( 'drugi_kal_' + id );
-		return panel && window.getComputedStyle( panel ).display !== 'none';
+		var wrap = document.getElementById( 'cr_calendar_wrap_' + id );
+		return wrap && ! wrap.classList.contains( 'cr-calendar-expanded--collapsed' );
 	}
 
-	function courtresCollapseCalendarPanel( id ) {
-		$( '#drugi_kal_' + id ).hide();
-		$( '#strelice_' + id ).hide();
+	window.courtresExpandCalendarPanel = function ( id ) {
+		var wrap = document.getElementById( 'cr_calendar_wrap_' + id );
+		if ( wrap ) {
+			wrap.classList.remove( 'cr-calendar-expanded--collapsed' );
+		}
+		$( '#prvi_kal_' + id ).hide();
+	};
+
+	window.courtresCollapseCalendarPanel = function ( id ) {
+		var wrap = document.getElementById( 'cr_calendar_wrap_' + id );
+		if ( wrap ) {
+			wrap.classList.add( 'cr-calendar-expanded--collapsed' );
+		}
 		$( '#prvi_kal_' + id ).css( 'display', 'flex' );
+		if ( typeof window.courtresDestroyFlatpickr === 'function' ) {
+			var root = document.getElementById( 'drugi_kal_' + id );
+			if ( root ) {
+				window.courtresDestroyFlatpickr( root );
+			}
+		}
+	};
+
+	function courtresCollapseCalendarPanel( id ) {
+		window.courtresCollapseCalendarPanel( id );
 	}
 
 	function courtresReplaceCalendarPanel( id, kalen, nav ) {
@@ -28,9 +48,7 @@
 		$panel.replaceWith( kalen );
 
 		if ( keepOpen ) {
-			$( '#drugi_kal_' + id ).show();
-			$( '#strelice_' + id ).show();
-			$( '#prvi_kal_' + id ).hide();
+			window.courtresExpandCalendarPanel( id );
 			courtresReinitDatepickers( id );
 			$( document ).trigger( 'courtres:calendar-replaced', [ id ] );
 		} else {

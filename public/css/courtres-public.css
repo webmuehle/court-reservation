@@ -54,8 +54,14 @@ table.table.reservations th {
 	margin-top: 5px;
 	margin-bottom: 5px;
 	display: flex;
-	/* display: none; */
 	flex-direction: row;
+	flex-wrap: nowrap;
+	align-items: center;
+	z-index: 2;
+}
+
+.container-reservations .navigator a.button {
+	flex: 0 0 auto;
 }
 
 .container-reservations .navigator div:last-child {
@@ -251,6 +257,19 @@ table.reservations .cr-tooltip:hover .cr-tooltiptext {
 }
 
 /* Flatpickr (reservation calendar) — fixed overlay on body, never reflows the table */
+.cr-flatpickr-anchor {
+	position: fixed !important;
+	top: -9999px !important;
+	left: -9999px !important;
+	width: 0 !important;
+	height: 0 !important;
+	opacity: 0 !important;
+	pointer-events: none !important;
+	border: 0 !important;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
 body > .flatpickr-calendar {
 	position: fixed !important;
 	z-index: 100002 !important;
@@ -268,19 +287,8 @@ body > .flatpickr-calendar.static {
 	z-index: 100002 !important;
 }
 
-.cr-calendar-picker .flatpickr-wrapper > .flatpickr-calendar,
 .flatpickr-wrapper > .flatpickr-calendar {
 	display: none !important;
-	visibility: hidden !important;
-	height: 0 !important;
-	width: 0 !important;
-	overflow: hidden !important;
-	margin: 0 !important;
-	padding: 0 !important;
-	pointer-events: none !important;
-	position: fixed !important;
-	top: -9999px !important;
-	left: -9999px !important;
 }
 
 .flatpickr-calendar {
@@ -291,37 +299,90 @@ body > .flatpickr-calendar.static {
 	z-index: 100002 !important;
 }
 
-[id^="drugi_kal_"] {
-	margin: 0;
-	padding: 0;
+/* Expanded month panel — absolute overlay, does not push the table */
+.container-reservations {
+	position: relative;
 }
 
-input.cr-reservation-date-input.flatpickr-input {
+.cr-calendar-expanded--collapsed {
+	display: none !important;
+}
+
+.cr-calendar-expanded {
+	position: absolute;
+	top: 42px;
+	left: 0;
+	z-index: 1001;
+	width: 197px;
+	max-width: 100%;
+	background: #f9fafb;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+	border-radius: 6px;
+	overflow: visible;
+}
+
+.cr-calendar-expanded-inner {
+	max-width: 197px;
+	background: #f9fafb;
+	margin-bottom: 0;
+}
+
+.cr-calendar-month-nav {
+	position: relative;
+	height: 0;
+	overflow: visible;
+}
+
+.cr-calendar-month-prev,
+.cr-calendar-month-next {
+	position: absolute;
+	top: 54px;
+	z-index: 10;
+	width: 30px;
+	height: 20px;
+	padding: 0;
+	border: none;
+	font-size: 22px;
+	line-height: 20px;
+	text-align: center;
+	cursor: pointer;
+	background: transparent;
+	color: inherit;
+	box-sizing: border-box;
+}
+
+.cr-calendar-month-prev {
+	left: 0;
+}
+
+.cr-calendar-month-next {
+	right: 0;
+}
+
+.cr-calendar-picker {
+	cursor: pointer;
+	position: relative;
+	width: 197px;
+	margin-top: 10px;
+	text-align: left;
+}
+
+.cr-calendar-picker .cr-calendar-dismiss {
+	padding-top: 3px;
+	width: 28px;
+	height: 24px;
+	margin-top: 2px;
+	position: absolute;
+	right: 0;
+	top: 0;
+	color: inherit;
+	background: transparent;
+	border: none;
 	cursor: pointer;
 }
 
-.cr-calendar-picker,
-.cr-calendar-picker .flatpickr-wrapper {
-	display: inline-block;
-	width: auto;
-	max-width: 197px;
-	overflow: visible;
-	vertical-align: top;
-}
-
-.container-reservations .navigator,
-.container-reservations #drugi_kal,
-.container-reservations [id^="drugi_kal_"],
-.container-reservations [id^="strelice_"] {
-	overflow: visible;
-}
-
-[id^="strelice_"] {
-	pointer-events: none;
-}
-
-[id^="strelice_"] [data-navigator] {
-	pointer-events: auto;
+input.cr-reservation-date-input {
+	cursor: pointer;
 }
 
 /* Piramid / legacy UI */

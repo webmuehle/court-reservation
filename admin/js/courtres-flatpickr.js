@@ -29,6 +29,10 @@
 	}
 
 	function isHiddenReservationPanel( input ) {
+		var wrap = input.closest( '.cr-calendar-expanded' );
+		if ( wrap ) {
+			return wrap.classList.contains( 'cr-calendar-expanded--collapsed' );
+		}
 		var panel = input.closest( '[id^="drugi_kal_"]' );
 		if ( ! panel ) {
 			return false;
@@ -36,7 +40,7 @@
 		return window.getComputedStyle( panel ).display === 'none';
 	}
 
-	function ensureCalendarOverlay( instance ) {
+	function ensureCalendarOverlay( instance, visibleInput ) {
 		var cal = instance && instance.calendarContainer;
 		if ( ! cal ) {
 			return;
@@ -47,24 +51,53 @@
 		cal.classList.remove( 'inline', 'static' );
 		cal.style.position = 'fixed';
 		cal.style.zIndex = '100002';
+		cal.style.margin = '0';
+		cal.style.right = 'auto';
+		cal.style.bottom = 'auto';
 		if ( ! cal.classList.contains( 'open' ) ) {
 			cal.style.display = 'none';
+			return;
 		}
+		cal.style.display = 'block';
+		positionCalendarNearInput( cal, visibleInput || instance._crVisibleInput );
 	}
 
-	function overlayHooks() {
+	function positionCalendarNearInput( cal, visibleInput ) {
+		if ( ! cal || ! visibleInput ) {
+			return;
+		}
+		var rect = visibleInput.getBoundingClientRect();
+		var calWidth = cal.offsetWidth || 308;
+		var calHeight = cal.offsetHeight || 320;
+		var top = rect.bottom + 6;
+		var left = rect.left;
+
+		if ( top + calHeight > window.innerHeight - 8 ) {
+			top = Math.max( 8, rect.top - calHeight - 6 );
+		}
+		if ( left + calWidth > window.innerWidth - 8 ) {
+			left = Math.max( 8, window.innerWidth - calWidth - 8 );
+		}
+		if ( left < 8 ) {
+			left = 8;
+		}
+
+		cal.style.top = top + 'px';
+		cal.style.left = left + 'px';
+	}
+
+	function reservationOverlayHooks( visibleInput ) {
 		return {
 			onReady: function ( selectedDates, dateStr, instance ) {
-				ensureCalendarOverlay( instance );
+				instance._crVisibleInput = visibleInput;
+				ensureCalendarOverlay( instance, visibleInput );
 			},
 			onOpen: function ( selectedDates, dateStr, instance ) {
-				ensureCalendarOverlay( instance );
-				if ( instance.calendarContainer ) {
-					instance.calendarContainer.style.display = 'block';
-				}
+				ensureCalendarOverlay( instance, visibleInput );
 				if ( typeof instance._positionCalendar === 'function' ) {
 					instance._positionCalendar();
 				}
+				ensureCalendarOverlay( instance, visibleInput );
 			},
 			onClose: function ( selectedDates, dateStr, instance ) {
 				if ( instance.calendarContainer ) {
@@ -81,21 +114,52 @@
 			static: false,
 			appendTo: document.body,
 			disableMobile: false,
-			clickOpens: true,
+			clickOpens: false,
 		};
 	}
 
+	function getReservationAnchor( courtId ) {
+		var anchorId = 'cr-fp-anchor-' + courtId;
+		var anchor = document.getElementById( anchorId );
+		if ( anchor ) {
+			return anchor;
+		}
+		anchor = document.createElement( 'input' );
+		anchor.type = 'text';
+		anchor.id = anchorId;
+		anchor.setAttribute( 'aria-hidden', 'true' );
+		anchor.setAttribute( 'tabindex', '-1' );
+		anchor.className = 'cr-flatpickr-anchor';
+		document.body.appendChild( anchor );
+		return anchor;
+	}
+
 	function destroyInput( input ) {
-		if ( ! input || ! input._flatpickr ) {
+		if ( ! input ) {
 			return;
 		}
-		var fp = input._flatpickr;
-		var cal = fp.calendarContainer;
-		fp.destroy();
-		if ( cal && cal.parentNode ) {
-			cal.parentNode.removeChild( cal );
+		if ( input._crFpAnchor && input._crFpAnchor._flatpickr ) {
+			var anchorFp = input._crFpAnchor._flatpickr;
+			var anchorCal = anchorFp.calendarContainer;
+			anchorFp.destroy();
+			if ( anchorCal && anchorCal.parentNode ) {
+				anchorCal.parentNode.removeChild( anchorCal );
+			}
+		}
+		if ( input._crFpAnchor && input._crFpAnchor.parentNode ) {
+			input._crFpAnchor.parentNode.removeChild( input._crFpAnchor );
+		}
+		if ( input._flatpickr ) {
+			var fp = input._flatpickr;
+			var cal = fp.calendarContainer;
+			fp.destroy();
+			if ( cal && cal.parentNode ) {
+				cal.parentNode.removeChild( cal );
+			}
 		}
 		input.removeAttribute( 'data-cr-fp-init' );
+		delete input._crFpAnchor;
+		delete input._flatpickr;
 		var wrap = input.closest( '.cr-calendar-picker' );
 		if ( wrap ) {
 			wrap.removeAttribute( 'data-cr-fp-wrap' );
@@ -104,8 +168,16 @@
 
 	window.courtresDestroyFlatpickr = function ( root ) {
 		var scope = root || document;
-		scope.querySelectorAll( 'input' ).forEach( function ( input ) {
+		scope.querySelectorAll( 'input.cr-reservation-date-input' ).forEach( function ( input ) {
 			destroyInput( input );
+		} );
+		scope.querySelectorAll( 'input' ).forEach( function ( input ) {
+			if ( input.classList.contains( 'cr-reservation-date-input' ) ) {
+				return;
+			}
+			if ( input._flatpickr || input.getAttribute( 'data-cr-fp-init' ) ) {
+				destroyInput( input );
+			}
 		} );
 	};
 
@@ -113,8 +185,12 @@
 		var active = new Set();
 		var scope = root || document;
 		scope.querySelectorAll( 'input' ).forEach( function ( input ) {
-			if ( input._flatpickr && input._flatpickr.calendarContainer ) {
-				active.add( input._flatpickr.calendarContainer );
+			var fp = input._flatpickr;
+			if ( fp && fp.calendarContainer ) {
+				active.add( fp.calendarContainer );
+			}
+			if ( input._crFpAnchor && input._crFpAnchor._flatpickr && input._crFpAnchor._flatpickr.calendarContainer ) {
+				active.add( input._crFpAnchor._flatpickr.calendarContainer );
 			}
 		} );
 		document.querySelectorAll( 'body > .flatpickr-calendar' ).forEach( function ( cal ) {
@@ -155,22 +231,27 @@
 		return Math.round( ( sel - today ) / 86400000 );
 	}
 
-	function bindCalendarWrapper( input, fp ) {
-		var wrap = input.closest( '.cr-calendar-picker' );
+	function bindReservationOpen( visibleInput, fp ) {
+		var wrap = visibleInput.closest( '.cr-calendar-picker' );
 		if ( ! wrap || wrap.getAttribute( 'data-cr-fp-wrap' ) ) {
 			return;
 		}
 		wrap.setAttribute( 'data-cr-fp-wrap', '1' );
+		var openPicker = function ( e ) {
+			if ( e ) {
+				e.preventDefault();
+			}
+			fp.open();
+		};
+		visibleInput.addEventListener( 'click', openPicker );
+		visibleInput.addEventListener( 'focus', openPicker );
 		wrap.addEventListener(
 			'click',
 			function ( e ) {
 				if ( e.target.closest( '.cr-calendar-dismiss' ) ) {
 					return;
 				}
-				if ( e.target === input ) {
-					return;
-				}
-				fp.open();
+				openPicker( e );
 			}
 		);
 	}
@@ -188,24 +269,27 @@
 			Object.assign( {}, baseOptions(), {
 				mode: 'multiple',
 				dateFormat: 'Y-m-d',
+				clickOpens: true,
 				defaultDate: initial.length ? initial : null,
 			} )
 		);
 		input.setAttribute( 'data-cr-fp-init', '1' );
 	}
 
-	function initReservationInput( input ) {
-		var courtId = input.getAttribute( 'data-court-id' ) || '';
+	function initReservationInput( visibleInput ) {
+		var courtId = visibleInput.getAttribute( 'data-court-id' ) || '';
 		var initial =
-			input.value && input.value !== 'YYYY-MM-DD' ? input.value : null;
+			visibleInput.value && visibleInput.value !== 'YYYY-MM-DD' ? visibleInput.value : null;
+		var anchor = getReservationAnchor( courtId );
 
 		var fp = flatpickr(
-			input,
-			Object.assign( {}, baseOptions(), overlayHooks(), {
+			anchor,
+			Object.assign( {}, baseOptions(), reservationOverlayHooks( visibleInput ), {
 				dateFormat: 'Y-m-d',
 				disableMobile: true,
 				closeOnSelect: true,
 				onChange: function ( selectedDates, dateStr ) {
+					visibleInput.value = dateStr || '';
 					if ( ! dateStr || ! courtId ) {
 						return;
 					}
@@ -221,10 +305,13 @@
 
 		if ( initial ) {
 			fp.setDate( initial, false );
+			anchor.value = initial;
 		}
 
-		input.setAttribute( 'data-cr-fp-init', '1' );
-		bindCalendarWrapper( input, fp );
+		visibleInput._crFpAnchor = anchor;
+		visibleInput._flatpickr = fp;
+		visibleInput.setAttribute( 'data-cr-fp-init', '1' );
+		bindReservationOpen( visibleInput, fp );
 	}
 
 	function initSingleInput( input ) {
@@ -233,6 +320,7 @@
 			input,
 			Object.assign( {}, baseOptions(), {
 				dateFormat: resolveDateFormat( input ),
+				clickOpens: true,
 			} )
 		);
 
@@ -245,6 +333,9 @@
 
 	function shouldInit( input ) {
 		if ( input.getAttribute( 'data-cr-fp-init' ) ) {
+			return false;
+		}
+		if ( input.classList.contains( 'cr-flatpickr-anchor' ) ) {
 			return false;
 		}
 		if ( input.classList.contains( 'cr-reservation-date-input' ) ) {
@@ -302,7 +393,6 @@
 		} );
 	};
 
-	// Backward compatibility for reservation calendar AJAX hooks.
 	window.courtresInitReservationDatepickers = window.courtresInitFlatpickr;
 
 	$( document ).ready( function () {
@@ -310,19 +400,33 @@
 		$( 'form[name="kalendar"]' ).on( 'submit', function ( e ) {
 			e.preventDefault();
 		} );
-		$( document ).on( 'click', '[id^="prvi_kal_"] a.button', function ( e ) {
-			if ( $( e.currentTarget ).closest( '[data-navigator]' ).length ) {
+		$( document ).on( 'click', '.cr-calendar-open', function ( e ) {
+			e.preventDefault();
+			var courtId = $( this ).data( 'court-id' );
+			if ( ! courtId || typeof window.courtresExpandCalendarPanel !== 'function' ) {
 				return;
 			}
-			var navId = $( this ).closest( '[id^="prvi_kal_"]' ).attr( 'id' );
-			if ( ! navId ) {
-				return;
-			}
-			var courtId = navId.replace( 'prvi_kal_', '' );
+			window.courtresExpandCalendarPanel( courtId );
 			window.setTimeout( function () {
 				var root = document.getElementById( 'drugi_kal_' + courtId );
 				window.courtresInitFlatpickr( root || document );
 			}, 50 );
+		} );
+		$( document ).on( 'click', '.cr-calendar-dismiss', function ( e ) {
+			e.preventDefault();
+			var courtId = $( this ).data( 'court-id' );
+			if ( ! courtId || typeof window.courtresCollapseCalendarPanel !== 'function' ) {
+				return;
+			}
+			window.courtresCollapseCalendarPanel( courtId );
+		} );
+		$( window ).on( 'resize scroll', function () {
+			document.querySelectorAll( 'input.cr-reservation-date-input[data-cr-fp-init]' ).forEach( function ( input ) {
+				var fp = input._flatpickr;
+				if ( fp && fp.isOpen && fp.calendarContainer ) {
+					ensureCalendarOverlay( fp, input );
+				}
+			} );
 		} );
 	} );
 }( jQuery ) );

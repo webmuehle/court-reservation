@@ -1,6 +1,6 @@
 <?php if ( ! defined( 'ABSPATH' ) ) { exit; } ?>
-		<div style="width: 100%; <?php if (!isset($_POST['sljedeci'])) { echo " display: none;"; } ?>" id="drugi_kal_<?php echo esc_attr( $courtID ); ?>">
-			<div style="backwidth: 100%; max-width: 197px; background: #f9fafb; margin-bottom: 10px;"> 
+		<div class="cr-calendar-expanded-panel" id="drugi_kal_<?php echo esc_attr( $courtID ); ?>">
+			<div class="cr-calendar-expanded-inner">
 <?php
 				$dani_tjedna=array("","M","T","W","T","F","S","S");
 
@@ -61,11 +61,11 @@
 
 				<form action='' method='POST' name='kalendar'>
 
-					<div class='cr-calendar-picker' id='cr_calendar_<?php echo esc_attr( $courtID ); ?>' style='cursor: pointer; position: relative; width: 197px; margin-top: 10px; text-align: left;'>
-						<input name='datum' id='cr-datum-<?php echo esc_attr( $courtID ); ?>' class='cr-flatpickr cr-reservation-date-input' data-court-id='<?php echo esc_attr( $courtID ); ?>' value='<?php echo esc_attr( $odabrani_dan ); ?>' type='text' readonly='readonly' autocomplete='off' placeholder='<?php echo esc_attr__( 'YYYY-MM-DD', 'court-reservation' ); ?>' style='outline: none; padding: 8px 10px 6px; width: 110px; background: transparent; font-size: 14px; color: inherit; border: none; cursor: pointer;'>
-						<div name='ponisti' class='button cr-calendar-dismiss' style='padding-top: 3px; width: 28px; height: 24px; margin-top: 4px; position: absolute; right: 0; top: 0; color: inherit;' onclick='document.getElementById("strelice_<?php echo esc_html($courtID); ?>").style.display="none"; document.getElementById("drugi_kal_<?php echo esc_html($courtID); ?>").style.display="none"; document.getElementById("prvi_kal_<?php echo esc_html($courtID); ?>").style.display="flex";'>
+					<div class='cr-calendar-picker' id='cr_calendar_<?php echo esc_attr( $courtID ); ?>'>
+						<input name='datum' id='cr-datum-<?php echo esc_attr( $courtID ); ?>' class='cr-reservation-date-input' data-court-id='<?php echo esc_attr( $courtID ); ?>' value='<?php echo esc_attr( $odabrani_dan ); ?>' type='text' readonly='readonly' autocomplete='off' placeholder='<?php echo esc_attr__( 'YYYY-MM-DD', 'court-reservation' ); ?>' style='outline: none; padding: 8px 10px 6px; width: 110px; background: transparent; font-size: 14px; color: inherit; border: none; cursor: pointer;'>
+						<button type="button" class='button cr-calendar-dismiss' aria-label="<?php echo esc_attr__( 'Close calendar', 'court-reservation' ); ?>" data-court-id="<?php echo esc_attr( $courtID ); ?>">
 							<img src="<?php echo plugin_dir_url( __FILE__ ).'../../public/images/kalendar.png'; ?>" style="width:18px;">
-						</div>
+						</button>
 					</div>
 
 					<div style='width: 197px; box-sizing: border-box; border-top: 3px solid #2273d7; padding: 10px; position: relative; text-align: center;'>
