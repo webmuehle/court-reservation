@@ -348,6 +348,7 @@ body > .flatpickr-calendar.static {
 	overflow: visible;
 	font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 	-webkit-font-smoothing: antialiased;
+	isolation: isolate;
 }
 
 .cr-calendar-expanded-inner {
@@ -360,21 +361,23 @@ body > .flatpickr-calendar.static {
 
 .cr-calendar-month-nav {
 	position: absolute;
-	inset: 0;
-	height: auto;
+	top: var(--cr-cal-picker-height);
+	left: 0;
+	right: 0;
+	height: var(--cr-cal-month-row-height);
 	overflow: visible;
 	pointer-events: none;
-	z-index: 11;
+	z-index: 5;
 }
 
 .cr-calendar-month-prev,
 .cr-calendar-month-next {
 	position: absolute;
-	top: calc(
-		var(--cr-cal-picker-height) +
-		(var(--cr-cal-month-row-height) - var(--cr-cal-nav-size)) / 2
-	);
-	z-index: 12;
+	top: 50%;
+	left: auto;
+	right: auto;
+	transform: translateY(-50%);
+	z-index: 6;
 	width: var(--cr-cal-nav-size);
 	height: var(--cr-cal-nav-size);
 	padding: 0;
@@ -448,6 +451,7 @@ body > .flatpickr-calendar.static {
 
 .cr-calendar-expanded-panel {
 	position: relative;
+	z-index: 1;
 }
 
 .cr-calendar-picker {
@@ -566,6 +570,7 @@ input.cr-reservation-date-input:focus-visible {
 	color: var(--cr-cal-text) !important;
 	letter-spacing: 0.02em;
 	background: var(--cr-cal-surface);
+	pointer-events: none;
 }
 
 /* Weekday headers */

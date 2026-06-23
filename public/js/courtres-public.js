@@ -17,6 +17,28 @@
 		return node.getAttribute( 'data-court-id' ) || '';
 	}
 
+	function courtresParseNavigatorStepFromDate( ymd ) {
+		if ( typeof courtres_params === 'undefined' || ! courtres_params.today_ymd || ! ymd ) {
+			return 0;
+		}
+		var selMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec( String( ymd ) );
+		var todayMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec( courtres_params.today_ymd );
+		if ( ! selMatch || ! todayMatch ) {
+			return 0;
+		}
+		var sel = Date.UTC( +selMatch[1], +selMatch[2] - 1, +selMatch[3] );
+		var today = Date.UTC( +todayMatch[1], +todayMatch[2] - 1, +todayMatch[3] );
+		return Math.round( ( sel - today ) / 86400000 );
+	}
+
+	function courtresReadNavigatorStep( courtId ) {
+		var input = document.getElementById( 'cr-datum-' + courtId );
+		if ( input && input.value ) {
+			return courtresParseNavigatorStepFromDate( input.value );
+		}
+		return 0;
+	}
+
 	window.courtresCloseFlatpickrOverlays = function ( id ) {
 		var root = document.getElementById( 'drugi_kal_' + id );
 		if ( root ) {
@@ -404,7 +426,10 @@
 						return;
 					}
 					var id = $table.attr( 'id' ).replace( /^cr-table-/, '' );
-					var $step = 0;
+					var navAction = $cr_days.data( 'navigator' );
+					var $step = ( navAction === 'prev-month' || navAction === 'next-month' )
+						? courtresReadNavigatorStep( id )
+						: 0;
 
 					window.courtresCloseFlatpickrOverlays( id );
 					$cr_days.append( '<img src="' + window.courtres_params.cr_url + '/images/spinner.gif" />' );
@@ -460,7 +485,6 @@
 									}
 								);
 
-								var navAction = $cr_days.data( 'navigator' );
 								if (
 									navAction === 'prev-month' ||
 									navAction === 'next-month' ||
