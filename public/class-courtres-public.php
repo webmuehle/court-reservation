@@ -79,7 +79,7 @@ class Courtres_Public extends Courtres_Base {
 
 		$this->plugin_name    = $plugin_name;
 		$this->version        = $version;
-		$this->assets_version = $version . '.10';
+		$this->assets_version = $version . '.11';
 	}
 
 	/**

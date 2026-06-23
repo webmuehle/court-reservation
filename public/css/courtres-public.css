@@ -257,11 +257,30 @@ body > .flatpickr-calendar {
 	margin: 0 !important;
 }
 
+body > .flatpickr-calendar:not(.open) {
+	display: none !important;
+}
+
 body > .flatpickr-calendar.open,
 body > .flatpickr-calendar.inline,
 body > .flatpickr-calendar.static {
 	position: fixed !important;
 	z-index: 100002 !important;
+}
+
+.cr-calendar-picker .flatpickr-wrapper > .flatpickr-calendar,
+.flatpickr-wrapper > .flatpickr-calendar {
+	display: none !important;
+	visibility: hidden !important;
+	height: 0 !important;
+	width: 0 !important;
+	overflow: hidden !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	pointer-events: none !important;
+	position: fixed !important;
+	top: -9999px !important;
+	left: -9999px !important;
 }
 
 .flatpickr-calendar {
@@ -270,6 +289,11 @@ body > .flatpickr-calendar.static {
 
 .flatpickr-calendar.open {
 	z-index: 100002 !important;
+}
+
+[id^="drugi_kal_"] {
+	margin: 0;
+	padding: 0;
 }
 
 input.cr-reservation-date-input.flatpickr-input {

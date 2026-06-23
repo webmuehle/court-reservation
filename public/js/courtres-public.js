@@ -1,12 +1,61 @@
 (function ($) {
 	'use strict';
 
+	function courtresIsCalendarPanelOpen( id ) {
+		var panel = document.getElementById( 'drugi_kal_' + id );
+		return panel && window.getComputedStyle( panel ).display !== 'none';
+	}
+
+	function courtresCollapseCalendarPanel( id ) {
+		$( '#drugi_kal_' + id ).hide();
+		$( '#strelice_' + id ).hide();
+		$( '#prvi_kal_' + id ).css( 'display', 'flex' );
+	}
+
+	function courtresReplaceCalendarPanel( id, kalen, nav ) {
+		var $panel = $( '#drugi_kal_' + id );
+		if ( ! $panel.length ) {
+			return;
+		}
+		var keepOpen =
+			nav === 'prev-month' ||
+			nav === 'next-month' ||
+			courtresIsCalendarPanelOpen( id );
+
+		if ( typeof window.courtresDestroyFlatpickr === 'function' ) {
+			window.courtresDestroyFlatpickr( $panel[0] );
+		}
+		$panel.replaceWith( kalen );
+
+		if ( keepOpen ) {
+			$( '#drugi_kal_' + id ).show();
+			$( '#strelice_' + id ).show();
+			$( '#prvi_kal_' + id ).hide();
+			courtresReinitDatepickers( id );
+			$( document ).trigger( 'courtres:calendar-replaced', [ id ] );
+		} else {
+			courtresCollapseCalendarPanel( id );
+		}
+	}
+
 	function courtresReinitDatepickers( id ) {
 		if ( typeof window.courtresInitFlatpickr !== 'function' ) {
 			return;
 		}
 		var root = document.getElementById( 'drugi_kal_' + id );
-		window.courtresInitFlatpickr( root || document );
+		if ( ! root ) {
+			return;
+		}
+		if ( ! courtresIsCalendarPanelOpen( id ) ) {
+			if ( typeof window.courtresDestroyFlatpickr === 'function' ) {
+				window.courtresDestroyFlatpickr( root );
+			}
+			return;
+		}
+		if ( typeof window.courtresCleanupFlatpickrCalendars === 'function' ) {
+			window.courtresCleanupFlatpickrCalendars( root );
+		}
+		window.courtresInitFlatpickr( root );
 	}
 
 	window.courtresNavigateToStep = function ( id, step ) {
@@ -75,6 +124,9 @@
 			$( document ).on( 'courtres:table-replaced', function ( e, id ) {
 				dialogs( id );
 				courtresReinitDatepickers( id );
+				actions2( id );
+			} );
+			$( document ).on( 'courtres:calendar-replaced', function ( e, id ) {
 				actions2( id );
 			} );
 
@@ -264,33 +316,33 @@
 									);
 								
 
-									$.ajax(
-										{
-											type: "GET",
-											url: courtres_params.ajax_url,
-											data: {
-												id: id,
-												action: 'ajax_cr_navigator_calendar',
-												navigaor: $cr_days.data( 'navigator' ),
-												navigator_step: $step
-											},
-											success: function (kalen) {
-												$( '#drugi_kal_' + id ).fadeOut(
-													'fast',
-													function () {
-														$( this ).replaceWith( kalen );
-														if ($cr_days.data( 'navigator' ) === 'prev-month') { $( '#drugi_kal_' + id ).css("display", "block"); }
-														if ($cr_days.data( 'navigator' ) === 'next-month') { $( '#drugi_kal_' + id ).css("display", "block"); }
-														courtresReinitDatepickers( id );
-														actions2( id );
-													}
-												);
-											},
-											error: function (err) {
-												console.error( err.responseText );
+									var navAction = $cr_days.data( 'navigator' );
+									if (
+										navAction === 'prev-month' ||
+										navAction === 'next-month' ||
+										courtresIsCalendarPanelOpen( id )
+									) {
+										$.ajax(
+											{
+												type: "GET",
+												url: courtres_params.ajax_url,
+												data: {
+													id: id,
+													action: 'ajax_cr_navigator_calendar',
+													navigaor: navAction,
+													navigator_step: $step
+												},
+												success: function (kalen) {
+													courtresReplaceCalendarPanel( id, kalen, navAction );
+												},
+												error: function (err) {
+													console.error( err.responseText );
+												}
 											}
-										}
-									);
+										);
+									} else {
+										courtresCollapseCalendarPanel( id );
+									}
 
 								},
 								error: function (err) {
