@@ -310,23 +310,49 @@ body > .flatpickr-calendar.static {
 	pointer-events: none !important;
 }
 
+/* -------------------------------------------------------------------------- */
+/* Reservation calendar — modern panel (Material / Fluent)                    */
+/* -------------------------------------------------------------------------- */
+.cr-calendar-expanded,
+.cr-calendar-expanded-inner,
+.flatpickr-calendar {
+	--cr-cal-accent: #5b5fc7;
+	--cr-cal-accent-hover: #4f52b8;
+	--cr-cal-accent-soft: rgba(91, 95, 199, 0.12);
+	--cr-cal-surface: #ffffff;
+	--cr-cal-surface-muted: #f8fafc;
+	--cr-cal-text: #1e293b;
+	--cr-cal-text-muted: #64748b;
+	--cr-cal-border: rgba(15, 23, 42, 0.08);
+	--cr-cal-radius: 10px;
+	--cr-cal-cell: 32px;
+	--cr-cal-width: 224px;
+	--cr-cal-shadow: 0 4px 24px rgba(15, 23, 42, 0.1), 0 1px 3px rgba(15, 23, 42, 0.06);
+	--cr-cal-transition: 0.18s ease;
+}
+
 .cr-calendar-expanded {
 	position: absolute;
 	top: 42px;
 	left: 0;
 	z-index: 100003;
-	width: 197px;
+	width: var(--cr-cal-width);
 	max-width: 100%;
-	background: #f9fafb;
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-	border-radius: 6px;
+	background: var(--cr-cal-surface);
+	box-shadow: var(--cr-cal-shadow);
+	border-radius: var(--cr-cal-radius);
+	border: 1px solid var(--cr-cal-border);
 	overflow: visible;
+	font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	-webkit-font-smoothing: antialiased;
 }
 
 .cr-calendar-expanded-inner {
-	max-width: 197px;
-	background: #f9fafb;
+	max-width: var(--cr-cal-width);
+	background: var(--cr-cal-surface);
 	margin-bottom: 0;
+	padding: 0 0 10px;
+	box-sizing: border-box;
 }
 
 .cr-calendar-month-nav {
@@ -338,54 +364,86 @@ body > .flatpickr-calendar.static {
 .cr-calendar-month-prev,
 .cr-calendar-month-next {
 	position: absolute;
-	top: 54px;
+	top: 52px;
 	z-index: 10;
-	width: 30px;
-	height: 20px;
+	width: 32px;
+	height: 32px;
 	padding: 0;
 	border: none;
-	font-size: 22px;
-	line-height: 20px;
+	font-size: 18px;
+	line-height: 32px;
 	text-align: center;
 	cursor: pointer;
-	background: transparent;
-	color: inherit;
+	background: var(--cr-cal-surface-muted);
+	color: var(--cr-cal-text-muted);
 	box-sizing: border-box;
+	border-radius: 50%;
+	transition: background var(--cr-cal-transition), color var(--cr-cal-transition), box-shadow var(--cr-cal-transition);
+}
+
+.cr-calendar-month-prev:hover,
+.cr-calendar-month-next:hover {
+	background: var(--cr-cal-accent-soft);
+	color: var(--cr-cal-accent);
+}
+
+.cr-calendar-month-prev:focus-visible,
+.cr-calendar-month-next:focus-visible {
+	outline: 2px solid var(--cr-cal-accent);
+	outline-offset: 2px;
 }
 
 .cr-calendar-month-prev {
-	left: 0;
+	left: 4px;
 }
 
 .cr-calendar-month-next {
-	right: 0;
+	right: 4px;
 }
 
 .cr-calendar-picker {
 	cursor: pointer;
 	position: relative;
-	width: 197px;
-	margin-top: 10px;
+	width: 100%;
+	margin-top: 0;
 	text-align: left;
+	display: flex;
+	align-items: center;
+	padding: 10px 10px 8px;
+	box-sizing: border-box;
+	border-bottom: 1px solid var(--cr-cal-border);
+	background: var(--cr-cal-surface-muted);
 }
 
 .cr-calendar-picker .cr-calendar-dismiss {
 	padding: 0;
-	width: 28px;
-	height: 24px;
-	margin-top: 2px;
+	width: 32px;
+	height: 32px;
+	margin-top: 0;
 	position: absolute;
-	right: 0;
-	top: 0;
+	right: 8px;
+	top: 50%;
+	transform: translateY(-50%);
 	z-index: 2;
-	color: inherit;
+	color: var(--cr-cal-text-muted);
 	background: transparent;
 	border: none;
+	border-radius: 50%;
 	cursor: pointer;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	pointer-events: auto;
+	transition: background var(--cr-cal-transition), color var(--cr-cal-transition);
+}
+
+.cr-calendar-picker .cr-calendar-dismiss:hover {
+	background: var(--cr-cal-accent-soft);
+}
+
+.cr-calendar-picker .cr-calendar-dismiss:focus-visible {
+	outline: 2px solid var(--cr-cal-accent);
+	outline-offset: 2px;
 }
 
 .cr-calendar-icon.dashicons {
@@ -396,8 +454,8 @@ body > .flatpickr-calendar.static {
 	height: 20px;
 	font-size: 20px;
 	line-height: 1;
-	color: #50575e;
-	transition: color 0.15s ease;
+	color: var(--cr-cal-text-muted);
+	transition: color var(--cr-cal-transition);
 }
 
 .cr-calendar-icon--sm.dashicons {
@@ -406,20 +464,260 @@ body > .flatpickr-calendar.static {
 	font-size: 18px;
 }
 
+.container-reservations .navigator a.cr-calendar-open:hover .cr-calendar-icon,
+.cr-calendar-dismiss:hover .cr-calendar-icon {
+	color: var(--cr-cal-accent);
+}
+
+input.cr-reservation-date-input {
+	cursor: pointer;
+	flex: 1 1 auto;
+	min-width: 0;
+	padding: 8px 36px 8px 4px !important;
+	width: auto !important;
+	max-width: 100%;
+	background: transparent !important;
+	font-size: 0.9375rem !important;
+	font-weight: 500 !important;
+	line-height: 1.4 !important;
+	color: var(--cr-cal-text) !important;
+	border: none !important;
+	border-radius: 6px !important;
+	outline: none !important;
+	transition: color var(--cr-cal-transition), background var(--cr-cal-transition);
+	letter-spacing: 0.01em;
+}
+
+input.cr-reservation-date-input:hover {
+	color: var(--cr-cal-accent) !important;
+}
+
+input.cr-reservation-date-input:focus-visible {
+	background: var(--cr-cal-accent-soft) !important;
+	box-shadow: inset 0 0 0 2px var(--cr-cal-accent);
+}
+
+/* Month title — overrides inline blue top border */
+.cr-calendar-expanded-inner form[name="kalendar"] > div:not(.cr-calendar-picker) {
+	width: 100% !important;
+	box-sizing: border-box !important;
+	border-top: none !important;
+	border-bottom: 1px solid var(--cr-cal-border) !important;
+	padding: 12px 40px !important;
+	position: relative !important;
+	text-align: center !important;
+	font-size: 0.9375rem !important;
+	font-weight: 600 !important;
+	color: var(--cr-cal-text) !important;
+	letter-spacing: 0.02em;
+	background: var(--cr-cal-surface);
+}
+
+/* Weekday headers */
+.cr-calendar-expanded-inner > div[style*="padding-top: 2px"][style*="width: 28px"] {
+	width: var(--cr-cal-cell) !important;
+	height: var(--cr-cal-cell) !important;
+	padding-top: 0 !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	font-size: 0.6875rem !important;
+	font-weight: 600 !important;
+	color: var(--cr-cal-text-muted) !important;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	box-sizing: border-box !important;
+}
+
+/* Day cells — larger hit area, circle highlight */
+.cr-calendar-expanded-inner .kalendar-dani,
+.cr-calendar-expanded-inner > div[style*="width: 28px"]:not(.kalendar-dani) {
+	width: var(--cr-cal-cell) !important;
+	height: var(--cr-cal-cell) !important;
+	box-sizing: border-box !important;
+}
+
+.cr-calendar-expanded-inner .kalendar-dani {
+	cursor: pointer !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	float: left;
+	padding-top: 0 !important;
+	text-align: center !important;
+	font-size: 0.875rem !important;
+	font-weight: 500 !important;
+	color: var(--cr-cal-text-muted) !important;
+	border-radius: 50%;
+	border: none;
+	background: transparent;
+	transition: background var(--cr-cal-transition), color var(--cr-cal-transition), box-shadow var(--cr-cal-transition), transform 0.12s ease;
+}
+
+.cr-calendar-expanded-inner .kalendar-dani:hover {
+	background: var(--cr-cal-accent-soft) !important;
+	color: var(--cr-cal-accent) !important;
+}
+
+.cr-calendar-expanded-inner .kalendar-dani:focus-visible {
+	outline: 2px solid var(--cr-cal-accent);
+	outline-offset: 1px;
+}
+
+/* Selected day (inline bold from PHP) */
+.cr-calendar-expanded-inner .kalendar-dani[style*="font-weight: bold"],
+.cr-calendar-expanded-inner .kalendar-dani[style*="font-weight:bold"] {
+	color: #fff !important;
+	font-weight: 600 !important;
+	background: var(--cr-cal-accent) !important;
+	box-shadow: 0 2px 8px rgba(91, 95, 199, 0.35);
+}
+
+.cr-calendar-expanded-inner .kalendar-dani[style*="font-weight: bold"]:hover,
+.cr-calendar-expanded-inner .kalendar-dani[style*="font-weight:bold"]:hover {
+	background: var(--cr-cal-accent-hover) !important;
+	color: #fff !important;
+}
+
+/* Flatpickr popup — match panel accent when date field opens overlay */
+body > .flatpickr-calendar,
+.flatpickr-calendar {
+	border-radius: var(--cr-cal-radius) !important;
+	border: 1px solid var(--cr-cal-border) !important;
+	box-shadow: var(--cr-cal-shadow) !important;
+	font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+	overflow: hidden;
+}
+
+body > .flatpickr-calendar:before,
+body > .flatpickr-calendar:after,
+.flatpickr-calendar:before,
+.flatpickr-calendar:after {
+	display: none !important;
+}
+
+.flatpickr-months {
+	padding: 8px 8px 0;
+}
+
+.flatpickr-months .flatpickr-month {
+	height: 40px;
+	border-radius: 8px;
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+	height: 36px;
+	width: 36px;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	top: 10px;
+	transition: background var(--cr-cal-transition), color var(--cr-cal-transition);
+}
+
+.flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-months .flatpickr-next-month:hover {
+	background: var(--cr-cal-accent-soft);
+	color: var(--cr-cal-accent);
+}
+
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+	fill: var(--cr-cal-accent) !important;
+}
+
+.flatpickr-current-month {
+	font-size: 0.9375rem;
+	font-weight: 600;
+	color: var(--cr-cal-text);
+	padding-top: 10px;
+}
+
+.flatpickr-current-month span.cur-month {
+	font-weight: 600;
+}
+
+.flatpickr-weekdays {
+	height: 32px;
+	background: var(--cr-cal-surface-muted);
+}
+
+span.flatpickr-weekday {
+	font-size: 0.6875rem;
+	font-weight: 600;
+	color: var(--cr-cal-text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.flatpickr-days {
+	width: 100% !important;
+	padding: 4px 6px 8px;
+	box-sizing: border-box;
+}
+
+.dayContainer {
+	width: 100% !important;
+	min-width: 0 !important;
+	max-width: none !important;
+	justify-content: center;
+	gap: 2px;
+}
+
+.flatpickr-day {
+	max-width: 36px;
+	height: 36px;
+	line-height: 36px;
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: var(--cr-cal-text-muted);
+	border-radius: 50% !important;
+	transition: background var(--cr-cal-transition), color var(--cr-cal-transition), box-shadow var(--cr-cal-transition);
+}
+
+.flatpickr-day:hover,
+.flatpickr-day:focus {
+	background: var(--cr-cal-accent-soft) !important;
+	border-color: transparent !important;
+	color: var(--cr-cal-accent) !important;
+}
+
+.flatpickr-day.today {
+	border-color: var(--cr-cal-accent) !important;
+	color: var(--cr-cal-accent);
+	font-weight: 600;
+}
+
+.flatpickr-day.today:hover,
+.flatpickr-day.today:focus {
+	background: var(--cr-cal-accent-soft) !important;
+	color: var(--cr-cal-accent) !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover,
+.flatpickr-day.selected:focus,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+	background: var(--cr-cal-accent) !important;
+	border-color: var(--cr-cal-accent) !important;
+	color: #fff !important;
+	box-shadow: 0 2px 8px rgba(91, 95, 199, 0.35);
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+	color: #94a3b8 !important;
+}
+
 .container-reservations .navigator a.cr-calendar-open {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	padding: 5px 10px;
-}
-
-.container-reservations .navigator a.cr-calendar-open:hover .cr-calendar-icon,
-.cr-calendar-dismiss:hover .cr-calendar-icon {
-	color: #2271b1;
-}
-
-input.cr-reservation-date-input {
-	cursor: pointer;
 }
 
 /* Piramid / legacy UI */
