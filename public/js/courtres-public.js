@@ -39,6 +39,54 @@
 		return 0;
 	}
 
+	function courtresApplyReservationNonce( $form, nonce ) {
+		var value = nonce || ( window.courtres_params && courtres_params.reservation_nonce ) || '';
+		if ( ! value || ! $form || ! $form.length ) {
+			return;
+		}
+		var $nonce = $form.find( 'input[name="courtres_add_reservation_nonce"]' );
+		if ( ! $nonce.length ) {
+			$nonce = $( '<input type="hidden" name="courtres_add_reservation_nonce" />' ).appendTo( $form );
+		}
+		$nonce.val( value );
+	}
+
+	function courtresWithFreshReservationNonce( $form, callback ) {
+		if ( ! $( 'body' ).hasClass( 'logged-in' ) || typeof courtres_params === 'undefined' || ! courtres_params.ajax_url ) {
+			callback();
+			return;
+		}
+		$.ajax(
+			{
+				type: 'POST',
+				url: courtres_params.ajax_url,
+				data: { action: 'courtres_reservation_nonce' },
+				xhrFields: { withCredentials: true },
+				success: function ( res ) {
+					var fresh = res && res.data && res.data.reservation_nonce;
+					if ( fresh ) {
+						courtres_params.reservation_nonce = fresh;
+						courtresApplyReservationNonce( $form, fresh );
+					} else {
+						courtresApplyReservationNonce( $form );
+					}
+					callback();
+				},
+				error: function () {
+					courtresApplyReservationNonce( $form );
+					callback();
+				}
+			}
+		);
+	}
+
+	function courtresResetReservationForm( $form ) {
+		if ( $form && $form.length && $form[0] ) {
+			$form[0].reset();
+		}
+		courtresApplyReservationNonce( $form );
+	}
+
 	window.courtresCloseFlatpickrOverlays = function ( id ) {
 		var root = document.getElementById( 'drugi_kal_' + id );
 		if ( root ) {
@@ -539,19 +587,25 @@
 
 				$cr_table.find( "table.reservations a.delete" ).click(
 					function () {
-						var $nonce = $cr_frm_reserve.find( 'input[name="courtres_add_reservation_nonce"]' ).val();
-						$.ajax(
-							{
-								type: "POST",
-								url: $url_reserve,
-								data: "action=add_reservation&id=" + $( this ).attr( 'data-id' ) + "&delete=true&courtres_add_reservation_nonce=" + ( $nonce || '' ),
-								success: function (msg) {
-									window.location.href = window.location.href.replace( window.location.hash, "" );
-								},
-								error: function (err) {
-									console.error( err.responseText );
-								}
-							}
+						courtresWithFreshReservationNonce(
+							$cr_frm_reserve,
+							function () {
+								var $nonce = $cr_frm_reserve.find( 'input[name="courtres_add_reservation_nonce"]' ).val();
+								$.ajax(
+									{
+										type: "POST",
+										url: $url_reserve,
+										data: "action=add_reservation&id=" + $( this ).attr( 'data-id' ) + "&delete=true&courtres_add_reservation_nonce=" + encodeURIComponent( $nonce || '' ),
+										xhrFields: { withCredentials: true },
+										success: function (msg) {
+											window.location.href = window.location.href.replace( window.location.hash, "" );
+										},
+										error: function (err) {
+											console.error( err.responseText );
+										}
+									}
+								);
+							}.bind( this )
 						);
 					}
 				);
@@ -584,7 +638,7 @@
 						// Reservation Type Select
 						// (RA) Adding partner-select after reservation type selected
 						$( ".cr-dialog-reserve" ).find( ".type-depending-row" ).remove();
-						$( ".cr-dialog-reserve" ).find( "form" )[0].reset();
+						courtresResetReservationForm( $cr_frm_reserve );
 
 						d.find( ".reservation-type-select" ).on(
 							'change',
@@ -630,6 +684,9 @@
 						);
 
 						d.dialog( 'open' );
+						if ( $( 'body' ).hasClass( 'logged-in' ) ) {
+							courtresWithFreshReservationNonce( $cr_frm_reserve, function () {} );
+						}
 						updatePartnersList( $url_reserve );
 						var opcije = d.find(".reservation-type-select option").length;
 						var courtres_empty = document.getElementById("courtres_type_select");
@@ -669,53 +726,58 @@
 
 							var validation = validate( $cr_frm_reserve );
 							if (validation.is_valid) {
-								$.ajax(
-									{
-										type: "POST",
-										url: $url_reserve,
-										data: $cr_frm_reserve.serialize(), // $(this).find('#cr-form-reserve').serialize(),
-										xhrFields: { withCredentials: true },
-										success: function (msg) {
-											const parsedMsg = JSON.parse(msg);
-											$( preloader ).fadeOut();
-											$btnSave.prop( 'disabled', false ).removeClass( 'is-loading' ).text( originalSaveText );
-											// console.log(msg);
-											let court_hourplus_form = $cr_frm_reserve[0];
-											var cr_frm_hourplus = $(court_hourplus_form).find('#hourplus').val();
-											var cr_frm_courtid = $(court_hourplus_form).find('[name="courtid"]').val();
-											if (cr_frm_hourplus % 30 === 0) { // The number is divisible by 30
-  												var cr_frm_quantity = cr_frm_hourplus / 30;
-												} else { var cr_frm_quantity = 0; }
+								courtresWithFreshReservationNonce(
+									$cr_frm_reserve,
+									function () {
+										$.ajax(
+											{
+												type: "POST",
+												url: $url_reserve,
+												data: $cr_frm_reserve.serialize(), // $(this).find('#cr-form-reserve').serialize(),
+												xhrFields: { withCredentials: true },
+												success: function (msg) {
+													const parsedMsg = JSON.parse(msg);
+													$( preloader ).fadeOut();
+													$btnSave.prop( 'disabled', false ).removeClass( 'is-loading' ).text( originalSaveText );
+													// console.log(msg);
+													let court_hourplus_form = $cr_frm_reserve[0];
+													var cr_frm_hourplus = $(court_hourplus_form).find('#hourplus').val();
+													var cr_frm_courtid = $(court_hourplus_form).find('[name="courtid"]').val();
+													if (cr_frm_hourplus % 30 === 0) { // The number is divisible by 30
+														var cr_frm_quantity = cr_frm_hourplus / 30;
+														} else { var cr_frm_quantity = 0; }
 
-    											const params = new URLSearchParams();
-    											params.append('gid', parsedMsg.gid); 
-    											params.append('product_id', $cr_frm_product_id); 
-    											params.append('court_id', cr_frm_courtid); 
-    											params.append('quantity', cr_frm_quantity); 
-    											params.append('add_cart', true);
+													const params = new URLSearchParams();
+													params.append('gid', parsedMsg.gid); 
+													params.append('product_id', $cr_frm_product_id); 
+													params.append('court_id', cr_frm_courtid); 
+													params.append('quantity', cr_frm_quantity); 
+													params.append('add_cart', true);
 
-    											// Redirect to the current page with query parameters
-    											window.location.href = window.location.origin + window.location.pathname + '?' + params.toString();
-										},
-										error: function (err) {
-											// console.error(err.responseText);
-											$( '<div/>' ).html( '<div class="error">' + err.responseText + '</div>' ).dialog(
-												{
-													dialogClass: "cr-dialog-alert",
-													open: function () {
-														// to block content under error dialog
-														$( "body" ).append( '<div class="cr-preloader-overlay" id="plo-error-dialog"></div>' );
-														$( "#plo-error-dialog" ).css( {"z-index": $( this ).closest( ".cr-dialog-alert" ).css( "z-index" ) - 1} );
-													},
-													close: function () {
-														$btnSave.prop( 'disabled', false ).removeClass( 'is-loading' ).text( originalSaveText );
-														$( this ).fadeOut( 600 );
-														$( preloader ).fadeOut();
-														$( ".cr-preloader-overlay#plo-error-dialog" ).remove();
-													},
+													// Redirect to the current page with query parameters
+													window.location.href = window.location.origin + window.location.pathname + '?' + params.toString();
+												},
+												error: function (err) {
+													// console.error(err.responseText);
+													$( '<div/>' ).html( '<div class="error">' + err.responseText + '</div>' ).dialog(
+														{
+															dialogClass: "cr-dialog-alert",
+															open: function () {
+																// to block content under error dialog
+																$( "body" ).append( '<div class="cr-preloader-overlay" id="plo-error-dialog"></div>' );
+																$( "#plo-error-dialog" ).css( {"z-index": $( this ).closest( ".cr-dialog-alert" ).css( "z-index" ) - 1} );
+															},
+															close: function () {
+																$btnSave.prop( 'disabled', false ).removeClass( 'is-loading' ).text( originalSaveText );
+																$( this ).fadeOut( 600 );
+																$( preloader ).fadeOut();
+																$( ".cr-preloader-overlay#plo-error-dialog" ).remove();
+															},
+														}
+													);
 												}
-											);
-										}
+											}
+										);
 									}
 								);
 
@@ -847,6 +909,9 @@
 														$cr_dlg_login.find( '#login-error' ).hide();
 														if ( j.reservation_nonce ) {
 															$cr_frm_reserve.find( 'input[name="courtres_add_reservation_nonce"]' ).val( j.reservation_nonce );
+															if ( window.courtres_params ) {
+																courtres_params.reservation_nonce = j.reservation_nonce;
+															}
 														}
 														if ( j.login_token ) {
 															var $loginToken = $cr_frm_reserve.find( 'input[name="courtres_login_token"]' );

@@ -79,7 +79,7 @@ class Courtres_Public extends Courtres_Base {
 
 		$this->plugin_name    = $plugin_name;
 		$this->version        = $version;
-		$this->assets_version = $version . '.24';
+		$this->assets_version = $version . '.25';
 	}
 
 	/**
@@ -1388,6 +1388,8 @@ class Courtres_Public extends Courtres_Base {
 			'attach_txt_ended'   => __( 'Ended', 'court-reservation' ),
 		);
 
+		$reservation_nonce = is_user_logged_in() ? wp_create_nonce( 'courtres_add_reservation' ) : '';
+
 		wp_localize_script(
 			$this->plugin_name,
 			$this->plugin_name . '_params',
@@ -1401,6 +1403,7 @@ class Courtres_Public extends Courtres_Base {
 					'cr_option_ui_dateformat' => $this->getDateFormat(),
 					'ajax_url'                => admin_url( 'admin-ajax.php' ),
 					'today_ymd'               => gmdate( 'Y-m-d' ),
+					'reservation_nonce'       => $reservation_nonce,
 				),
 				$attach_local
 			)
@@ -1461,6 +1464,8 @@ class Courtres_Public extends Courtres_Base {
 			'attach_txt_ended'   => __( 'Ended', 'court-reservation' ),
 		);
 
+		$reservation_nonce = is_user_logged_in() ? wp_create_nonce( 'courtres_add_reservation' ) : '';
+
 		wp_localize_script(
 			$this->plugin_name,
 			$this->plugin_name . '_params',
@@ -1474,6 +1479,7 @@ class Courtres_Public extends Courtres_Base {
 					'cr_option_ui_dateformat' => $this->getDateFormat(),
 					'ajax_url'                => admin_url( 'admin-ajax.php' ),
 					'today_ymd'               => gmdate( 'Y-m-d' ),
+					'reservation_nonce'       => $reservation_nonce,
 				),
 				$attach_local
 			)

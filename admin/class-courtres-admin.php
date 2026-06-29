@@ -671,6 +671,24 @@ class Courtres_Admin extends Courtres_Base {
 		wp_die();
 	}
 
+	/**
+	 * Return a fresh reservation nonce for the current logged-in user.
+	 */
+	public function ajax_reservation_nonce() {
+		if ( ! is_user_logged_in() || ! current_user_can( 'place_reservation' ) ) {
+			wp_send_json_error(
+				array( 'message' => __( 'No permission.', 'court-reservation' ) ),
+				403
+			);
+		}
+
+		wp_send_json_success(
+			array(
+				'reservation_nonce' => wp_create_nonce( 'courtres_add_reservation' ),
+			)
+		);
+	}
+
 	public function add_admin_page() {
 		add_menu_page(
 			'Manage Reservations',

@@ -224,6 +224,7 @@ class Courtres {
 		// Enable the user with no privileges to run ajax_login() in AJAX
 		$this->loader->add_action( 'wp_ajax_nopriv_ajax_login', $plugin_admin, 'ajax_login' );
 		// $this->loader->add_action( 'wp_ajax_ajax_login', $plugin_admin, 'ajax_login' );
+		$this->loader->add_action( 'wp_ajax_courtres_reservation_nonce', $plugin_admin, 'ajax_reservation_nonce' );
 
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_admin_page' );
 
