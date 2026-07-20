@@ -19,6 +19,9 @@ Allow members to reserve courts online 24/7, manage recurring events and tournam
 
 The plugin is mobile-friendly, GDPR-ready, and designed for easy setup without technical knowledge.
 
+== NEW ==
+https://app.courtreservation.io/
+
 == Why Court Reservation? ==
 
 * Easy setup in just a few minutes
@@ -29,6 +32,10 @@ The plugin is mobile-friendly, GDPR-ready, and designed for easy setup without t
 * WooCommerce payment integration
 * Ladder competitions & pyramid tournaments
 * Regular updates and active support
+
+== NEW APP ==
+Looking for a complete hosted solution? Court Reservation is now available as a standalone web app. 
+Get started at https://app.courtreservation.io/
 
 == FREE VERSION FEATURES ==
 
