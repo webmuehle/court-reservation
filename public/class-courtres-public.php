@@ -308,16 +308,19 @@ class Courtres_Public extends Courtres_Base {
 	}
 
 
-	private function isBlockedByDate( $date, $hour, $is_half_hour = null ) {
+	private function isBlockedByDate( $date, $hour, $is_half_hour = null, $court_id = 0 ) {
 		if ( null === $is_half_hour ) {
 			$is_half_hour = $this->ishalfhour();
 		}
-		$cache_key = $date . '|' . (string) $hour . '|' . ( $is_half_hour ? '1' : '0' );
+		$cache_key = $date . '|' . (string) $hour . '|' . (int) $court_id . '|' . ( $is_half_hour ? '1' : '0' );
 		if ( array_key_exists( $cache_key, $this->blocked_by_date_cache ) ) {
 			return $this->blocked_by_date_cache[ $cache_key ];
 		}
 
 		foreach ( $this->blocks as $block ) {
+			if ( $court_id && isset( $block->courtid ) && (int) $block->courtid !== (int) $court_id ) {
+				continue;
+			}
 			$event_start_m    = property_exists( $block, 'start_ts' ) && $block->start_ts ? date_i18n( 'i', $block->start_ts ) : 0;
 			$event_start_time = (int) $block->start + (int) $event_start_m / 60;
 
@@ -782,7 +785,7 @@ class Courtres_Public extends Courtres_Base {
 		// Events >
 
 
-		$block = $this->isBlockedByDate( $date, $hourD, $is_half_hour );
+		$block = $this->isBlockedByDate( $date, $hourD, $is_half_hour, isset( $court->id ) ? (int) $court->id : 0 );
 		if ( $block != null ) {
 
 			$event_start_m    = property_exists( $block, 'start_ts' ) && $block->start_ts ? date_i18n( 'i', $block->start_ts ) : 0;
@@ -1893,22 +1896,60 @@ class Courtres_Public extends Courtres_Base {
 	 * @return array  Example: array("d.m." => "German", "m.d." => "U.S.");
 	 */
 	public function getDateformats( $str = '' ) {
-		$delimiter = '=';
 		global $wpdb;
-		$table_settings = $this->getTable( 'settings' );
-		$result         = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_dateformats'" );
+		if ( '' === (string) $str ) {
+			$table_settings = $this->getTable( 'settings' );
+			$result         = $wpdb->get_row( "SELECT * FROM $table_settings WHERE option_name = 'option_dateformats'" );
+			$str            = $result ? (string) $result->option_value : '';
+		}
 
-		$str   = preg_replace( array( '/ /' ), array( '' ), $result->option_value );
-		$items = explode( "\r\n", $str );
-
+		$normalized  = trim( str_replace( array( "\r\n", "\r" ), "\n", (string) $str ) );
 		$dateformats = array();
-		foreach ( $items as $item ) {
-			$arr           = explode( $delimiter, $item );
-			$dateformats[] = array(
-				'format' => $arr[0],
-				'name'   => $arr[1],
+
+		if ( $normalized !== '' && preg_match_all( '/([^\s=]+)\s*=\s*([^=]+?)(?=(?:\s+[^\s=]+\s*=)|$)/', $normalized, $matches, PREG_SET_ORDER ) ) {
+			foreach ( $matches as $match ) {
+				$format = trim( $match[1] );
+				$name   = trim( $match[2] );
+				if ( $format !== '' && $name !== '' ) {
+					$dateformats[] = array(
+						'format' => $format,
+						'name'   => $name,
+					);
+				}
+			}
+		}
+
+		if ( empty( $dateformats ) && $normalized !== '' ) {
+			$items = explode( "\n", $normalized );
+			foreach ( $items as $item ) {
+				$parts = explode( '=', $item, 2 );
+				if ( count( $parts ) !== 2 ) {
+					continue;
+				}
+				$format = trim( $parts[0] );
+				$name   = trim( $parts[1] );
+				if ( $format !== '' && $name !== '' ) {
+					$dateformats[] = array(
+						'format' => $format,
+						'name'   => $name,
+					);
+				}
+			}
+		}
+
+		if ( empty( $dateformats ) ) {
+			return array(
+				array(
+					'format' => 'd.m.',
+					'name'   => 'German',
+				),
+				array(
+					'format' => 'm.d.',
+					'name'   => 'USA',
+				),
 			);
 		}
+
 		return $dateformats;
 	}
 

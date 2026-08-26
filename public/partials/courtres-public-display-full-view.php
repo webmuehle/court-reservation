@@ -115,9 +115,9 @@ if (!isset($court_ispis) || !is_array($court_ispis)) { $court_ispis=array(); }
 	$minPlayers                = $this->getMinPlayers();
 	$dateformats               = $this->getDateformats();
 	$dateformat                = $this->getDateFormat();
-	$found_index               = array_search( "$dateformat", array_column( $dateformats, 'format' ) );
+	$found_index               = array_search( "$dateformat", array_column( $dateformats, 'format' ), true );
 	$isTeamMateMandatory       = $this->isTeamMateMandatory();
-	$dateFormatName            = $dateformats[ $found_index ]['name'];
+	$dateFormatName            = ( false !== $found_index && isset( $dateformats[ $found_index ]['name'] ) ) ? $dateformats[ $found_index ]['name'] : 'German';
 	$timeFormat                = ( $dateFormatName == 'USA' ) ? 'h:i a' : 'H:i';
 	$matchDurations            = $this->getMatchDurations();
 

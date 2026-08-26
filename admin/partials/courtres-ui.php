@@ -357,7 +357,7 @@ if ( isset( $_POST['submit'] ) ) {
 			$wpdb->update(
 				$table_name,
 				array(
-					'option_value' => sanitize_text_field( $_POST['option_dateformats'] ),
+					'option_value' => sanitize_textarea_field( wp_unslash( $_POST['option_dateformats'] ) ),
 				),
 				array( 'option_id' => (int) $_POST['option_dateformats_id'] ),
 				array( '%s' )
@@ -369,7 +369,7 @@ if ( isset( $_POST['submit'] ) ) {
 			$table_name,
 			array(
 				'option_name'  => 'option_dateformats',
-				'option_value' => sanitize_text_field( $_POST['option_dateformats'] ),
+				'option_value' => sanitize_textarea_field( wp_unslash( $_POST['option_dateformats'] ) ),
 			),
 			array( '%s', '%s' )
 		);
@@ -709,7 +709,7 @@ require 'courtres-notice-message.php';
 							<br>Example:<pre>d.m. = German<br>m.d. = USA</pre>
 						</td>
 						<td>
-							<textarea name="option_dateformats" rows="3" cols="20"><?php echo esc_attr( $option_dateformats->option_value ); ?></textarea>
+							<textarea name="option_dateformats" rows="3" cols="20"><?php echo esc_textarea( $option_dateformats->option_value ); ?></textarea>
 							<div class="tooltip">
 								<div class="symbol">
 									<span>?</span>

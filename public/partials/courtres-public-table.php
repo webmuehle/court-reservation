@@ -51,8 +51,8 @@ if ( $court == null ) {
   $availableReservationTypes = $this->getAvailableReservationTypes();
   $dateformats               = $this->getDateformats();
   $dateformat                = $this->getDateFormat();
-  $found_index               = array_search( "$dateformat", array_column( $dateformats, 'format' ) );
-  $dateFormatName            = $dateformats[ $found_index ]['name'];
+  $found_index               = array_search( "$dateformat", array_column( $dateformats, 'format' ), true );
+  $dateFormatName            = ( false !== $found_index && isset( $dateformats[ $found_index ]['name'] ) ) ? $dateformats[ $found_index ]['name'] : 'German';
   $timeFormat                = ( $dateFormatName == 'USA' ) ? 'h:i a' : 'H:i';
   $theTime                   = getCurrentDateTime();
   $nowTZ                     = new DateTime( $theTime['datetime'] );
