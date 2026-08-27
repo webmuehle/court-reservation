@@ -1189,18 +1189,53 @@ class Courtres_Admin extends Courtres_Base {
 	 * @return array  Example: array("d.m." => "German", "m.d." => "U.S.");
 	 */
 	public function getDateformats( $str = '' ) {
-		$delimiter = '=';
-		$str       = preg_replace( array( '/ /' ), array( '' ), $str );
-		$items     = explode( "\r\n", $str );
-
+		$normalized  = trim( str_replace( array( "\r\n", "\r" ), "\n", (string) $str ) );
 		$dateformats = array();
-		foreach ( $items as $item ) {
-			$arr           = explode( $delimiter, $item );
-			$dateformats[] = array(
-				'format' => $arr[0],
-				'name'   => $arr[1],
+
+		if ( $normalized !== '' && preg_match_all( '/([^\s=]+)\s*=\s*([^=]+?)(?=(?:\s+[^\s=]+\s*=)|$)/', $normalized, $matches, PREG_SET_ORDER ) ) {
+			foreach ( $matches as $match ) {
+				$format = trim( $match[1] );
+				$name   = trim( $match[2] );
+				if ( $format !== '' && $name !== '' ) {
+					$dateformats[] = array(
+						'format' => $format,
+						'name'   => $name,
+					);
+				}
+			}
+		}
+
+		if ( empty( $dateformats ) && $normalized !== '' ) {
+			$items = explode( "\n", $normalized );
+			foreach ( $items as $item ) {
+				$parts = explode( '=', $item, 2 );
+				if ( count( $parts ) !== 2 ) {
+					continue;
+				}
+				$format = trim( $parts[0] );
+				$name   = trim( $parts[1] );
+				if ( $format !== '' && $name !== '' ) {
+					$dateformats[] = array(
+						'format' => $format,
+						'name'   => $name,
+					);
+				}
+			}
+		}
+
+		if ( empty( $dateformats ) ) {
+			return array(
+				array(
+					'format' => 'd.m.',
+					'name'   => 'German',
+				),
+				array(
+					'format' => 'm.d.',
+					'name'   => 'USA',
+				),
 			);
 		}
+
 		return $dateformats;
 	}
 
