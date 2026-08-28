@@ -16,7 +16,7 @@
  * Plugin Name:       Court Reservation
  * Plugin URI:        https://www.courtreservation.io
  * Description:       Reservation system for tennis, squash and badminton
- * Version:           1.12.1
+ * Version:           1.12.2
  * Author:            Webmühle e.U.
  * Author URI:        https://www.webmuehle.at
  * License:           GPL-2.0+
@@ -81,7 +81,7 @@ if ( ! function_exists( 'cr_fs' ) ) {
  * Start at version 1.0.4 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'Court_Reservation', '1.12.1' );
+define( 'Court_Reservation', '1.12.2' );
 
 require_once plugin_dir_path( __FILE__ ) . 'functions.php';
 
