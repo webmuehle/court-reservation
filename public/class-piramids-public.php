@@ -57,7 +57,7 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 
 		$this->plugin_name    = $plugin_name;
 		$this->version        = $version;
-		$this->assets_version = $version . '.11';
+		$this->assets_version = $version . '.12';
 	}
 
 	/**

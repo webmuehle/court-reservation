@@ -253,6 +253,15 @@ function courtres_enqueue_flatpickr_assets() {
 	wp_enqueue_script( $plugin_name . '-flatpickr' );
 	wp_enqueue_script( $plugin_name . '-flatpickr-de' );
 	wp_enqueue_script( $plugin_name . '-flatpickr-init' );
+	$locale = function_exists( 'determine_locale' ) ? determine_locale() : get_locale();
+	wp_localize_script(
+		$plugin_name . '-flatpickr-init',
+		'courtres_flatpickr',
+		array(
+			'locale'         => $locale,
+			'firstDayOfWeek' => (int) get_option( 'start_of_week', 1 ),
+		)
+	);
 }
 
 /**

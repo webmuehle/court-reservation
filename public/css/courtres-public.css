@@ -36,12 +36,18 @@ table.table.reservations {
 	margin: 0;
 }
 
-/* Match both classes so we beat theme/Bootstrap `.table > tbody > tr > td { text-align: left }`. */
+/* Match both classes so we beat theme/Bootstrap `.table > tbody > tr > td { text-align: left }`.
+   Row height follows the reserve button / booking block — not a square cell. */
 table.table.reservations td {
 	text-align: center;
-	padding: 0.5em;
-	height: 6em;
+	padding: 2px 8px;
+	height: auto;
 	vertical-align: middle !important;
+}
+table.table.reservations tbody th {
+	height: auto;
+	padding: 2px 8px;
+	vertical-align: middle;
 }
 
 table.table.reservations th {

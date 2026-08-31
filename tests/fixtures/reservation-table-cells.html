@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Reservation table cell height fixture</title>
+	<link rel="stylesheet" href="../../public/css/courtres-public.css">
+	<style>
+		body { font-family: Arial, Helvetica, sans-serif; margin: 24px; color: #222; }
+		h1 { font-size: 18px; }
+		.note { color: #555; margin-bottom: 16px; }
+		table.table.reservations { min-width: 480px; border-collapse: collapse; }
+		table.table.reservations th, table.table.reservations td { border: 1px solid #ddd; }
+		table.table.reservations td.blocked { background: #c0392b; color: #fff; }
+		table.table.reservations td.blocked-dark { background: #6b1c23; color: #fff; }
+		#measure { margin-top: 16px; font-family: ui-monospace, monospace; }
+	</style>
+</head>
+<body>
+	<h1>Compact reservation rows</h1>
+	<p class="note">Cell height should match the reserve button / booking block, not a square.</p>
+	<div class="container-reservations" id="cr-table-1" data-navigator-step="3">
+		<table class="table reservations" id="cr-reservations-1" data-from-day="0">
+			<thead>
+				<tr>
+					<th>Time</th>
+					<th>Monday 31.08.</th>
+					<th>Tuesday 01.09.</th>
+					<th>Wednesday 02.09.</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<th>19:00 – 19:30</th>
+					<td><a class="button" href="#">reserve</a></td>
+					<td><a class="button" href="#">reserve</a></td>
+					<td><a class="button" href="#">reserve</a></td>
+				</tr>
+				<tr>
+					<th>19:30 – 20:00</th>
+					<td><a class="button" href="#">reserve</a></td>
+					<td class="blocked" rowspan="2">MD</td>
+					<td><a class="button" href="#">reserve</a></td>
+				</tr>
+				<tr>
+					<th>20:00 – 20:30</th>
+					<td class="blocked-dark blocked" rowspan="2">&nbsp;</td>
+					<td><a class="button" href="#">reserve</a></td>
+				</tr>
+				<tr>
+					<th>20:30 – 21:00</th>
+					<td><a class="button" href="#">reserve</a></td>
+					<td><a class="button" href="#">reserve</a></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<p id="measure"></p>
+	<script>
+		var cell = document.querySelector( '#cr-reservations-1 td' );
+		var btn = document.querySelector( '#cr-reservations-1 a.button' );
+		var cellH = Math.round( cell.getBoundingClientRect().height );
+		var btnH = Math.round( btn.getBoundingClientRect().height );
+		var extra = cellH - btnH;
+		document.getElementById( 'measure' ).textContent =
+			'cell=' + cellH + 'px button=' + btnH + 'px extra=' + extra + 'px';
+		document.body.setAttribute( 'data-cell-height', String( cellH ) );
+		document.body.setAttribute( 'data-button-height', String( btnH ) );
+		document.body.setAttribute( 'data-extra', String( extra ) );
+	</script>
+</body>
+</html>

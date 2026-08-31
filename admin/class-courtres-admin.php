@@ -57,7 +57,7 @@ class Courtres_Admin extends Courtres_Base {
 
 		$this->plugin_name    = $plugin_name;
 		$this->version        = $version;
-		$this->assets_version = $version . '.02';
+		$this->assets_version = $version . '.03';
 	}
 
 	public function get_version() {
