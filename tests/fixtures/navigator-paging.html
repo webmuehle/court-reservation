@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Website next-button paging fixture</title>
+	<style>
+		body { font-family: Arial, Helvetica, sans-serif; margin: 24px; }
+		.navigator { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
+		.button { padding: 5px 12px; border: 1px solid #dadce0; border-radius: 4px; background: #fff; cursor: pointer; }
+		#month { margin-left: auto; }
+		table { border-collapse: collapse; }
+		th, td { border: 1px solid #ddd; padding: 6px 12px; }
+		#status { margin-top: 12px; font-family: ui-monospace, monospace; }
+	</style>
+</head>
+<body>
+	<div class="navigator">
+		<button class="button" id="prev" type="button">&lt;</button>
+		<button class="button" id="today" type="button">Today</button>
+		<button class="button" id="next" type="button">&gt;</button>
+		<span id="month">August 2026</span>
+	</div>
+	<table id="grid"></table>
+	<p id="status"></p>
+	<script>
+		var DAYS = 3;
+		var step = 0;
+		var today = new Date( Date.UTC( 2026, 7, 31 ) );
+		function ymd( offset ) {
+			var d = new Date( today );
+			d.setUTCDate( d.getUTCDate() + offset );
+			return d.toISOString().slice( 0, 10 );
+		}
+		function weekday( offset ) {
+			return new Intl.DateTimeFormat( 'en-US', { weekday: 'long', timeZone: 'UTC' } ).format( new Date( Date.UTC( 2026, 7, 31 + offset ) ) );
+		}
+		function render() {
+			var html = '<tr><th>Time</th>';
+			for ( var i = 0; i < DAYS; i++ ) {
+				var day = step + i;
+				html += '<th>' + weekday( day ) + '<br>' + ymd( day ) + '</th>';
+			}
+			html += '</tr><tr><td>08:00 – 08:30</td><td colspan="' + DAYS + '">page starting ' + ymd( step ) + '</td></tr>';
+			document.getElementById( 'grid' ).innerHTML = html;
+			document.getElementById( 'month' ).textContent = new Intl.DateTimeFormat( 'en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' } ).format( new Date( Date.UTC( 2026, 7, 31 + step ) ) );
+			document.getElementById( 'status' ).textContent = 'step=' + step + ' lastDate=' + ymd( step + DAYS - 1 );
+			document.body.setAttribute( 'data-step', String( step ) );
+			document.body.setAttribute( 'data-last-date', ymd( step + DAYS - 1 ) );
+		}
+		document.getElementById( 'next' ).addEventListener( 'click', function () {
+			step += DAYS;
+			render();
+		} );
+		document.getElementById( 'prev' ).addEventListener( 'click', function () {
+			step = Math.max( 0, step - DAYS );
+			render();
+		} );
+		document.getElementById( 'today' ).addEventListener( 'click', function () {
+			step = 0;
+			render();
+		} );
+		render();
+	</script>
+</body>
+</html>
