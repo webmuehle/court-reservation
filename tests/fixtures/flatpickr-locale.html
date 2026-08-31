@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Flatpickr locale fixture</title>
+	<link rel="stylesheet" href="../../admin/assets/flatpickr/flatpickr.min.css">
+	<style>
+		body { font-family: Arial, Helvetica, sans-serif; margin: 24px; }
+		.row { display: flex; gap: 32px; flex-wrap: wrap; }
+		h1 { font-size: 18px; }
+	</style>
+</head>
+<body>
+	<h1>Datepicker locale follows the site language</h1>
+	<div class="row">
+		<div>
+			<p>English site (<code>en_US</code>)</p>
+			<input id="en-date" value="2026-08-31">
+			<div id="en-weekdays"></div>
+		</div>
+		<div>
+			<p>German site (<code>de_AT</code>)</p>
+			<input id="de-date" value="2026-08-31">
+			<div id="de-weekdays"></div>
+		</div>
+	</div>
+	<script src="../../admin/assets/flatpickr/flatpickr.min.js"></script>
+	<script src="../../admin/assets/flatpickr/l10n-de.js"></script>
+	<script>
+		function resolveLocaleCode( loc ) {
+			return String( loc ).toLowerCase().replace( '_', '-' ).split( '-' )[0];
+		}
+		function getLocale( loc, firstDay ) {
+			var lang = resolveLocaleCode( loc );
+			var l10ns = flatpickr.l10ns || {};
+			var base = ( lang && l10ns[lang] ) ? Object.assign( {}, l10ns[lang] ) : Object.assign( {}, l10ns.default || {} );
+			if ( firstDay !== undefined ) {
+				base.firstDayOfWeek = firstDay;
+			}
+			return base;
+		}
+		function weekdaysOf( input ) {
+			return Array.prototype.map.call(
+				input._flatpickr.calendarContainer.querySelectorAll( 'span.flatpickr-weekday' ),
+				function ( el ) { return el.textContent.trim(); }
+			).join( ' ' );
+		}
+		flatpickr( '#en-date', { locale: getLocale( 'en_US', 1 ), inline: true, dateFormat: 'Y-m-d', defaultDate: '2026-08-31' } );
+		flatpickr( '#de-date', { locale: getLocale( 'de_AT', 1 ), inline: true, dateFormat: 'Y-m-d', defaultDate: '2026-08-31' } );
+		document.getElementById( 'en-weekdays' ).textContent = weekdaysOf( document.getElementById( 'en-date' ) );
+		document.getElementById( 'de-weekdays' ).textContent = weekdaysOf( document.getElementById( 'de-date' ) );
+		document.body.setAttribute( 'data-en-weekdays', weekdaysOf( document.getElementById( 'en-date' ) ) );
+		document.body.setAttribute( 'data-de-weekdays', weekdaysOf( document.getElementById( 'de-date' ) ) );
+		var enMonth = document.querySelector( '#en-date + .flatpickr-calendar .cur-month, .flatpickr-calendar .cur-month' );
+	</script>
+</body>
+</html>

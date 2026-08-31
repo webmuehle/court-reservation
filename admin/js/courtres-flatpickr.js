@@ -1,11 +1,31 @@
 ( function ( $ ) {
 	'use strict';
 
-	function getLocale() {
-		if ( typeof flatpickr !== 'undefined' && flatpickr.l10ns && flatpickr.l10ns.de ) {
-			return flatpickr.l10ns.de;
+	function resolveLocaleCode() {
+		var loc = '';
+		if ( typeof courtres_flatpickr !== 'undefined' && courtres_flatpickr.locale ) {
+			loc = courtres_flatpickr.locale;
+		} else if ( typeof courtres_params !== 'undefined' && courtres_params.locale ) {
+			loc = courtres_params.locale;
+		} else if ( typeof document !== 'undefined' && document.documentElement && document.documentElement.lang ) {
+			loc = document.documentElement.lang;
 		}
-		return 'de';
+		return String( loc ).toLowerCase().replace( '_', '-' ).split( '-' )[0];
+	}
+
+	function getLocale() {
+		var lang = resolveLocaleCode();
+		var l10ns = ( typeof flatpickr !== 'undefined' && flatpickr.l10ns ) ? flatpickr.l10ns : {};
+		var base;
+		if ( lang && l10ns[lang] ) {
+			base = Object.assign( {}, l10ns[lang] );
+		} else {
+			base = Object.assign( {}, l10ns.default || {} );
+		}
+		if ( typeof courtres_flatpickr !== 'undefined' && courtres_flatpickr.firstDayOfWeek !== undefined && courtres_flatpickr.firstDayOfWeek !== '' ) {
+			base.firstDayOfWeek = parseInt( courtres_flatpickr.firstDayOfWeek, 10 );
+		}
+		return base;
 	}
 
 	function jqueryFormatToFlatpickr( format ) {

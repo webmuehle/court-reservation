@@ -79,7 +79,7 @@ class Courtres_Public extends Courtres_Base {
 
 		$this->plugin_name    = $plugin_name;
 		$this->version        = $version;
-		$this->assets_version = $version . '.25';
+		$this->assets_version = $version . '.26';
 	}
 
 	/**
@@ -1406,6 +1406,7 @@ class Courtres_Public extends Courtres_Base {
 					'cr_option_ui_dateformat' => $this->getDateFormat(),
 					'ajax_url'                => admin_url( 'admin-ajax.php' ),
 					'today_ymd'               => gmdate( 'Y-m-d' ),
+					'locale'                  => function_exists( 'determine_locale' ) ? determine_locale() : get_locale(),
 					'reservation_nonce'       => $reservation_nonce,
 				),
 				$attach_local
@@ -1482,6 +1483,7 @@ class Courtres_Public extends Courtres_Base {
 					'cr_option_ui_dateformat' => $this->getDateFormat(),
 					'ajax_url'                => admin_url( 'admin-ajax.php' ),
 					'today_ymd'               => gmdate( 'Y-m-d' ),
+					'locale'                  => function_exists( 'determine_locale' ) ? determine_locale() : get_locale(),
 					'reservation_nonce'       => $reservation_nonce,
 				),
 				$attach_local
@@ -1690,16 +1692,21 @@ class Courtres_Public extends Courtres_Base {
 		if ( ! isset( $opt ) || $opt->option_value === '' ) {
 			return '';
 		}
+		$height = absint( $opt->option_value );
+		if ( $height <= 0 ) {
+			return '';
+		}
 		return '<style>
-		table.reservations {
-			height: 100%;
+		table.table.reservations {
+			height: auto;
 		}
-		table.reservations thead, table.reservations tbody tr {
+		table.table.reservations thead, table.table.reservations tbody tr {
 			table-layout:fixed;
+			height: auto;
 		}
-		table.reservations th, table.reservations td {
-			/*min-height: ' . $opt->option_value . 'px;*/
-			height: ' . $opt->option_value . 'px;
+		table.table.reservations th, table.table.reservations td {
+			height: auto;
+			max-height: ' . $height . 'px;
 			padding-top: 0;
 			padding-bottom: 0;
 		}

@@ -32,11 +32,56 @@
 	}
 
 	function courtresReadNavigatorStep( courtId ) {
+		var table = document.getElementById( 'cr-reservations-' + courtId );
+		if ( table ) {
+			var fromDay = table.getAttribute( 'data-from-day' );
+			if ( fromDay !== null && fromDay !== '' ) {
+				var parsed = parseInt( fromDay, 10 );
+				if ( ! isNaN( parsed ) ) {
+					return parsed;
+				}
+			}
+		}
 		var input = document.getElementById( 'cr-datum-' + courtId );
 		if ( input && input.value ) {
 			return courtresParseNavigatorStepFromDate( input.value );
 		}
 		return 0;
+	}
+
+	function courtresYmdFromStep( step ) {
+		if ( typeof courtres_params === 'undefined' || ! courtres_params.today_ymd ) {
+			return '';
+		}
+		var todayMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec( courtres_params.today_ymd );
+		if ( ! todayMatch ) {
+			return '';
+		}
+		var d = new Date( Date.UTC( +todayMatch[1], +todayMatch[2] - 1, +todayMatch[3] ) );
+		d.setUTCDate( d.getUTCDate() + ( parseInt( step, 10 ) || 0 ) );
+		return (
+			d.getUTCFullYear() +
+			'-' +
+			String( d.getUTCMonth() + 1 ).padStart( 2, '0' ) +
+			'-' +
+			String( d.getUTCDate() ).padStart( 2, '0' )
+		);
+	}
+
+	function courtresSyncDateInput( courtId, step ) {
+		var parsed = parseInt( step, 10 );
+		if ( isNaN( parsed ) ) {
+			parsed = 0;
+		}
+		var ymd = courtresYmdFromStep( parsed );
+		var input = document.getElementById( 'cr-datum-' + courtId );
+		if ( input && ymd ) {
+			input.value = ymd;
+		}
+		var table = document.getElementById( 'cr-reservations-' + courtId );
+		if ( table ) {
+			table.setAttribute( 'data-from-day', String( parsed ) );
+		}
 	}
 
 	function courtresApplyReservationNonce( $form, nonce ) {
@@ -302,6 +347,7 @@
 						function () {
 							$( this ).replaceWith( cnt );
 							$( '#cr-table-' + id ).find( '#cr-today-my' ).html( $( '#cr-reservations-' + id ).data( 'navigator-my' ) );
+							courtresSyncDateInput( id, $step );
 							$( document ).trigger( 'courtres:table-replaced', [ id ] );
 							$( '#cr-reservations-' + id ).fadeIn( 1000 );
 							courtresSyncCalendarPanelAfterNav( id, $step, 'pick' );
@@ -452,6 +498,7 @@
 									function () {
 										$( this ).replaceWith( cnt );
 										$( '#cr-table-' + id ).find( '#cr-today-my' ).html( $( '#cr-reservations-' + id ).data( 'navigator-my' ) );
+										courtresSyncDateInput( id, $step );
 										dialogs( id );
 										$( '#cr-reservations-' + id ).fadeIn( 1000 );
 										$cr_days.find( 'img' ).remove();
@@ -475,9 +522,7 @@
 					}
 					var id = $table.attr( 'id' ).replace( /^cr-table-/, '' );
 					var navAction = $cr_days.data( 'navigator' );
-					var $step = ( navAction === 'prev-month' || navAction === 'next-month' )
-						? courtresReadNavigatorStep( id )
-						: 0;
+					var $step = courtresReadNavigatorStep( id );
 
 					window.courtresCloseFlatpickrOverlays( id );
 					$cr_days.append( '<img src="' + window.courtres_params.cr_url + '/images/spinner.gif" />' );
@@ -526,6 +571,7 @@
 									function () {
 										$( this ).replaceWith( cnt );
 										$( '#cr-table-' + id ).find( '#cr-today-my' ).html( $( '#cr-reservations-' + id ).data( 'navigator-my' ) );
+										courtresSyncDateInput( id, $step );
 										$( '#cr-reservations-' + id ).fadeIn( 1000 );
 										$cr_days.find( 'img' ).remove();
 										$cr_days.removeClass( 'button--active' );

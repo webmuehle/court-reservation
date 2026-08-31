@@ -301,7 +301,7 @@ echo wp_kses($this->option_ui_table_cell_mouseover_linktext(), $allowed_html); ?
 		</div>
 	<?php */ } ?>
 
-	<table class="table reservations" id="cr-reservations-<?php echo esc_attr( $courtID ); ?>" style="width: auto; margin: 0 auto; min-width: 0;">
+	<table class="table reservations" id="cr-reservations-<?php echo esc_attr( $courtID ); ?>" data-from-day="<?php echo esc_attr( (int) $fromDay ); ?>" data-navigator-my="<?php echo esc_html(date_i18n( 'F', strtotime( '+' . $fromDay . ' day', $nowTZTS ) )) . ' ' . esc_html(date_i18n( 'Y', strtotime( '+' . $fromDay . ' day', $nowTZTS ) )); ?>" style="width: auto; margin: 0 auto; min-width: 0;">
 		<thead>
 			<tr>
 
