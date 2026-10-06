@@ -47,13 +47,14 @@ $the_player  = $atts['the_player'];
 	<?php if ( isset( $piramid['players'] ) && $piramid['players'] ) : ?>
 	<div class="cr-players-list" type="1" start="1">
 		<?php
-		$counter = 0;
-		$row_len = 1;
+		$counter           = 0;
+		$row_len           = 1;
+		$challengeable_ids = ( $player_user && $the_player )
+			? Courtres_Entity_Piramids_Players::challengeable_player_ids( $piramid['players'], $player_user->ID )
+			: array();
 
 		foreach ( $piramid['players'] as $key => $player ) :
-			$enabled = $can_create_challenge &&
-							$player_user && $player['player_id'] != $player_user->ID &&
-							$the_player && $player['sort'] < $the_player['sort'] && $player['sort'] >= $the_player['sort'] - $row_len;
+			$enabled = $can_create_challenge && in_array( (int) $player['player_id'], $challengeable_ids, true );
 			?>
 			<button 
 				class="cr-player-item<?php echo ( $player_user && $player['player_id'] == $player_user->ID ? ' current' : '' ); ?>" 

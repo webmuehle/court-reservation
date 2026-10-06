@@ -289,6 +289,8 @@ class Courtres {
 
 		$this->loader->add_action( 'wp_ajax_delete_challenge', $plugin_piramid_public, 'delete_challenge' );
 
+		$this->loader->add_action( 'wp_ajax_withdraw_challenge', $plugin_piramid_public, 'withdraw_challenge' );
+
 		$this->loader->add_action( 'wp_ajax_enter_challenge_result', $plugin_piramid_public, 'enter_challenge_result' );
 
 		$this->loader->add_action( 'template_redirect', $plugin_piramid_public, 'accept_challenge_by_email_link', 1 );
@@ -296,6 +298,7 @@ class Courtres {
 		// Work with email notifications
 		$plugin_public_notices = new Courtres_Notices( $this->get_plugin_name(), $this->get_version() );
 		$this->loader->add_action( 'after_challenge_created', $plugin_public_notices, 'after_challenge_created', 10, 2 );
+		$this->loader->add_action( 'after_challenge_withdrawn', $plugin_public_notices, 'after_challenge_withdrawn', 10, 1 );
 
 	}
 

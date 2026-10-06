@@ -94,6 +94,50 @@ class Courtres_Entity_Piramids_Players extends Courtres_Entity_Base {
 
 
 	/**
+	 * Player ids the challenger may challenge.
+	 *
+	 * Walks the pyramid in display order, the same way the front-end buttons do:
+	 * row length starts at 1 and grows by one player each row. A player is offered
+	 * when their sort is above the challenger and within the current row length.
+	 *
+	 * @param array $players       Players in pyramid display order (sort ascending).
+	 * @param int   $challenger_id WordPress user id of the challenger.
+	 * @return int[]
+	 */
+	public static function challengeable_player_ids( array $players, $challenger_id ) {
+		$challenger_id = (int) $challenger_id;
+		$challenger    = null;
+		foreach ( $players as $player ) {
+			if ( (int) $player['player_id'] === $challenger_id ) {
+				$challenger = $player;
+				break;
+			}
+		}
+		if ( ! $challenger ) {
+			return array();
+		}
+
+		$ids      = array();
+		$counter  = 0;
+		$row_len  = 1;
+		$own_sort = (int) $challenger['sort'];
+		foreach ( $players as $player ) {
+			$sort      = (int) $player['sort'];
+			$player_id = (int) $player['player_id'];
+			if ( $player_id !== $challenger_id && $sort < $own_sort && $sort >= $own_sort - $row_len ) {
+				$ids[] = $player_id;
+			}
+			$counter++;
+			if ( $counter === $row_len ) {
+				$counter = 0;
+				$row_len++;
+			}
+		}
+		return $ids;
+	}
+
+
+	/**
 	 * Challenger wins.
 	 * So he takes the place of the challenged. The challenged moves down 1 field.
 	 *

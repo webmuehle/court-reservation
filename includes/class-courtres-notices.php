@@ -81,4 +81,35 @@ class Courtres_Notices {
 		return $res;
 	}
 
+
+	/**
+	 * Mail the challenged player when the challenger withdraws a challenge.
+	 *
+	 * @param array $challenge Challenge row with player data, captured before delete.
+	 * @return bool
+	 */
+	function after_challenge_withdrawn( $challenge ) {
+		if ( empty( $challenge['challenged']['wp_user'] ) || empty( $challenge['challenger']['wp_user'] ) ) {
+			return false;
+		}
+
+		$challenged = $challenge['challenged']['wp_user'];
+		$challenger = $challenge['challenger']['wp_user'];
+		$to         = is_object( $challenged ) ? $challenged->user_email : ( isset( $challenged['user_email'] ) ? $challenged['user_email'] : '' );
+		$from_name  = is_object( $challenger ) ? $challenger->display_name : ( isset( $challenger['display_name'] ) ? $challenger['display_name'] : '' );
+		$from_email = is_object( $challenger ) ? $challenger->user_email : ( isset( $challenger['user_email'] ) ? $challenger['user_email'] : '' );
+		if ( ! $to || ! $from_email ) {
+			return false;
+		}
+
+		$headers = array(
+			sprintf( 'From: %s<%s>', $from_name, $from_email ),
+			'content-type: text/html',
+		);
+		$subject = __( 'Challenge withdrawn', 'court-reservation' );
+		$message = esc_html( $from_name ) . ' ' . __( 'has withdrawn the challenge.', 'court-reservation' );
+
+		return wp_mail( $to, $subject, $message, $headers );
+	}
+
 }

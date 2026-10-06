@@ -14,6 +14,10 @@ const piramidJs = fs.readFileSync( path.join( root, 'public/js/piramid-public.js
 const publicJs = fs.readFileSync( path.join( root, 'public/js/courtres-public.js' ), 'utf8' );
 const header = fs.readFileSync( path.join( root, 'courtres.php' ), 'utf8' );
 const readme = fs.readFileSync( path.join( root, 'readme.txt' ), 'utf8' );
+const notices = fs.readFileSync( path.join( root, 'includes/class-courtres-notices.php' ), 'utf8' );
+const challengesView = fs.readFileSync( path.join( root, 'public/partials/courtres-public-challenges.php' ), 'utf8' );
+const pyramidView = fs.readFileSync( path.join( root, 'public/partials/courtres-public-piramid.php' ), 'utf8' );
+const players = fs.readFileSync( path.join( root, 'includes/entity/piramids-players.php' ), 'utf8' );
 
 const stateChangingNopriv = [
 	'edit_reservation_type',
@@ -24,6 +28,7 @@ const stateChangingNopriv = [
 	'enter_challenge_result',
 	'get_court',
 	'download_csv',
+	'withdraw_challenge',
 ];
 
 stateChangingNopriv.forEach( function ( action ) {
@@ -55,6 +60,21 @@ assert.match( piramid, /authorize_challenge_request\(\s*\$response,\s*'schedule_
 assert.match( piramid, /authorize_challenge_request\(\s*\$response,\s*'enter_results_nonce',\s*'enter_results'\s*\)/ );
 assert.match( piramid, /current_user_can\(\s*'place_reservation'\s*\)/ );
 assert.match( piramid, /accept_link_token/ );
+assert.match( piramid, /authorize_challenge_request\(\s*\$response,\s*'withdraw_nonce',\s*'withdraw_nonce'\s*\)/ );
+assert.match( piramid, /load_challenge_for_user\(\s*\$challenge_id,\s*\$response,\s*'challenger'\s*\)/ );
+assert.match( piramid, /'created' !== \$challenge\['status'\]/ );
+assert.match( piramid, /challengeable_player_ids/ );
+assert.match( piramid, /You cannot challenge this player\./ );
+assert.match( hooks, /wp_ajax_withdraw_challenge/ );
+assert.match( hooks, /after_challenge_withdrawn/ );
+assert.match( notices, /function after_challenge_withdrawn/ );
+assert.match( notices, /has withdrawn the challenge\./ );
+assert.match( challengesView, /data-withdraw_nonce/ );
+assert.match( challengesView, /esc_html__\(\s*'Withdraw',\s*'court-reservation'\s*\)/ );
+assert.match( pyramidView, /challengeable_player_ids/ );
+assert.match( players, /function challengeable_player_ids/ );
+assert.match( piramidJs, /withdraw_nonce/ );
+assert.match( piramidJs, /"action": "withdraw_challenge"/ );
 
 assert.match( publicPhp, /check_ajax_referer\(\s*'courtres_get_court',\s*'court_nonce'\s*\)/ );
 assert.match( publicPhp, /players_nonce/ );

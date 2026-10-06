@@ -170,6 +170,8 @@ Introduced optional participant joining for events, including recurring events, 
 
 = 1.12.3 =
 * Security hardening of AJAX handlers
+* Allow the challenger to withdraw a challenge that has not been accepted yet
+* Limit new challenges to the positions offered on the pyramid
 
 = 1.12.1 =
 * Fixed plugin translations not loading for non-English WordPress locales

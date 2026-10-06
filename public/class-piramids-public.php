@@ -213,6 +213,9 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 					'Court is required'           => __( 'Court is required', 'court-reservation' ),
 					'Winner is required'          => __( 'Winner is required', 'court-reservation' ),
 					'Delete Challenge?'           => __( 'Delete Challenge?', 'court-reservation' ),
+					'Withdraw challenge?'         => __( 'Withdraw challenge?', 'court-reservation' ),
+					'Are you sure you want to withdraw the challenge?' => __( 'Are you sure you want to withdraw the challenge?', 'court-reservation' ),
+					'Withdraw'                    => __( 'Withdraw', 'court-reservation' ),
 				),
 			)
 		);
@@ -286,7 +289,7 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 	 *
 	 * @param int    $challenge_id Challenge id.
 	 * @param array  $response     Response payload.
-	 * @param string $mode         challenged|participant.
+	 * @param string $mode         challenged, challenger, or participant.
 	 * @return array{0:Courtres_Entity_Challenges,1:array}
 	 */
 	private function load_challenge_for_user( $challenge_id, $response, $mode ) {
@@ -300,6 +303,8 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 		$allowed = false;
 		if ( 'challenged' === $mode ) {
 			$allowed = ( (int) $uid === (int) $challenge['challenged_id'] );
+		} elseif ( 'challenger' === $mode ) {
+			$allowed = ( (int) $uid === (int) $challenge['challenger_id'] );
 		} else {
 			$allowed = ( (int) $uid === (int) $challenge['challenger_id'] || (int) $uid === (int) $challenge['challenged_id'] );
 		}
@@ -354,6 +359,10 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 		}
 		if ( ! in_array( $challenger_id, $player_ids, true ) || ! in_array( $challenged_id, $player_ids, true ) ) {
 			$this->challenge_ajax_error( $response, __( 'No permission.', 'court-reservation' ) );
+		}
+		$challengeable_ids = Courtres_Entity_Piramids_Players::challengeable_player_ids( is_array( $pyramid_players ) ? $pyramid_players : array(), $challenger_id );
+		if ( ! in_array( $challenged_id, $challengeable_ids, true ) ) {
+			$this->challenge_ajax_error( $response, __( 'You cannot challenge this player.', 'court-reservation' ) );
 		}
 		$challenger_wpuser = get_user_by( 'ID', $challenger_id );
 		$challenged_wpuser = get_user_by( 'ID', $challenged_id );
@@ -649,6 +658,43 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 			if ( ! $deleted ) {
 				$this->challenge_ajax_error( $response, __( 'No one challenge event deleted', 'court-reservation' ) );
 			}
+		}
+
+		$response['success'] = true;
+		echo wp_json_encode( $response );
+		wp_die();
+	}
+
+
+	/**
+	 * Challenger withdraws a challenge that has not been accepted yet.
+	 */
+	function withdraw_challenge() {
+		$response = array(
+			'errors'  => array(),
+			'success' => false,
+		);
+
+		$this->authorize_challenge_request( $response, 'withdraw_nonce', 'withdraw_nonce' );
+
+		$challenge_id = isset( $_POST['challenge_id'] ) ? absint( $_POST['challenge_id'] ) : 0;
+		if ( ! $challenge_id ) {
+			$this->challenge_ajax_error( $response, __( 'Challenge id is not received', 'court-reservation' ) );
+		}
+
+		list( $challenges_class, $challenge ) = $this->load_challenge_for_user( $challenge_id, $response, 'challenger' );
+		if ( empty( $challenge['status'] ) || 'created' !== $challenge['status'] ) {
+			$this->challenge_ajax_error( $response, __( 'This challenge can no longer be withdrawn.', 'court-reservation' ) );
+		}
+
+		$full = Courtres_Entity_Challenges::get_challenge_by_id( $challenge_id );
+		$res  = $challenges_class->delete_by_id();
+		if ( ! $res ) {
+			$this->challenge_ajax_error( $response, __( 'Error deleting the challenge', 'court-reservation' ) );
+		}
+
+		if ( $full ) {
+			do_action( 'after_challenge_withdrawn', $full );
 		}
 
 		$response['success'] = true;
