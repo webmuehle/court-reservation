@@ -17,29 +17,24 @@
 				$mjeseci=array("01"=>"January", "02"=>"February", "03"=>"March", "04"=>"April", "05"=>"May", "06"=>"June", "07"=>"July", "08"=>"August", "09"=>"September", "10"=>"October", "11"=>"November", "12"=>"December");
 				$odabrani_dan=gmdate('Y-m-d');
 				$danas=gmdate('Y-m-d');
-				if (isset($_POST['datum']))
+				if ( isset( $_POST['datum'] ) )
 				{
-					$odabrani_dan = $_POST['datum'];
+					$odabrani_dan = sanitize_text_field( wp_unslash( $_POST['datum'] ) );
+					if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $odabrani_dan ) ) {
+						$odabrani_dan = gmdate( 'Y-m-d' );
+					}
 					$odabrani_dan_ = strtotime($odabrani_dan);
 					$danas_ = strtotime($danas);
 					$razlika =  round( ($odabrani_dan_-$danas_) / (60 * 60 * 24) );
-					$fromDay                   = intval( $razlika ); // $court->days;
-					$tillDay                   = $fromDay === 0 ? $court->days : $fromDay + $court->days;
 				}
 
-				if (isset($_GET['navigator_step']))
+				if ( isset( $_REQUEST['navigator_step'] ) )
 				{
-					$koliko=$_GET['navigator_step'];
+					$koliko = intval( $_REQUEST['navigator_step'] );
 					$odabrani_dan1=strtotime($danas);
 					if ($koliko<0) { $odabrani_dan2 = strtotime("$koliko day", $odabrani_dan1); }
 					else { $odabrani_dan2 = strtotime("+$koliko day", $odabrani_dan1); }
 					$odabrani_dan = gmdate('Y-m-d', $odabrani_dan2);
-					// $odabrani_dan = $_POST['datum'];
-					// $odabrani_dan_ = strtotime($odabrani_dan);
-					// $danas_ = strtotime($danas);
-					// $razlika =  round( ($odabrani_dan_-$danas_) / (60 * 60 * 24) );
-					$fromDay                   = intval( $_GET['navigator_step'] ); // $court->days;
-					$tillDay                   = $fromDay === 0 ? $court->days : $fromDay + $court->days;
 				}
 
 				// $danas=date('2023-06-05');

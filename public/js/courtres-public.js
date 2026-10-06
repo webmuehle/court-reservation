@@ -959,6 +959,13 @@
 																courtres_params.reservation_nonce = j.reservation_nonce;
 															}
 														}
+														if ( j.players_nonce && window.courtres_params ) {
+															courtres_params.players_nonce = j.players_nonce;
+															updatePartnersList( $url_reserve );
+														}
+														if ( window.courtresLastRowsArgs ) {
+															get_more_rows_html( window.courtresLastRowsArgs );
+														}
 														if ( j.login_token ) {
 															var $loginToken = $cr_frm_reserve.find( 'input[name="courtres_login_token"]' );
 															if ( ! $loginToken.length ) {
@@ -1074,8 +1081,12 @@
 	}
 
 	function updatePartnersList($ajax_url){
+		if ( ! window.courtres_params || ! courtres_params.players_nonce ) {
+			return;
+		}
 		var params = {
 			"action": "get_players_select_options",
+			"players_nonce": courtres_params.players_nonce
 		}
 		$.ajax(
 			{
@@ -1102,6 +1113,7 @@
 		var preloader    = $( '.cr-preloader-overlay#plo-add-reserv' );
 		$( preloader ).fadeIn();
 
+		window.courtresLastRowsArgs = args;
 		args.action = "get_more_rows_html";
 		jQuery.ajax(
 			{

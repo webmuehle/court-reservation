@@ -132,7 +132,23 @@ $locktime_ts     = $atts['piramid']['locktime_ts'];
 				}
 				?>
 
-				<li class="cr-challenge-item" data-id="<?php echo esc_attr( $challenge['id'] ); ?>" data-status="<?php echo esc_attr( $challenge['status'] ); ?>" data-challenge='<?php echo json_encode( $challenge ); ?>'<?php echo esc_html( $item_title ); ?>>
+				<?php
+				$challenge_public = $challenge;
+				foreach ( array( 'challenger', 'challenged', 'winner' ) as $challenge_role ) {
+					if ( empty( $challenge_public[ $challenge_role ]['wp_user'] ) ) {
+						continue;
+					}
+					$challenge_user = $challenge_public[ $challenge_role ]['wp_user'];
+					if ( is_object( $challenge_user ) ) {
+						$challenge_user = clone $challenge_user;
+						unset( $challenge_user->user_email, $challenge_user->user_pass );
+					} elseif ( is_array( $challenge_user ) ) {
+						unset( $challenge_user['user_email'], $challenge_user['user_pass'] );
+					}
+					$challenge_public[ $challenge_role ]['wp_user'] = $challenge_user;
+				}
+				?>
+				<li class="cr-challenge-item" data-id="<?php echo esc_attr( $challenge['id'] ); ?>" data-status="<?php echo esc_attr( $challenge['status'] ); ?>" data-challenge="<?php echo esc_attr( wp_json_encode( $challenge_public ) ); ?>"<?php echo esc_html( $item_title ); ?>>
 					<p class="cr-challenge-row main">
 						<span class="cr-challenge-cell player"><?php echo esc_html( $challenge['challenger']['wp_user']->display_name ); ?></span>
 						<span class="cr-challenge-cell vs">vs.</span>
@@ -143,6 +159,9 @@ $locktime_ts     = $atts['piramid']['locktime_ts'];
         								'class' => true,
         								'href'  => true,
         								'data-schedule_nonce' => true,
+        								'data-accept_nonce' => true,
+        								'data-delete_nonce' => true,
+        								'data-record_result_nonce' => true,
     									],
 								]; 
 								echo wp_kses( $descr_big,$allowed_html ); ?></span>
@@ -156,7 +175,10 @@ $locktime_ts     = $atts['piramid']['locktime_ts'];
     								'a' => [
         								'class' => true,
         								'href'  => true,
-        								'data-accept-nonce' => true,
+        								'data-schedule_nonce' => true,
+        								'data-accept_nonce' => true,
+        								'data-delete_nonce' => true,
+        								'data-record_result_nonce' => true,
     									],
 								]; 
 								echo wp_kses( $descr_small,$allowed_html ); ?></span>

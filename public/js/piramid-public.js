@@ -319,7 +319,8 @@
 
 			var params = {
 				"court_id": $( this ).val(),
-				"action": "get_court"
+				"action": "get_court",
+				"court_nonce": (cr_params && cr_params.court_nonce) ? cr_params.court_nonce : ""
 			}
 
 			jQuery.ajax(

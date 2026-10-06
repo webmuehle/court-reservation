@@ -103,7 +103,8 @@
 			var params = {
 				"action": "edit_reservation_type",
 				"action_type": "add",
-				"reservation_type" : input.val()
+				"reservation_type" : input.val(),
+				"nonce": (window.js_data && js_data.reservation_type_nonce) ? js_data.reservation_type_nonce : ""
 			}
 			$.ajax(
 				{
@@ -144,7 +145,8 @@
 			var params = {
 				"action": "edit_reservation_type",
 				"action_type": "delete",
-				"reservation_type" : input.val()
+				"reservation_type" : input.val(),
+				"nonce": (window.js_data && js_data.reservation_type_nonce) ? js_data.reservation_type_nonce : ""
 			}
 			$.ajax(
 				{

@@ -228,12 +228,10 @@ class Courtres {
 
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_admin_page' );
 
-		// add reservation type in settings tab
+		// add reservation type in settings tab (administrators only)
 		$this->loader->add_action( 'wp_ajax_edit_reservation_type', $plugin_admin, 'edit_reservation_type' );
-		$this->loader->add_action( 'wp_ajax_nopriv_edit_reservation_type', $plugin_admin, 'edit_reservation_type' );
 
-				$this->loader->add_action( 'admin_post_get_players_select_options', $plugin_admin, 'get_players_select_options' );
-		$this->loader->add_action( 'admin_post_nopriv_get_players_select_options', $plugin_admin, 'get_players_select_options' ); // for non-autorized users
+		$this->loader->add_action( 'admin_post_get_players_select_options', $plugin_admin, 'get_players_select_options' );
 
 		// export expired reservations to csv
 		$this->loader->add_action( 'wp_ajax_download_csv', $plugin_admin, 'download_csv' );
@@ -262,6 +260,7 @@ class Courtres {
 		$this->loader->add_action( 'wp_ajax_ajax_cr_navigator', $plugin_public, 'ajax_cr_navigator' );
 		$this->loader->add_action( 'wp_ajax_nopriv_ajax_cr_navigator', $plugin_public, 'ajax_cr_navigator' );
 		$this->loader->add_action( 'wp_ajax_ajax_cr_navigator2', $plugin_public, 'ajax_cr_navigator2' );
+		$this->loader->add_action( 'wp_ajax_nopriv_ajax_cr_navigator2', $plugin_public, 'ajax_cr_navigator2' );
 		$this->loader->add_action( 'wp_ajax_ajax_cr_navigator_full_view', $plugin_public, 'ajax_cr_navigator_full_view' );
 		$this->loader->add_action( 'wp_ajax_nopriv_ajax_cr_navigator_full_view', $plugin_public, 'ajax_cr_navigator_full_view' );
 		$this->loader->add_action( 'wp_ajax_ajax_cr_navigator_calendar', $plugin_public, 'ajax_cr_navigator_calendar' );
@@ -278,25 +277,19 @@ class Courtres {
 		$this->loader->add_shortcode( 'courtchallenges', $plugin_piramid_public, 'public_shortcode_courtchallenges' );
 
 		$this->loader->add_action( 'wp_ajax_create_challenge', $plugin_piramid_public, 'create_challenge' );
-		$this->loader->add_action( 'wp_ajax_nopriv_create_challenge', $plugin_piramid_public, 'accept_challenge' );
 
 		$this->loader->add_action( 'wp_ajax_accept_challenge', $plugin_piramid_public, 'accept_challenge' );
-		$this->loader->add_action( 'wp_ajax_nopriv_accept_challenge', $plugin_piramid_public, 'accept_challenge' );
 
 		$this->loader->add_action( 'wp_ajax_get_court', $plugin_public, 'ajax_get_court' );
-		$this->loader->add_action( 'wp_ajax_nopriv_get_court', $plugin_public, 'ajax_get_court' );
 
 		$this->loader->add_action( 'wp_ajax_courtres_event_attach_join', $plugin_public, 'ajax_event_attach_join' );
 		$this->loader->add_action( 'wp_ajax_courtres_event_attach_leave', $plugin_public, 'ajax_event_attach_leave' );
 
 		$this->loader->add_action( 'wp_ajax_schedule_challenge', $plugin_piramid_public, 'schedule_challenge' );
-		$this->loader->add_action( 'wp_ajax_nopriv_schedule_challenge', $plugin_piramid_public, 'schedule_challenge' );
 
 		$this->loader->add_action( 'wp_ajax_delete_challenge', $plugin_piramid_public, 'delete_challenge' );
-		$this->loader->add_action( 'wp_ajax_nopriv_delete_challenge', $plugin_piramid_public, 'delete_challenge' );
 
 		$this->loader->add_action( 'wp_ajax_enter_challenge_result', $plugin_piramid_public, 'enter_challenge_result' );
-		$this->loader->add_action( 'wp_ajax_nopriv_enter_challenge_result', $plugin_piramid_public, 'enter_challenge_result' );
 
 		$this->loader->add_action( 'template_redirect', $plugin_piramid_public, 'accept_challenge_by_email_link', 1 );
 

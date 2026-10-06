@@ -569,5 +569,16 @@ class Courtres_Entity_Challenges extends Courtres_Entity_Base {
 		return $cnt;
 	}
 
+	/**
+	 * Token for the email accept link. Independent of the user who sends the mail.
+	 *
+	 * @param int $challenge_id Challenge id.
+	 * @param int $challenged_id Challenged player id.
+	 * @return string
+	 */
+	public static function accept_link_token( $challenge_id, $challenged_id ) {
+		return hash_hmac( 'sha256', absint( $challenge_id ) . '|' . absint( $challenged_id ), wp_salt( 'nonce' ) );
+	}
+
 
 }

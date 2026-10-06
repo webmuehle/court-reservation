@@ -132,7 +132,8 @@ class Courtres_Admin extends Courtres_Base {
 			$this->plugin_name,
 			'js_data',
 			array(
-				'ajax_url' => admin_url( 'admin-ajax.php' ),
+				'ajax_url'               => admin_url( 'admin-ajax.php' ),
+				'reservation_type_nonce' => wp_create_nonce( 'courtres_edit_reservation_type' ),
 			)
 		);
 
@@ -664,6 +665,7 @@ class Courtres_Admin extends Courtres_Base {
 					'display_name'      => $user_signon->display_name,
 					'message'           => __( 'Login successful, redirecting...' ),
 					'reservation_nonce' => wp_create_nonce( 'courtres_add_reservation' ),
+					'players_nonce'     => wp_create_nonce( 'courtres_players_select' ),
 					'login_token'       => $login_token,
 				)
 			);
@@ -1261,27 +1263,39 @@ class Courtres_Admin extends Courtres_Base {
 	 * @return json
 	 */
 	function edit_reservation_type() {
-		$responce            = array();
-		$responce['errors']  = array();
-		$responce['request'] = $_REQUEST;
+		$responce           = array();
+		$responce['errors'] = array();
 
-		$reservation_type = isset( $_REQUEST['reservation_type'] ) ? sanitize_text_field( $_REQUEST['reservation_type'] ) : '';
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$responce['errors'][] = __( 'No permission.', 'court-reservation' );
+			echo wp_json_encode( $responce );
+			wp_die();
+		}
+
+		check_ajax_referer( 'courtres_edit_reservation_type', 'nonce' );
+
+		$reservation_type = isset( $_REQUEST['reservation_type'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['reservation_type'] ) ) : '';
+		$reservation_type = substr( $reservation_type, 0, 80 );
 		if ( ! $reservation_type ) {
 			$responce['errors'][] = __( 'New reservation type is empty', 'court-reservation' );
-			echo json_encode( $responce );
+			echo wp_json_encode( $responce );
 			wp_die();
 		}
 
 		$option_reservation_types = $this->getOption( 'reservation_types' );
 		if ( ! $option_reservation_types ) {
 			$responce['errors'][] = __( 'Reservation types not found in the db', 'court-reservation' );
-			echo json_encode( $responce );
+			echo wp_json_encode( $responce );
 			wp_die();
 		}
 
-		$reservation_types = $option_reservation_types->option_value ? unserialize( $option_reservation_types->option_value ) : array();
+		$reservation_types = $option_reservation_types->option_value ? maybe_unserialize( $option_reservation_types->option_value ) : array();
+		if ( ! is_array( $reservation_types ) ) {
+			$reservation_types = array();
+		}
 
-		switch ( $_REQUEST['action_type'] ) {
+		$action_type = isset( $_REQUEST['action_type'] ) ? sanitize_key( wp_unslash( $_REQUEST['action_type'] ) ) : '';
+		switch ( $action_type ) {
 			case 'add':
 				$reservation_types[] = $reservation_type;
 				break;
@@ -1289,7 +1303,7 @@ class Courtres_Admin extends Courtres_Base {
 				$found_key = array_search( $reservation_type, $reservation_types );
 				if ( $found_key === false ) {
 					$responce['errors'][] = __( 'Reservation type not found to delete', 'court-reservation' );
-					echo json_encode( $responce );
+					echo wp_json_encode( $responce );
 					wp_die();
 				}
 				unset( $reservation_types[ $found_key ] );
@@ -1297,7 +1311,7 @@ class Courtres_Admin extends Courtres_Base {
 
 			default:
 				$responce['errors'][] = __( 'Unknown action type', 'court-reservation' );
-				echo json_encode( $responce );
+				echo wp_json_encode( $responce );
 				wp_die();
 				break;
 		}
@@ -1317,16 +1331,18 @@ class Courtres_Admin extends Courtres_Base {
 
 		$responce['reservation_types'] = $reservation_types;
 
-		echo json_encode( $responce );
+		echo wp_json_encode( $responce );
 		wp_die();
 	}
 
 	// this is for ajax call
 	function get_players_select_options() {
-		$responce            = array();
-		$responce['errors']  = array();
-		$responce['request'] = $_REQUEST;
-		$players             = $this->getAvailablePlayers(); ?>
+		if ( ! is_user_logged_in() || ! current_user_can( 'place_reservation' ) ) {
+			wp_die( esc_html__( 'No permission.', 'court-reservation' ), '', array( 'response' => 403 ) );
+		}
+		check_ajax_referer( 'courtres_players_select', 'players_nonce' );
+
+		$players = $this->getAvailablePlayers(); ?>
 
 		<option value="0"><?php echo esc_html__( 'Select partner', 'court-reservation' ); ?></option> 
 									 <?php
@@ -1335,6 +1351,7 @@ class Courtres_Admin extends Courtres_Base {
 		<option value="<?php echo esc_html($player->id); ?>"><?php echo esc_html($player->display_name); ?></option> 
 											<?php
 										}
+										wp_die();
 	}
 
 
@@ -1605,11 +1622,22 @@ class Courtres_Admin extends Courtres_Base {
 	// this is for ajax call
 	// download_csv
 	function download_csv() {
-		if ( wp_verify_nonce( $_POST['export_expired_nonce'], 'export_expired' ) ) {
-			$data = $this->get_expired( sanitize_text_field( $_POST['target'] ) );
-			$this->export_csv( $this->prepare_to_csv( $data ) );
-			wp_die();
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'No permission.', 'court-reservation' ), '', array( 'response' => 403 ) );
 		}
+
+		$nonce = isset( $_POST['export_expired_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['export_expired_nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'export_expired' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'court-reservation' ), '', array( 'response' => 403 ) );
+		}
+
+		$target = isset( $_POST['target'] ) ? sanitize_key( wp_unslash( $_POST['target'] ) ) : '';
+		$data   = $this->get_expired( $target );
+		if ( ! is_array( $data ) ) {
+			$data = array();
+		}
+		$this->export_csv( $this->prepare_to_csv( $data ) );
+		wp_die();
 	}
 
 }

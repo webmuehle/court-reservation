@@ -64,8 +64,9 @@ class Courtres_Notices {
 
 		$link = add_query_arg(
 			array(
-				'cr-challenge' => $challenge_id,
-				'cr-action'    => 'accept',
+				'cr-challenge'    => $challenge_id,
+				'cr-action'       => 'accept',
+				'cr_accept_token' => Courtres_Entity_Challenges::accept_link_token( $challenge_id, $challenge['challenged_id'] ),
 			),
 			$piramid_url
 		);
