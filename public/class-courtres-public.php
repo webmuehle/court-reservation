@@ -1392,6 +1392,7 @@ class Courtres_Public extends Courtres_Base {
 		);
 
 		$reservation_nonce = is_user_logged_in() ? wp_create_nonce( 'courtres_add_reservation' ) : '';
+		$players_nonce     = is_user_logged_in() ? wp_create_nonce( 'courtres_players_select' ) : '';
 
 		wp_localize_script(
 			$this->plugin_name,
@@ -1408,6 +1409,7 @@ class Courtres_Public extends Courtres_Base {
 					'today_ymd'               => gmdate( 'Y-m-d' ),
 					'locale'                  => function_exists( 'determine_locale' ) ? determine_locale() : get_locale(),
 					'reservation_nonce'       => $reservation_nonce,
+					'players_nonce'           => $players_nonce,
 				),
 				$attach_local
 			)
@@ -1469,6 +1471,7 @@ class Courtres_Public extends Courtres_Base {
 		);
 
 		$reservation_nonce = is_user_logged_in() ? wp_create_nonce( 'courtres_add_reservation' ) : '';
+		$players_nonce     = is_user_logged_in() ? wp_create_nonce( 'courtres_players_select' ) : '';
 
 		wp_localize_script(
 			$this->plugin_name,
@@ -1485,6 +1488,7 @@ class Courtres_Public extends Courtres_Base {
 					'today_ymd'               => gmdate( 'Y-m-d' ),
 					'locale'                  => function_exists( 'determine_locale' ) ? determine_locale() : get_locale(),
 					'reservation_nonce'       => $reservation_nonce,
+					'players_nonce'           => $players_nonce,
 				),
 				$attach_local
 			)
@@ -2006,8 +2010,8 @@ class Courtres_Public extends Courtres_Base {
 		$html_select='<datalist id="polja_">';
 		foreach ( $players as $player ) 
 		{
-			$html_options .= '<option data-value="' . $player->id . '">' . $player->display_name . '</option>';
-			$html_select=$html_select . '<option data-value="' . $player->id . '">' . $player->display_name . '</option>';
+			$html_options .= '<option data-value="' . esc_attr( $player->id ) . '">' . esc_html( $player->display_name ) . '</option>';
+			$html_select=$html_select . '<option data-value="' . esc_attr( $player->id ) . '">' . esc_html( $player->display_name ) . '</option>';
 		}
 		$html_select=$html_select . '</datalist>';
 		/*
@@ -2081,22 +2085,39 @@ class Courtres_Public extends Courtres_Base {
 	// for ajax calls
 	function ajax_get_court() {
 		$response = array(
-			'request' => $_POST,
 			'errors'  => array(),
 			'success' => false,
 		);
-		$res      = false;
 
-		$court_id = isset( $_POST['court_id'] ) ? intval( $_POST['court_id'] ) : false;
-		if ( ! $court_id ) {
-			$response['errors'][] = __( 'Court id is not received', 'courtres' );
-			echo json_encode( $response );
+		if ( ! is_user_logged_in() || ! current_user_can( 'place_reservation' ) ) {
+			$response['errors'][] = __( 'No permission.', 'court-reservation' );
+			echo wp_json_encode( $response );
 			wp_die();
 		}
 
-		$response['court']   = $this->getCourtByID( $court_id );
+		check_ajax_referer( 'courtres_get_court', 'court_nonce' );
+
+		$court_id = isset( $_POST['court_id'] ) ? absint( $_POST['court_id'] ) : 0;
+		if ( ! $court_id ) {
+			$response['errors'][] = __( 'Court id is not received', 'courtres' );
+			echo wp_json_encode( $response );
+			wp_die();
+		}
+
+		$court = $this->getCourtByID( $court_id );
+		if ( ! $court ) {
+			$response['errors'][] = __( 'Court id is not received', 'courtres' );
+			echo wp_json_encode( $response );
+			wp_die();
+		}
+
+		$response['court']   = array(
+			'id'    => (int) $court->id,
+			'open'  => (int) $court->open,
+			'close' => (int) $court->close,
+		);
 		$response['success'] = true;
-		echo json_encode( $response );
+		echo wp_json_encode( $response );
 		wp_die();
 	}
 
@@ -2207,17 +2228,27 @@ class Courtres_Public extends Courtres_Base {
 
 		global $wpdb;
 
-		$html  = $this->get_time_row( $_POST );
+		$args = array(
+			'court_id'       => isset( $_POST['court_id'] ) ? absint( $_POST['court_id'] ) : 0,
+			'is_halfhour'    => isset( $_POST['is_halfhour'] ) ? absint( $_POST['is_halfhour'] ) : 0,
+			'start_ts'       => isset( $_POST['start_ts'] ) ? absint( $_POST['start_ts'] ) : 0,
+			'duration_ts'    => isset( $_POST['duration_ts'] ) ? absint( $_POST['duration_ts'] ) : 0,
+			'exact_duration' => ! empty( $_POST['exact_duration'] ) ? 1 : 0,
+			'player_counter' => isset( $_POST['player_counter'] ) ? absint( $_POST['player_counter'] ) : 0,
+			'max_players'    => isset( $_POST['max_players'] ) ? min( 12, absint( $_POST['max_players'] ) ) : 0,
+			'min_players'    => isset( $_POST['min_players'] ) ? absint( $_POST['min_players'] ) : 0,
+		);
+
+		$html  = $this->get_time_row( $args );
 
 		if ( is_user_logged_in() ) { $court_userroles = wp_get_current_user()->roles; } else { $court_userroles = array(); }
 
 		$table_settings = $this->getTable( 'settings' );
 
-		if (isset($_POST['court_id']) && is_numeric($_POST['court_id']) && in_array('guest_player', $court_userroles)) 
+		if ( $args['court_id'] && in_array( 'guest_player', $court_userroles, true ) ) 
 		{ 
 
-			// print_r($_POST); die;
-			$court_id = intval($_POST['court_id']);
+			$court_id = $args['court_id'];
 			$is_court_payable = $this->is_court_payable($court_id,$table_settings);
 			if ( $is_court_payable > 0 )
 			{ 
@@ -2232,7 +2263,7 @@ class Courtres_Public extends Courtres_Base {
 					</div>
 					<div class="cr-control">' . $court_product->get_price_html() . ' ';
 
-				if ( isset($_POST['is_halfhour']) && $_POST['is_halfhour'] == 1 ) { $html .= __( ' per half-hour', 'court-reservation' ); }
+				if ( $args['is_halfhour'] == 1 ) { $html .= __( ' per half-hour', 'court-reservation' ); }
 				else { $html .= __( 'per hour', 'court-reservation' ); }
 	
 				$html .= '
@@ -2244,8 +2275,8 @@ class Courtres_Public extends Courtres_Base {
 		}
 
 		$anonymization_mode = $this->getAnonymizationMode();
-		if ( $anonymization_mode != 1 ) {
-			$html .= $this->get_teammate_row( $_POST );
+		if ( $anonymization_mode != 1 && is_user_logged_in() && current_user_can( 'place_reservation' ) ) {
+			$html .= $this->get_teammate_row( $args );
 		}
 
 		$allowed_html = array(

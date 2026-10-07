@@ -45,6 +45,9 @@ $locktime_ts     = $atts['piramid']['locktime_ts'];
 						if ( $current_user_id == $challenge['challenged_id'] ) {
 							$descr_small .= ' (<a href="javascript:void(0);" class="cr-challenge-action ' . $action . '" data-' . $action . '_nonce="' . wp_create_nonce( $action . '_nonce' ) . '">' . $action_title . '</a>)';
 						}
+						if ( $current_user_id == $challenge['challenger_id'] ) {
+							$descr_small .= ' (<a href="javascript:void(0);" class="cr-challenge-action withdraw" data-withdraw_nonce="' . wp_create_nonce( 'withdraw_nonce' ) . '">' . esc_html__( 'Withdraw', 'court-reservation' ) . '</a>)';
+						}
 
 						$expired_ts = strtotime( $challenge['created_dt'] ) + $lifetime_ts;
 						$item_title = ' title="' . __( 'Will expire', 'courtres' ) . ': ' . date_i18n( $date_format, $expired_ts ) . ', ' . date_i18n( $time_format, $expired_ts ) . '"';
@@ -132,7 +135,23 @@ $locktime_ts     = $atts['piramid']['locktime_ts'];
 				}
 				?>
 
-				<li class="cr-challenge-item" data-id="<?php echo esc_attr( $challenge['id'] ); ?>" data-status="<?php echo esc_attr( $challenge['status'] ); ?>" data-challenge='<?php echo json_encode( $challenge ); ?>'<?php echo esc_html( $item_title ); ?>>
+				<?php
+				$challenge_public = $challenge;
+				foreach ( array( 'challenger', 'challenged', 'winner' ) as $challenge_role ) {
+					if ( empty( $challenge_public[ $challenge_role ]['wp_user'] ) ) {
+						continue;
+					}
+					$challenge_user = $challenge_public[ $challenge_role ]['wp_user'];
+					if ( is_object( $challenge_user ) ) {
+						$challenge_user = clone $challenge_user;
+						unset( $challenge_user->user_email, $challenge_user->user_pass );
+					} elseif ( is_array( $challenge_user ) ) {
+						unset( $challenge_user['user_email'], $challenge_user['user_pass'] );
+					}
+					$challenge_public[ $challenge_role ]['wp_user'] = $challenge_user;
+				}
+				?>
+				<li class="cr-challenge-item" data-id="<?php echo esc_attr( $challenge['id'] ); ?>" data-status="<?php echo esc_attr( $challenge['status'] ); ?>" data-challenge="<?php echo esc_attr( wp_json_encode( $challenge_public ) ); ?>"<?php echo esc_html( $item_title ); ?>>
 					<p class="cr-challenge-row main">
 						<span class="cr-challenge-cell player"><?php echo esc_html( $challenge['challenger']['wp_user']->display_name ); ?></span>
 						<span class="cr-challenge-cell vs">vs.</span>
@@ -143,6 +162,10 @@ $locktime_ts     = $atts['piramid']['locktime_ts'];
         								'class' => true,
         								'href'  => true,
         								'data-schedule_nonce' => true,
+        								'data-accept_nonce' => true,
+        								'data-delete_nonce' => true,
+        								'data-record_result_nonce' => true,
+        								'data-withdraw_nonce' => true,
     									],
 								]; 
 								echo wp_kses( $descr_big,$allowed_html ); ?></span>
@@ -156,7 +179,11 @@ $locktime_ts     = $atts['piramid']['locktime_ts'];
     								'a' => [
         								'class' => true,
         								'href'  => true,
-        								'data-accept-nonce' => true,
+        								'data-schedule_nonce' => true,
+        								'data-accept_nonce' => true,
+        								'data-delete_nonce' => true,
+        								'data-record_result_nonce' => true,
+        								'data-withdraw_nonce' => true,
     									],
 								]; 
 								echo wp_kses( $descr_small,$allowed_html ); ?></span>

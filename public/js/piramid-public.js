@@ -319,7 +319,8 @@
 
 			var params = {
 				"court_id": $( this ).val(),
-				"action": "get_court"
+				"action": "get_court",
+				"court_nonce": (cr_params && cr_params.court_nonce) ? cr_params.court_nonce : ""
 			}
 
 			jQuery.ajax(
@@ -352,6 +353,74 @@
 				}
 			);
 
+		}
+	)
+
+	// withdrawing a challenge that has not been accepted yet
+	.on(
+		'click',
+		'.cr-challenge-item .cr-challenge-action.withdraw',
+		function (e) {
+			e.preventDefault();
+			var challenge_id = $( this ).closest( ".cr-challenge-item" ).data( "id" );
+			var challenge    = $( this ).closest( ".cr-challenge-item" ).data( "challenge" );
+			var trans        = (cr_params && cr_params.trans) ? cr_params.trans : {};
+			var params       = {
+				"challenge_id": challenge_id,
+				"action": "withdraw_challenge",
+				"withdraw_nonce": $( this ).data( "withdraw_nonce" )
+			}
+			$( '#cr-dialog-comfirm-' + challenge.piramid_id ).first().dialog(
+				{
+					modal: true,
+					title: trans["Withdraw challenge?"] || "Withdraw challenge?",
+					buttons: [{
+						text: "No",
+						click: function () {
+							$( this ).dialog( "close" );
+						}
+					},
+					{
+						text: trans["Withdraw"] || "Withdraw",
+						click: function () {
+							e.preventDefault();
+							var the_dialog = $( this );
+
+							$( this ).closest( ".ui-dialog" ).append( '<div class="cr-preloader-overlay in-relative-block" id="plo_withdraw_challenge"><div class="cr-preloader"></div></div>' );
+							var preloader = $( this ).closest( ".ui-dialog" ).find( '.cr-preloader-overlay#plo_withdraw_challenge' );
+							$( preloader ).fadeIn();
+
+							jQuery.ajax(
+								{
+									type: "POST",
+									url: cr_params.ajax_url,
+									data: params,
+									dataType: 'json',
+									success: function (responce) {
+										if (responce.success) {
+											$( the_dialog ).dialog( "close" );
+											window.location.href = window.location.href.replace();
+										} else {
+											alert( responce.errors.join( '; ' ) );
+											$( the_dialog ).dialog( "close" );
+										}
+										$( preloader ).fadeOut();
+									},
+									error: function () {
+										$( preloader ).fadeOut();
+										console.warn( 'withdraw challenge ajax error' );
+									},
+								}
+							);
+						}
+					}
+					],
+					open: function () {
+						$( this ).find( ".content" ).text( trans["Are you sure you want to withdraw the challenge?"] || "Are you sure you want to withdraw the challenge?" );
+					},
+					close: function () {},
+				}
+			);
 		}
 	)
 
