@@ -3,7 +3,7 @@ Contributors: webmuehle
 Donate link: https://www.webmuehle.at/
 Tags: court booking, tennis booking, padel booking, sports reservation, pickleball, tennis club, booking system, court management
 Requires at least: 3.0.1
-Tested up to: 7.0.0
+Tested up to: 7.1.3
 Stable tag: 1.12.4
 Requires PHP: 5.2.4
 License: GPLv2 or later
@@ -178,6 +178,11 @@ Introduced optional participant joining for events, including recurring events, 
 * Security hardening of AJAX handlers
 * Allow the challenger to withdraw a challenge that has not been accepted yet
 * Limit new challenges to the positions offered on the pyramid
+
+= 1.12.2 =
+* Fixed saving reservations while logged in
+* Fixed court-specific event rendering and date format parsing
+* Fixed calendar paging, datepicker locale, and compact reservation rows
 
 = 1.12.1 =
 * Fixed plugin translations not loading for non-English WordPress locales
