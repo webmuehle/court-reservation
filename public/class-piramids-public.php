@@ -89,9 +89,9 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 			'courtpyramid'
 		);
 
-		$piramid = array();
-		if ( $atts['id'] ) {
-			$piramid_id = $atts['id'];
+		$piramid    = array();
+		$piramid_id = absint( $atts['id'] );
+		if ( $piramid_id ) {
 			$piramid    = Courtres_Entity_Piramid::get_by_id( $piramid_id );
 			if ( $piramid ) {
 				$piramid['players'] = Courtres_Entity_Piramids_Players::get_by_piramid_id( $piramid_id );
@@ -241,12 +241,20 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 			'courtchallenges'
 		);
 
-		if ( $atts['piramid_id'] && $atts['statuses'] ) {
-			$atts['piramid'] = Courtres_Entity_Piramid::get_by_id( $atts['piramid_id'] );
-			$statuses_str    = sanitize_text_field( str_replace( ' ', '', $atts['statuses'] ) );
-			if ( $statuses_str ) {
-				$atts['challenges'] = Courtres_Entity_Challenges::get_by_statuses( $atts['piramid_id'], explode( ',', $statuses_str ) );
+		$piramid_id       = absint( $atts['piramid_id'] );
+		$allowed_statuses = array( 'created', 'accepted', 'scheduled', 'played', 'closed' );
+		$statuses         = array();
+		foreach ( explode( ',', (string) $atts['statuses'] ) as $status ) {
+			$status = sanitize_key( $status );
+			if ( in_array( $status, $allowed_statuses, true ) ) {
+				$statuses[] = $status;
 			}
+		}
+		if ( $piramid_id && $statuses ) {
+			$atts['piramid_id'] = $piramid_id;
+			$atts['statuses']   = implode( ',', $statuses );
+			$atts['piramid']    = Courtres_Entity_Piramid::get_by_id( $piramid_id );
+			$atts['challenges'] = Courtres_Entity_Challenges::get_by_statuses( $piramid_id, $statuses );
 		}
 
 		ob_start();
@@ -461,9 +469,11 @@ class Piramids_Public extends Courtres_Entity_Piramid {
 	 * @return
 	 */
 	function accept_challenge_by_email_link() {
+		$action = get_query_var( 'cr-action' );
+		$action = is_string( $action ) ? sanitize_key( $action ) : '';
 		$params = array(
-			'challenge' => get_query_var( 'cr-challenge' ),
-			'action'    => get_query_var( 'cr-action' ),
+			'challenge' => absint( get_query_var( 'cr-challenge' ) ),
+			'action'    => $action,
 		);
 		if ( $params['challenge'] && $params['action'] ) {
 			$challenges_class = Courtres_Entity_Challenges::get_instance( $params['challenge'] );

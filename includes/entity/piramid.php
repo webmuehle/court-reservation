@@ -152,9 +152,18 @@ class Courtres_Entity_Piramid extends Courtres_Entity_Base {
 				$cnt = Courtres_Entity_Piramids_Players::count(
 					array(
 						'conditions' => array(
-							'`piramid_id` = ' . $row['piramid_id'],
-							'`player_id` = ' . $row['player_id'],
-							'`sort` = ' . $row['sort'],
+							array(
+								'sql'    => '`piramid_id` = %d',
+								'values' => array( (int) $row['piramid_id'] ),
+							),
+							array(
+								'sql'    => '`player_id` = %d',
+								'values' => array( (int) $row['player_id'] ),
+							),
+							array(
+								'sql'    => '`sort` = %d',
+								'values' => array( (int) $row['sort'] ),
+							),
 						),
 					)
 				);

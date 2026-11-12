@@ -85,9 +85,10 @@ assert.match( piramidJs, /accept_nonce/ );
 assert.match( piramidJs, /delete_nonce/ );
 assert.match( publicJs, /players_nonce/ );
 
-assert.match( header, /Version:\s+1\.12\.4/ );
-assert.match( header, /define\(\s*'Court_Reservation',\s*'1\.12\.4'\s*\)/ );
-assert.match( readme, /Stable tag:\s*1\.12\.4/ );
+assert.match( header, /Version:\s+1\.12\.5/ );
+assert.match( header, /define\(\s*'Court_Reservation',\s*'1\.12\.5'\s*\)/ );
+assert.match( readme, /Stable tag:\s*1\.12\.5/ );
+assert.match( readme, /Improved database query handling/ );
 assert.match( readme, /Updated Freemius SDK to the latest version/ );
 assert.match( readme, /Security hardening of AJAX handlers/ );
 
