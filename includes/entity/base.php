@@ -20,8 +20,8 @@ class Courtres_Entity_Base {
 	private $db_data;
 
 	public function __construct( $id ) {
-		$this->id      = $id;
-		$this->db_data = self::get_by_id( $id );
+		$this->id      = absint( $id );
+		$this->db_data = self::get_by_id( $this->id );
 	}
 
 	public static function get_instance( $id ) {
@@ -126,67 +126,82 @@ class Courtres_Entity_Base {
 	 * @return array $items or empty array
 	 */
 	static function get_list( $params = array() ) {
-		 global $wpdb;
+		global $wpdb;
 		$defaults = array(
 			'n_page'      => 0,
 			'limit'       => self::LIMIT,
 			'where'       => false,
 			'sql_where'   => false,
+			'sql_values'  => array(),
 			'sort'        => self::get_table_name() . '.`id` DESC',
 			'result_type' => 'ARRAY_A',
 		);
 		$params   = wp_parse_args( $params, $defaults );
-		$offset   = ( $params['n_page'] ? $params['n_page'] - 1 : $params['n_page'] ) * $params['limit'];
-		$sql_sort = $params['sort'] ? ' ORDER BY ' . $params['sort'] : '';
 
-		if ( $params['sql_where'] ) {
-			$sql_where = $params['sql_where'];
-		} else {
-			$sql_where = '';
-			if ( $params['where'] ) {
-				$conditions = isset( $params['where']['conditions'] ) ? $params['where']['conditions'] : false;
-				if ( $conditions ) {
-					$logic      = isset( $params['where']['logic'] ) ? $params['where']['logic'] : 'AND';
-					$conditions = array_map( 'self::add_aliases', $conditions );
-					$sql_where  = ' WHERE ' . implode( ' ' . $logic . ' ', $conditions );
-				}
+		$limit  = (int) $params['limit'];
+		$n_page = (int) $params['n_page'];
+		$offset = ( $n_page ? $n_page - 1 : $n_page ) * $limit;
+		if ( $offset < 0 ) {
+			$offset = 0;
+		}
+
+		$sort     = self::sanitize_sort( $params['sort'] );
+		$sql_sort = $sort ? ' ORDER BY ' . $sort : '';
+
+		$where_spec = array();
+		if ( ! empty( $params['sql_where'] ) ) {
+			$where_spec['sql_where'] = $params['sql_where'];
+			if ( isset( $params['sql_values'] ) && is_array( $params['sql_values'] ) ) {
+				$where_spec['sql_values'] = $params['sql_values'];
+			}
+		} elseif ( ! empty( $params['where'] ) && is_array( $params['where'] ) ) {
+			$where_spec = $params['where'];
+			if ( ! empty( $where_spec['conditions'] ) && is_array( $where_spec['conditions'] ) ) {
+				$where_spec['conditions'] = array_map( 'self::add_aliases', $where_spec['conditions'] );
 			}
 		}
 
+		list( $sql_where, $where_values ) = self::compile_where( $where_spec );
+
 		$sql_join        = '';
 		$sql_select_more = '';
+		$table           = self::get_table_name();
+		$result_type     = self::sanitize_result_type( $params['result_type'] );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- ORM: table/join/where from trusted params
-		$items = $wpdb->get_results(
-			$wpdb->prepare(
-				'SELECT ' . self::get_table_name() . '.*'
-				. $sql_select_more
-				. ' FROM ' . self::get_table_name()
-				. $sql_join
-				. $sql_where
-				. $sql_sort
-				. ' LIMIT %d OFFSET %d',
-				$params['limit'],
-				$offset
-			),
-			$params['result_type']
-		);
-		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
-
-		// fppr($wpdb->last_query, __FILE__.' $wpdb->last_query');
-		// fppr($items, __FILE__.' $items');
-
-		// to count a quantity for paging
-		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- ORM: table/join/where from trusted params
-		$res       = $wpdb->get_row(
-			'SELECT COUNT(*) AS cnt '
-			. ' FROM ' . self::get_table_name()
+		$sql = 'SELECT ' . $table . '.*'
+			. $sql_select_more
+			. ' FROM ' . $table
 			. $sql_join
 			. $sql_where
+			. $sql_sort
+			. ' LIMIT %d OFFSET %d';
+
+		$prepare_values = array_merge( $where_values, array( $limit, $offset ) );
+
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- table name is internal; values use placeholders
+		if ( self::placeholder_count( $sql ) !== count( $prepare_values ) ) {
+			self::$cnt = 0;
+			return array();
+		}
+		$items = $wpdb->get_results(
+			$wpdb->prepare( $sql, $prepare_values ),
+			$result_type
 		);
+
+		$count_sql = 'SELECT COUNT(*) AS cnt FROM ' . $table . $sql_join . $sql_where;
+		if ( $where_values ) {
+			if ( self::placeholder_count( $count_sql ) !== count( $where_values ) ) {
+				$res = null;
+			} else {
+				$res = $wpdb->get_row( $wpdb->prepare( $count_sql, $where_values ) );
+			}
+		} else {
+			$res = $wpdb->get_row( $count_sql );
+		}
 		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
+
 		self::$cnt = $res ? $res->cnt : 0;
-				return $items ? $items : array();
+		return $items ? $items : array();
 	}
 
 
@@ -207,33 +222,23 @@ class Courtres_Entity_Base {
 	 */
 	static function count( $where = array() ) {
 		global $wpdb;
-		$defaults = array(
-			'conditions' => false,
-			'logic'      => false,
-			'sql_where'  => false,
-		);
-		$where    = wp_parse_args( $where, $defaults );
-
-		if ( $where['sql_where'] ) {
-			$sql_where = $where['sql_where'];
-		} else {
-			$sql_where  = '';
-			$conditions = $where['conditions'] ? $where['conditions'] : false;
-			if ( $conditions ) {
-				$logic     = $where['logic'] ? $where['logic'] : 'AND';
-				$sql_where = ' WHERE ' . implode( ' ' . $logic . ' ', $conditions );
-			}
+		if ( ! is_array( $where ) ) {
+			$where = array();
 		}
 
-		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- ORM: table/where from trusted params
-		$res = $wpdb->get_row(
-			'SELECT COUNT(*) AS cnt '
-			. ' FROM ' . self::get_table_name()
-			. $sql_where
-		);
+		list( $sql_where, $where_values ) = self::compile_where( $where );
+		$count_sql                        = 'SELECT COUNT(*) AS cnt FROM ' . self::get_table_name() . $sql_where;
+
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- table name is internal; values use placeholders
+		if ( $where_values ) {
+			if ( self::placeholder_count( $count_sql ) !== count( $where_values ) ) {
+				return 0;
+			}
+			$res = $wpdb->get_row( $wpdb->prepare( $count_sql, $where_values ) );
+		} else {
+			$res = $wpdb->get_row( $count_sql );
+		}
 		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
-		// fppr($wpdb->last_query, __FILE__.' $wpdb->last_query');
-		// fppr($res, __FILE__.' $res');
 
 		$cnt = $res ? $res->cnt : 0;
 		return $cnt;
@@ -244,10 +249,16 @@ class Courtres_Entity_Base {
 	 * @return array $item or empty array
 	 */
 	static function get_by_id( $id ) {
-		$items      = self::get_list(
-			$params = array(
+		$id    = absint( $id );
+		$items = self::get_list(
+			array(
 				'where' => array(
-					'conditions' => array( 'ID = ' . $id ),
+					'conditions' => array(
+						array(
+							'sql'    => 'ID = %d',
+							'values' => array( $id ),
+						),
+					),
 				),
 			)
 		);
@@ -259,13 +270,445 @@ class Courtres_Entity_Base {
 	 * add aliases to sql queries
 	 */
 	static function add_aliases( $item ) {
-		global $wpdb;
-		if ( strpos( $item, '.' ) === false ) {
-			$result = self::get_table_name() . '.' . $item;
-		} else {
-			$result = $item;
+		if ( is_array( $item ) ) {
+			if ( isset( $item['sql'] ) && is_string( $item['sql'] ) ) {
+				$item['sql'] = self::alias_sql_fragment( $item['sql'] );
+			}
+			return $item;
 		}
-		return $result;
+		if ( ! is_string( $item ) ) {
+			return $item;
+		}
+		return self::alias_sql_fragment( $item );
+	}
+
+
+	/**
+	 * Prefix a simple column fragment with the entity table.
+	 *
+	 * Grouped fragments stay unchanged so an OR list is not prefixed as a whole.
+	 *
+	 * @param string $item SQL fragment.
+	 * @return string
+	 */
+	protected static function alias_sql_fragment( $item ) {
+		if ( false !== strpos( $item, '.' ) ) {
+			return $item;
+		}
+		if ( preg_match( '/^\s*`?[A-Za-z_][A-Za-z0-9_]*`?\b/', $item ) ) {
+			return self::get_table_name() . '.' . ltrim( $item );
+		}
+		return $item;
+	}
+
+
+	/**
+	 * Build a WHERE fragment and placeholder values.
+	 *
+	 * A condition is either a comparison string or
+	 * array( 'sql' => '`id` = %d', 'values' => array( 1 ) ).
+	 * String fragments are read back into placeholders. A fragment that is not a
+	 * simple comparison matches no rows.
+	 *
+	 * @param array $where conditions, logic, sql_where, sql_values.
+	 * @return array
+	 */
+	protected static function compile_where( $where ) {
+		if ( ! is_array( $where ) ) {
+			return array( '', array() );
+		}
+
+		if ( ! empty( $where['sql_where'] ) && is_string( $where['sql_where'] ) ) {
+			$values = ( isset( $where['sql_values'] ) && is_array( $where['sql_values'] ) ) ? array_values( $where['sql_values'] ) : array();
+			$body   = preg_replace( '/^\s*WHERE\b\s*/i', '', $where['sql_where'] );
+			if ( $values ) {
+				if ( ! self::values_are_scalar( $values ) || self::placeholder_count( $body ) !== count( $values ) || ! self::template_is_safe( $body ) ) {
+					return array( ' WHERE 1 = 0', array() );
+				}
+				return array( ' WHERE ' . $body, $values );
+			}
+			$compiled = self::parse_expression( $body );
+			if ( null === $compiled ) {
+				return array( ' WHERE 1 = 0', array() );
+			}
+			return array( ' WHERE ' . $compiled['sql'], $compiled['values'] );
+		}
+
+		if ( empty( $where['conditions'] ) || ! is_array( $where['conditions'] ) ) {
+			return array( '', array() );
+		}
+
+		$logic = self::sanitize_logic( isset( $where['logic'] ) ? $where['logic'] : 'AND' );
+		$parts = array();
+		$values = array();
+		foreach ( $where['conditions'] as $condition ) {
+			$compiled = self::compile_condition( $condition );
+			if ( null === $compiled ) {
+				return array( ' WHERE 1 = 0', array() );
+			}
+			$parts[] = $compiled['sql'];
+			$values  = array_merge( $values, $compiled['values'] );
+		}
+
+		return array( ' WHERE ' . implode( ' ' . $logic . ' ', $parts ), $values );
+	}
+
+
+	/**
+	 * @param mixed $condition Condition string or sql/values array.
+	 * @return array|null
+	 */
+	protected static function compile_condition( $condition ) {
+		if ( is_array( $condition ) && isset( $condition['sql'] ) && is_string( $condition['sql'] ) ) {
+			$values = ( isset( $condition['values'] ) && is_array( $condition['values'] ) ) ? array_values( $condition['values'] ) : array();
+			if ( ! self::values_are_scalar( $values ) ) {
+				return null;
+			}
+			if ( 0 === self::placeholder_count( $condition['sql'] ) ) {
+				return self::parse_expression( $condition['sql'] );
+			}
+			if ( self::placeholder_count( $condition['sql'] ) !== count( $values ) || ! self::template_is_safe( $condition['sql'] ) ) {
+				return null;
+			}
+			return array(
+				'sql'    => $condition['sql'],
+				'values' => $values,
+			);
+		}
+		if ( ! is_string( $condition ) ) {
+			return null;
+		}
+		return self::parse_expression( $condition );
+	}
+
+
+	/**
+	 * @param string $sql SQL fragment with placeholders.
+	 * @return bool
+	 */
+	protected static function template_is_safe( $sql ) {
+		$probe = preg_replace( '/(?<!%)%(?:\d+\$)?d/i', '0', $sql );
+		$probe = preg_replace( '/(?<!%)%(?:\d+\$)?[sfi]/i', "'x'", $probe );
+		return null !== self::parse_expression( $probe );
+	}
+
+
+	/**
+	 * @param array $values Placeholder values.
+	 * @return bool
+	 */
+	protected static function values_are_scalar( $values ) {
+		foreach ( $values as $value ) {
+			if ( null !== $value && ! is_scalar( $value ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+	/**
+	 * @param string $sql SQL fragment.
+	 * @return int
+	 */
+	protected static function placeholder_count( $sql ) {
+		$stripped = str_replace( '%%', '', $sql );
+		preg_match_all( '/%(?:\d+\$)?[dsfi]/i', $stripped, $matches );
+		return count( $matches[0] );
+	}
+
+
+	/**
+	 * @param mixed $logic Join keyword.
+	 * @return string
+	 */
+	protected static function sanitize_logic( $logic ) {
+		if ( is_string( $logic ) && preg_match( '/^(AND|OR)$/i', $logic ) ) {
+			return strtoupper( $logic );
+		}
+		return 'AND';
+	}
+
+
+	/**
+	 * Keep column sorts. Anything else falls back to the id column.
+	 *
+	 * @param mixed $sort Sort clause.
+	 * @return string
+	 */
+	protected static function sanitize_sort( $sort ) {
+		$default = self::get_table_name() . '.`id` DESC';
+		if ( ! is_string( $sort ) || '' === trim( $sort ) ) {
+			return '';
+		}
+		$sort   = trim( $sort );
+		$table  = preg_quote( self::get_table_name(), '/' );
+		$column = '`?[A-Za-z_][A-Za-z0-9_]*`?';
+		$piece  = '(?:(?:' . $table . ')\.)?' . $column . '(?:\s+(?:ASC|DESC))?';
+		if ( ! preg_match( '/^' . $piece . '(?:\s*,\s*' . $piece . ')*$/i', $sort ) ) {
+			return $default;
+		}
+		return $sort;
+	}
+
+
+	/**
+	 * @param mixed $result_type Requested result shape.
+	 * @return string
+	 */
+	protected static function sanitize_result_type( $result_type ) {
+		$allowed = array( ARRAY_A, ARRAY_N, OBJECT, OBJECT_K );
+		if ( in_array( $result_type, $allowed, true ) ) {
+			return $result_type;
+		}
+		return ARRAY_A;
+	}
+
+
+	/**
+	 * @param string $sql Expression.
+	 * @return array|null
+	 */
+	protected static function parse_expression( $sql ) {
+		if ( ! is_string( $sql ) ) {
+			return null;
+		}
+		$parsed = self::parse_or_expr( $sql, 0 );
+		if ( null === $parsed ) {
+			return null;
+		}
+		if ( '' !== trim( substr( $sql, $parsed['pos'] ) ) ) {
+			return null;
+		}
+		return array(
+			'sql'    => $parsed['sql'],
+			'values' => $parsed['values'],
+		);
+	}
+
+
+	/**
+	 * @param string $sql Expression.
+	 * @param int    $pos Offset.
+	 * @return array|null
+	 */
+	protected static function parse_or_expr( $sql, $pos ) {
+		$left = self::parse_and_expr( $sql, $pos );
+		if ( null === $left ) {
+			return null;
+		}
+		while ( preg_match( '/^\s+OR\b/i', substr( $sql, $left['pos'] ), $match ) ) {
+			$right = self::parse_and_expr( $sql, $left['pos'] + strlen( $match[0] ) );
+			if ( null === $right ) {
+				return null;
+			}
+			$left = array(
+				'sql'    => $left['sql'] . ' OR ' . $right['sql'],
+				'values' => array_merge( $left['values'], $right['values'] ),
+				'pos'    => $right['pos'],
+			);
+		}
+		return $left;
+	}
+
+
+	/**
+	 * @param string $sql Expression.
+	 * @param int    $pos Offset.
+	 * @return array|null
+	 */
+	protected static function parse_and_expr( $sql, $pos ) {
+		$left = self::parse_primary( $sql, $pos );
+		if ( null === $left ) {
+			return null;
+		}
+		while ( preg_match( '/^\s+AND\b/i', substr( $sql, $left['pos'] ), $match ) ) {
+			$right = self::parse_primary( $sql, $left['pos'] + strlen( $match[0] ) );
+			if ( null === $right ) {
+				return null;
+			}
+			$left = array(
+				'sql'    => $left['sql'] . ' AND ' . $right['sql'],
+				'values' => array_merge( $left['values'], $right['values'] ),
+				'pos'    => $right['pos'],
+			);
+		}
+		return $left;
+	}
+
+
+	/**
+	 * @param string $sql Expression.
+	 * @param int    $pos Offset.
+	 * @return array|null
+	 */
+	protected static function parse_primary( $sql, $pos ) {
+		if ( preg_match( '/^\s*\(/', substr( $sql, $pos ), $match ) ) {
+			$inner = self::parse_or_expr( $sql, $pos + strlen( $match[0] ) );
+			if ( null === $inner ) {
+				return null;
+			}
+			if ( ! preg_match( '/^\s*\)/', substr( $sql, $inner['pos'] ), $close ) ) {
+				return null;
+			}
+			return array(
+				'sql'    => '(' . $inner['sql'] . ')',
+				'values' => $inner['values'],
+				'pos'    => $inner['pos'] + strlen( $close[0] ),
+			);
+		}
+		return self::parse_predicate( $sql, $pos );
+	}
+
+
+	/**
+	 * @param string $sql Expression.
+	 * @param int    $pos Offset.
+	 * @return array|null
+	 */
+	protected static function parse_predicate( $sql, $pos ) {
+		$ident = self::match_identifier( substr( $sql, $pos ) );
+		if ( null === $ident ) {
+			return null;
+		}
+		$cursor = $pos + $ident['len'];
+		$after  = substr( $sql, $cursor );
+
+		if ( preg_match( '/^\s+IN\s*\(/i', $after, $in_match ) ) {
+			$list = self::parse_literal_list( $sql, $cursor + strlen( $in_match[0] ) );
+			if ( null === $list || ! preg_match( '/^\s*\)/', substr( $sql, $list['pos'] ), $close ) ) {
+				return null;
+			}
+			return array(
+				'sql'    => $ident['sql'] . ' IN (' . implode( ', ', $list['placeholders'] ) . ')',
+				'values' => $list['values'],
+				'pos'    => $list['pos'] + strlen( $close[0] ),
+			);
+		}
+
+		if ( ! preg_match( '/^\s*(!=|<>|<=|>=|=|<|>)\s*/', $after, $op_match ) ) {
+			return null;
+		}
+		$cursor  += strlen( $op_match[0] );
+		$after_op = substr( $sql, $cursor );
+		if ( preg_match( '/^CURRENT_TIMESTAMP\(\)\s*-\s*INTERVAL\s+(\d+)\s+SECOND\b/i', $after_op, $interval ) ) {
+			return array(
+				'sql'    => $ident['sql'] . ' ' . $op_match[1] . ' CURRENT_TIMESTAMP() - INTERVAL %d SECOND',
+				'values' => array( (int) $interval[1] ),
+				'pos'    => $cursor + strlen( $interval[0] ),
+			);
+		}
+
+		$literal = self::match_literal( $after_op );
+		if ( null === $literal ) {
+			return null;
+		}
+		return array(
+			'sql'    => $ident['sql'] . ' ' . $op_match[1] . ' ' . $literal['placeholder'],
+			'values' => array( $literal['value'] ),
+			'pos'    => $cursor + $literal['len'],
+		);
+	}
+
+
+	/**
+	 * @param string $rest Remaining SQL.
+	 * @return array|null
+	 */
+	protected static function match_identifier( $rest ) {
+		if ( ! preg_match( '/^\s*(`?)([A-Za-z_][A-Za-z0-9_]*)\1(?:\s*\.\s*(`?)([A-Za-z_][A-Za-z0-9_]*)\3)?/', $rest, $match ) ) {
+			return null;
+		}
+		if ( ! empty( $match[4] ) ) {
+			$sql = '`' . $match[2] . '`.`' . $match[4] . '`';
+		} else {
+			$sql = '`' . $match[2] . '`';
+		}
+		return array(
+			'sql' => $sql,
+			'len' => strlen( $match[0] ),
+		);
+	}
+
+
+	/**
+	 * @param string $rest Remaining SQL.
+	 * @return array|null
+	 */
+	protected static function match_literal( $rest ) {
+		if ( preg_match( '/^(-?\d+)/', $rest, $match ) ) {
+			return array(
+				'placeholder' => '%d',
+				'value'       => (int) $match[1],
+				'len'         => strlen( $match[0] ),
+			);
+		}
+		if ( preg_match( "/^'([^']*)'/", $rest, $match ) ) {
+			return array(
+				'placeholder' => '%s',
+				'value'       => $match[1],
+				'len'         => strlen( $match[0] ),
+			);
+		}
+		if ( preg_match( '/^"([^"]*)"/', $rest, $match ) ) {
+			return array(
+				'placeholder' => '%s',
+				'value'       => $match[1],
+				'len'         => strlen( $match[0] ),
+			);
+		}
+		return null;
+	}
+
+
+	/**
+	 * @param string $sql Expression.
+	 * @param int    $pos Offset.
+	 * @return array|null
+	 */
+	protected static function parse_literal_list( $sql, $pos ) {
+		$placeholders = array();
+		$values       = array();
+		$length       = strlen( $sql );
+		$expect_comma = false;
+
+		while ( $pos < $length ) {
+			if ( preg_match( '/^\s+/', substr( $sql, $pos ), $ws ) ) {
+				$pos += strlen( $ws[0] );
+			}
+			if ( $expect_comma ) {
+				if ( ! preg_match( '/^,/', substr( $sql, $pos ) ) ) {
+					break;
+				}
+				$pos += 1;
+				if ( preg_match( '/^\s+/', substr( $sql, $pos ), $ws_after ) ) {
+					$pos += strlen( $ws_after[0] );
+				}
+			}
+			$literal = self::match_literal( substr( $sql, $pos ) );
+			if ( null === $literal ) {
+				if ( $expect_comma && preg_match( '/^,/', substr( $sql, $pos - 1 ) ) ) {
+					return null;
+				}
+				if ( ! $placeholders ) {
+					return null;
+				}
+				break;
+			}
+			$placeholders[] = $literal['placeholder'];
+			$values[]       = $literal['value'];
+			$pos           += $literal['len'];
+			$expect_comma   = true;
+		}
+
+		if ( ! $placeholders ) {
+			return null;
+		}
+		return array(
+			'placeholders' => $placeholders,
+			'values'       => $values,
+			'pos'          => $pos,
+		);
 	}
 
 
@@ -327,27 +770,57 @@ class Courtres_Entity_Base {
 	 */
 	static function delete( array $args, $logic = 'OR' ) {
 		global $wpdb;
-		$result     = false;
-		$sql_wheres = false;
+		$result = false;
+		$values = array();
+		$sql    = '';
+
 		if ( $args ) {
-			if ( isset( $args['where'] ) ) {
-				$conditions = isset( $args['where']['conditions'] ) ? $args['where']['conditions'] : false;
-				if ( $conditions ) {
-					$logic      = isset( $args['where']['logic'] ) ? $args['where']['logic'] : 'AND';
-					$sql_wheres = $args['where']['conditions'];
+			if ( isset( $args['where'] ) && is_array( $args['where'] ) ) {
+				$where = $args['where'];
+				if ( empty( $where['logic'] ) ) {
+					$where['logic'] = 'AND';
 				}
+				list( $sql_where, $values ) = self::compile_where( $where );
+				if ( '' === $sql_where ) {
+					return false;
+				}
+				$sql = 'DELETE FROM `' . self::get_table_name() . '`' . $sql_where;
 			} else {
+				$logic_sql = self::sanitize_logic( $logic );
+				$parts     = array();
 				foreach ( $args as $key => $value ) {
-					$sql_wheres[] = sprintf( "(`%s` = '%s')", $key, $value );
+					if ( ! is_string( $key ) || ! preg_match( '/^[A-Za-z_][A-Za-z0-9_]*$/', $key ) ) {
+						return false;
+					}
+					if ( is_int( $value ) || ( is_string( $value ) && preg_match( '/^-?\d+$/', $value ) ) ) {
+						$parts[]  = '(`' . $key . '` = %d)';
+						$values[] = (int) $value;
+					} else {
+						$parts[]  = '(`' . $key . '` = %s)';
+						$values[] = (string) $value;
+					}
 				}
+				if ( ! $parts ) {
+					return false;
+				}
+				$sql = 'DELETE FROM `' . self::get_table_name() . '` WHERE (' . implode( ' ' . $logic_sql . ' ', $parts ) . ')';
 			}
-			if ( $sql_wheres ) {
-				$sql = sprintf( 'DELETE FROM `%s` WHERE (%s)', self::get_table_name(), implode( ' ' . $logic . ' ', $sql_wheres ) );
-				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- ORM: table/conditions from trusted params
-				$res = $wpdb->query( $sql );
+
+			// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- table name is internal; values use placeholders
+			if ( $values ) {
+				if ( self::placeholder_count( $sql ) !== count( $values ) ) {
+					return false;
+				}
+				$prepared = $wpdb->prepare( $sql, $values );
+			} else {
+				$prepared = $sql;
 			}
-			if ( $res ) {
-				$result = true;
+			// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
+			if ( is_string( $prepared ) && '' !== $prepared ) {
+				$res = $wpdb->query( $prepared );
+				if ( $res ) {
+					$result = true;
+				}
 			}
 		}
 		return $result;

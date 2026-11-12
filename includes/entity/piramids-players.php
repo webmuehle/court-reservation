@@ -74,11 +74,19 @@ class Courtres_Entity_Piramids_Players extends Courtres_Entity_Base {
 	 * @return array of players or empty array
 	 */
 	static function get_by_piramid_id( int $piramid_id ) {
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- get_list: piramid_id is int, conditions are safe
 		$items = self::get_list(
 			array(
 				'where' => array(
-					'conditions' => array( '`piramid_id` = ' . $piramid_id, '`is_active` = 1' ),
+					'conditions' => array(
+						array(
+							'sql'    => '`piramid_id` = %d',
+							'values' => array( $piramid_id ),
+						),
+						array(
+							'sql'    => '`is_active` = %d',
+							'values' => array( 1 ),
+						),
+					),
 				),
 				'sort'  => self::get_table_name() . '.sort ASC',
 			)

@@ -184,13 +184,23 @@ class Courtres_Entity_Challenges extends Courtres_Entity_Base {
 				)
 			);
 
+			$player_conditions = array(
+				array(
+					'sql'    => '`piramid_id` = %d',
+					'values' => array( absint( $challenges[0]['piramid_id'] ) ),
+				),
+			);
+			$player_ids = array_values( array_filter( array_map( 'absint', $user_ids ) ) );
+			if ( $player_ids ) {
+				$player_conditions[] = array(
+					'sql'    => '`player_id` IN (' . implode( ', ', array_fill( 0, count( $player_ids ), '%d' ) ) . ')',
+					'values' => $player_ids,
+				);
+			}
 			$piramid_players = Courtres_Entity_Piramids_Players::get_list(
 				array(
 					'where' => array(
-						'conditions' => array(
-							'`piramid_id` = ' . $challenges[0]['piramid_id'],
-							'`player_id` IN (' . implode( ',', $user_ids ) . ')',
-						),
+						'conditions' => $player_conditions,
 					),
 				)
 			);
@@ -242,7 +252,12 @@ class Courtres_Entity_Challenges extends Courtres_Entity_Base {
 	static function get_challenge_by_id( int $id ) {
 		$args       = array(
 			'where' => array(
-				'conditions' => array( '`id` = ' . $id ),
+				'conditions' => array(
+					array(
+						'sql'    => '`id` = %d',
+						'values' => array( absint( $id ) ),
+					),
+				),
 			),
 		);
 		$challenges = self::get_challenges( $args );
@@ -260,7 +275,20 @@ class Courtres_Entity_Challenges extends Courtres_Entity_Base {
 	static function get_challenges_by_challenger( int $piramid_id, int $challenger_id ) {
 		$args       = array(
 			'where' => array(
-				'conditions' => array( '`piramid_id` = ' . $piramid_id, '`challenger_id` = ' . $challenger_id, '`status` != "closed"' ),
+				'conditions' => array(
+					array(
+						'sql'    => '`piramid_id` = %d',
+						'values' => array( $piramid_id ),
+					),
+					array(
+						'sql'    => '`challenger_id` = %d',
+						'values' => array( $challenger_id ),
+					),
+					array(
+						'sql'    => '`status` != %s',
+						'values' => array( 'closed' ),
+					),
+				),
 			),
 		);
 		$challenges = self::get_challenges( $args );
@@ -286,11 +314,29 @@ class Courtres_Entity_Challenges extends Courtres_Entity_Base {
 	 * @return array with challenges data or empty array
 	 */
 	static function get_by_statuses( int $piramid_id, array $statuses ) {
-		foreach ( $statuses as $key => $status ) {
-			$conditions[] = sprintf( "status = '%s'", $status );
+		$statuses = array_values(
+			array_filter(
+				array_map( 'strval', $statuses ),
+				'strlen'
+			)
+		);
+		if ( ! $statuses ) {
+			return array();
 		}
+		$status_sql = implode( ' OR ', array_fill( 0, count( $statuses ), 'status = %s' ) );
 		$args       = array(
-			'sql_where' => sprintf( ' WHERE (`piramid_id` = %d) AND (%s)', $piramid_id, implode( ' OR ', $conditions ) ),
+			'where' => array(
+				'conditions' => array(
+					array(
+						'sql'    => '`piramid_id` = %d',
+						'values' => array( $piramid_id ),
+					),
+					array(
+						'sql'    => '(' . $status_sql . ')',
+						'values' => $statuses,
+					),
+				),
+			),
 		);
 		$challenges = self::get_challenges( $args );
 		return $challenges;
@@ -305,7 +351,12 @@ class Courtres_Entity_Challenges extends Courtres_Entity_Base {
 	static function get_expired() {
 		$args       = array(
 			'where' => array(
-				'conditions' => array( '`end_ts` < ' . (int) current_time( 'timestamp' ) ),
+				'conditions' => array(
+				array(
+					'sql'    => '`end_ts` < %d',
+					'values' => array( (int) current_time( 'timestamp' ) ),
+				),
+			),
 			),
 			'sort'  => self::get_table_name() . '.`end_ts` DESC',
 		);
@@ -324,7 +375,20 @@ class Courtres_Entity_Challenges extends Courtres_Entity_Base {
 	static function is_player_already_challenger( int $piramid_id, int $challenger_id ) {
 		$cnt = self::count(
 			array(
-				'sql_where' => sprintf( ' WHERE `piramid_id` = %d AND `challenger_id` = %d AND `status` != "closed"', $piramid_id, $challenger_id ),
+				'conditions' => array(
+					array(
+						'sql'    => '`piramid_id` = %d',
+						'values' => array( $piramid_id ),
+					),
+					array(
+						'sql'    => '`challenger_id` = %d',
+						'values' => array( $challenger_id ),
+					),
+					array(
+						'sql'    => '`status` != %s',
+						'values' => array( 'closed' ),
+					),
+				),
 			)
 		);
 		return boolval( $cnt );
@@ -342,7 +406,20 @@ class Courtres_Entity_Challenges extends Courtres_Entity_Base {
 	static function is_player_already_challenged( int $piramid_id, int $challenged_id ) {
 		$cnt = self::count(
 			array(
-				'sql_where' => sprintf( ' WHERE `piramid_id` = %d AND `challenged_id` = %d AND `status` != "closed"', $piramid_id, $challenged_id ),
+				'conditions' => array(
+					array(
+						'sql'    => '`piramid_id` = %d',
+						'values' => array( $piramid_id ),
+					),
+					array(
+						'sql'    => '`challenged_id` = %d',
+						'values' => array( $challenged_id ),
+					),
+					array(
+						'sql'    => '`status` != %s',
+						'values' => array( 'closed' ),
+					),
+				),
 			)
 		);
 		return boolval( $cnt );
@@ -362,12 +439,29 @@ class Courtres_Entity_Challenges extends Courtres_Entity_Base {
 
 		$challenges = self::get_challenges(
 			array(
-				'sql_where' => sprintf(
-					' WHERE `piramid_id` = %1$d AND (`challenger_id` = %2$d OR `challenged_id` = %2$d) AND (`challenger_id` = %3$d OR `challenged_id` = %3$d) AND `status` = "closed" AND `closed_dt` > CURRENT_TIMESTAMP() - INTERVAL %4$d SECOND',
-					$piramid_id,
-					$challenger_id,
-					$challenged_id,
-					$piramid['locktime_ts']
+				'where' => array(
+					'conditions' => array(
+						array(
+							'sql'    => '`piramid_id` = %d',
+							'values' => array( $piramid_id ),
+						),
+						array(
+							'sql'    => '(`challenger_id` = %d OR `challenged_id` = %d)',
+							'values' => array( $challenger_id, $challenger_id ),
+						),
+						array(
+							'sql'    => '(`challenger_id` = %d OR `challenged_id` = %d)',
+							'values' => array( $challenged_id, $challenged_id ),
+						),
+						array(
+							'sql'    => '`status` = %s',
+							'values' => array( 'closed' ),
+						),
+						array(
+							'sql'    => '`closed_dt` > CURRENT_TIMESTAMP() - INTERVAL %d SECOND',
+							'values' => array( (int) $piramid['locktime_ts'] ),
+						),
+					),
 				),
 			)
 		);
@@ -522,8 +616,14 @@ class Courtres_Entity_Challenges extends Courtres_Entity_Base {
 			array(
 				'where' => array(
 					'conditions' => array(
-						"`status` = 'created'",
-						'`created_dt` < CURRENT_TIMESTAMP() - INTERVAL ' . $lifetime_ts . ' SECOND',
+						array(
+							'sql'    => '`status` = %s',
+							'values' => array( 'created' ),
+						),
+						array(
+							'sql'    => '`created_dt` < CURRENT_TIMESTAMP() - INTERVAL %d SECOND',
+							'values' => array( $lifetime_ts ),
+						),
 					),
 					'logic'      => 'AND',
 				),
@@ -544,8 +644,14 @@ class Courtres_Entity_Challenges extends Courtres_Entity_Base {
 			array(
 				'where' => array(
 					'conditions' => array(
-						"`status` = 'accepted'",
-						'`accepted_dt` < CURRENT_TIMESTAMP() - INTERVAL ' . $lifetime_ts . ' SECOND',
+						array(
+							'sql'    => '`status` = %s',
+							'values' => array( 'accepted' ),
+						),
+						array(
+							'sql'    => '`accepted_dt` < CURRENT_TIMESTAMP() - INTERVAL %d SECOND',
+							'values' => array( $lifetime_ts ),
+						),
 					),
 					'logic'      => 'AND',
 				),
@@ -563,7 +669,20 @@ class Courtres_Entity_Challenges extends Courtres_Entity_Base {
 	 */
 	static function user_can_accept( int $id ) {
 		$args = array(
-			'conditions' => array( "challenged_id = $id", "status = 'created'", 'is_active = 1' ),
+			'conditions' => array(
+				array(
+					'sql'    => 'challenged_id = %d',
+					'values' => array( $id ),
+				),
+				array(
+					'sql'    => 'status = %s',
+					'values' => array( 'created' ),
+				),
+				array(
+					'sql'    => 'is_active = %d',
+					'values' => array( 1 ),
+				),
+			),
 		);
 		$cnt  = self::count( $args );
 		return $cnt;
